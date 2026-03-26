@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1020969618268",
+    "project_id": "techgestor-bd",
+    "storage_bucket": "techgestor-bd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020969618268:android:75be0906ba615dd6f58f99",
+        "android_client_info": {
+          "package_name": "com.pedrogpn.techgestor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1020969618268-v6tk53pc2mjj2ca2otkkeklftr5urosh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNfHrrmixRic-vw7KMiYe7qPeB_SLUVSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1020969618268-v6tk53pc2mjj2ca2otkkeklftr5urosh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
