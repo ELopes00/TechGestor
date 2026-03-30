@@ -222,7 +222,6 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
     return ((i.nome && i.nome.toLowerCase().includes(termo)) || (i.pat && i.pat.includes(termo)) || (i.responsavel && i.responsavel.toLowerCase().includes(termo)) || (i.ipImpressora && i.ipImpressora.includes(termo)));
   });
 
-  // Função Auxiliar para renderizar Autocompletes com design embutido (evita o erro de z-index)
   const renderAutocomplete = (fieldValue, setField, dropdownKey, placeholder, dataSource, mapFunc, onSelect, keyboardType = "default") => {
     return (
       <View style={{ flex: 1 }}>
