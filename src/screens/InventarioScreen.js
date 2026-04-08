@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx';
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
 
+// IMPORTAÇÃO DOS DADOS FIXOS
 import { EQUIPAMENTOS, PREDIOS, SERVIDORES, SETORES_UNIDADES } from '../../constants/const';
 
 const PILLS_EQUIPAMENTOS = ['Monitor', 'CPU', 'Impressora', 'Scanner', 'Nobreak', 'Equipamento de Vídeoconferência', 'Notebook', 'Tablet', 'Telefone IP'];
@@ -67,7 +68,6 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
     if (Platform.OS !== 'web') getCameraPermissions();
   }, []);
 
-  // 👇 LÓGICA PARA PUXAR AS MARCAS DO TEU CONST.TS 👇
   const getMarcas = (categoria) => {
     let catAjustada = categoria === 'CPU' ? 'Computador' : categoria;
     const eq = EQUIPAMENTOS.find(e => e.categoria.toLowerCase() === catAjustada.toLowerCase());
@@ -503,7 +503,6 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
     else setSelectedInventoryItems(inventarioFiltrado.map(item => item.id));
   };
 
-  // 👇 MOTOR DE AUTOCOMPLETE NATIVO E INSTANTÂNEO 👇
   const renderAutocomplete = (fieldValue, setField, dropdownKey, placeholder, dataSource, mapFunc, onSelect, keyboardType = "default") => {
     const safeData = dataSource || [];
     return (
@@ -637,7 +636,6 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
         ))}
       </ScrollView>
 
-      {/* 👇 MODAL DO LEVANTAMENTO (COM OS CAMPOS DE BUSCA) 👇 */}
       <Modal visible={isAddModalOpen} transparent animationType="slide">
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center', padding: 15 }}>
           <View style={{ width: '100%', maxWidth: 500, backgroundColor: '#121212', borderRadius: 12, overflow: 'hidden', maxHeight: '95%' }}>
