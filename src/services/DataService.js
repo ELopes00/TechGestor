@@ -1,6 +1,5 @@
 import { deleteApp, getApps, initializeApp } from 'firebase/app';
-// 👇 Adicionados os imports para trocar a senha: updatePassword, reauthenticateWithCredential, EmailAuthProvider
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { createUserWithEmailAndPassword, EmailAuthProvider, getAuth, onAuthStateChanged, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updatePassword } from 'firebase/auth';
 import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, orderBy, query, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 
@@ -121,7 +120,6 @@ export const DataService = {
     await signOut(auth);
   },
 
-  // 👇 NOVA FUNÇÃO: O PRÓPRIO UTILIZADOR MUDA A SENHA
   async mudarMinhaSenha(senhaAtual, novaSenha) {
     const user = auth.currentUser;
     if (!user) return { sucesso: false, erro: "Usuário não logado" };

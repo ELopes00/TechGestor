@@ -1,7 +1,7 @@
+import { Camera, CameraView } from 'expo-camera';
 import * as DocumentPicker from 'expo-document-picker';
-import { useState, useRef, useEffect } from 'react';
-import { Alert, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
-import { CameraView, Camera } from 'expo-camera';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Image, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
@@ -33,9 +33,10 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   const [msgErro, setMsgErro] = useState('');
   const [solucao, setSolucao] = useState('');
 
-  // ESTADOS DA SELEÇÃO MÚLTIPLA
+  // ESTADOS DA SELEÇÃO MÚLTIPLA E TRAVA DE SALVAMENTO
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [isSavingChamado, setIsSavingChamado] = useState(false);
 
   // ESTADOS DA CÂMARA DE FOTOS
   const [hasPermission, setHasPermission] = useState(null);
@@ -53,7 +54,6 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
 
   const registrarLog = (msg) => { if (addLog) addLog(msg); };
 
-  // --- NOVA LÓGICA DE TÉCNICOS POR PRÉDIO ---
   const todosTecnicos = users.filter((u) => u.perfil === 'TECNICO' || u.perfil === 'ADM');
   const tecnicosDoSetorAtual = todosTecnicos.filter(u => u.predio === setor);
 
@@ -79,47 +79,58 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     else setSelectedIds([...selectedIds, id]);
   };
 
-  const bulkExcluir = async () => {
+  // 👇 EXCLUSÃO EM LOTE ULTRARRÁPIDA 👇
+  const bulkExcluir = () => {
     if (selectedIds.length === 0) return;
     if (user.perfil !== 'ADM') return Alert.alert('Erro', 'Apenas Administradores podem excluir chamados.');
 
-    const msg = `Apagar ${selectedIds.length} chamados permanentemente?`;
-    
-    const acaoExcluir = async () => {
-      try {
-        await Promise.all(selectedIds.map(id => DataService.deletarChamado(id)));
-        if (showPush) showPush(`🗑️ ${selectedIds.length} chamados excluídos.`);
-        registrarLog(`🗑️ ADM EXCLUIU ${selectedIds.length} CHAMADOS EM LOTE`);
-        setIsSelectMode(false); setSelectedIds([]);
-      } catch (e) { Alert.alert('Erro', 'Falha ao excluir em lote.'); }
+    const acaoExcluir = () => {
+      const idsParaApagar = [...selectedIds];
+      setIsSelectMode(false); 
+      setSelectedIds([]);
+      
+      setTimeout(() => { if (showPush) showPush(`🗑️ ${idsParaApagar.length} chamados excluídos.`); }, 100);
+
+      idsParaApagar.forEach(id => DataService.deletarChamado(id).catch(e => console.log('Erro:', e)));
+      registrarLog(`🗑️ ADM EXCLUIU ${idsParaApagar.length} CHAMADOS EM LOTE`);
     };
 
+    const msg = `Apagar ${selectedIds.length} chamados permanentemente?`;
     if (Platform.OS === 'web') { if (window.confirm(msg)) acaoExcluir(); } 
     else { Alert.alert("Atenção", msg, [{ text: "Cancelar" }, { text: "Excluir", style: 'destructive', onPress: acaoExcluir }]); }
   };
 
-  const bulkAssumir = async () => {
+  // ASSUMIR EM LOTE
+  const bulkAssumir = () => {
     if (selectedIds.length === 0) return;
+    
     const msgSistema = { user: 'SISTEMA', texto: `✅ ${user.login} assumiu em lote.`, time: Date.now() };
+    const idsParaAssumir = [...selectedIds];
+    
+    setIsSelectMode(false); 
+    setSelectedIds([]); 
+    setAbaAtiva('MEUS');
 
-    try {
-      await Promise.all(selectedIds.map(async id => {
-        const chamadoTarget = chamados.find(c => c.id === id);
-        return DataService.atualizarChamado(id, { tecnico: user.login, status: 'EM ATENDIMENTO', historico: [msgSistema, ...(chamadoTarget.historico || [])] });
-      }));
-      if (showPush) showPush(`🙋‍♂️ ${selectedIds.length} chamados assumidos!`);
-      registrarLog(`🙋‍♂️ ASSUMIU ${selectedIds.length} CHAMADOS EM LOTE`);
-      setIsSelectMode(false); setSelectedIds([]); setAbaAtiva('MEUS');
-    } catch (e) { Alert.alert('Erro', 'Falha ao assumir chamados em lote.'); }
+    setTimeout(() => { if (showPush) showPush(`🙋‍♂️ ${idsParaAssumir.length} chamados assumidos!`); }, 100);
+
+    idsParaAssumir.forEach(id => {
+      const chamadoTarget = chamados.find(c => c.id === id);
+      if (chamadoTarget) {
+        DataService.atualizarChamado(id, { 
+          tecnico: user.login, 
+          status: 'EM ATENDIMENTO', 
+          historico: [msgSistema, ...(chamadoTarget.historico || [])] 
+        }).catch(e => console.log(e));
+      }
+    });
+    
+    registrarLog(`🙋‍♂️ ASSUMIU ${idsParaAssumir.length} CHAMADOS EM LOTE`);
   };
 
-  // --- NOVA LÓGICA DE SORTEIO ALEATÓRIO ---
   const autoEscalar = () => {
     if (tecnicosDoSetorAtual.length === 0) return Alert.alert('Aviso', `Nenhum técnico no setor ${setor}.`);
-
     const indiceAleatorio = Math.floor(Math.random() * tecnicosDoSetorAtual.length);
     const tecnicoSorteado = tecnicosDoSetorAtual[indiceAleatorio].login;
-
     setTecSel(tecnicoSorteado);
     if (showPush) showPush(`⚡ ${tecnicoSorteado} sorteado para o chamado!`);
   };
@@ -181,37 +192,47 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     }
   };
 
-  // --- NOVA FUNÇÃO ABRIR COM LIMPEZA DE CAMPOS ---
   const abrir = async () => {
     if (!desc) return Alert.alert('Erro', 'A descrição é obrigatória.');
+    if (isSavingChamado) return; // Trava de segurança
+    
+    setIsSavingChamado(true);
+
     const novoChamado = {
       descricao: desc, predio: setor, status: 'ABERTO', tecnico: tecSel || '',
       prioridade, dataAbertura: Date.now(), equipamento: equipSel, historico: [],
       anexos: formAnexos, checklist: CHECKLIST_PADRAO, abertoPor: user.login
     };
-    await DataService.salvarChamado(novoChamado);
-    
-    registrarLog(`✨ ABRIU CHAMADO: ${desc.substring(0, 30)}...`);
-    if (showPush) showPush(`🔔 Novo Chamado Criado`);
 
-    if (tecSel) {
-      const tecnicoTarget = users.find(u => u.login === tecSel);
-      if (tecnicoTarget && tecnicoTarget.expoPushToken && DataService.enviarPushNotification) {
-        await DataService.enviarPushNotification(
-          tecnicoTarget.expoPushToken, 
-          '🚨 Novo Chamado Escalonado!', 
-          `${desc.substring(0, 30)}... Sala: ${setor}`
-        );
+    try {
+      await DataService.salvarChamado(novoChamado);
+      
+      registrarLog(`✨ ABRIU CHAMADO: ${desc.substring(0, 30)}...`);
+      if (showPush) showPush(`🔔 Novo Chamado Criado`);
+
+      if (tecSel) {
+        const tecnicoTarget = users.find(u => u.login === tecSel);
+        if (tecnicoTarget && tecnicoTarget.expoPushToken && DataService.enviarPushNotification) {
+          DataService.enviarPushNotification(
+            tecnicoTarget.expoPushToken, 
+            '🚨 Novo Chamado Escalonado!', 
+            `${desc.substring(0, 30)}... Sala: ${setor}`
+          ).catch(e => console.log(e));
+        }
       }
-    }
 
-    // Limpeza Mágica dos Campos
-    setDesc(''); 
-    setSetor(SETORES[0]); 
-    setTecSel(''); 
-    setPrioridade('NORMAL'); 
-    setEquipSel(null); 
-    setFormAnexos([]);
+      // Limpeza Mágica dos Campos
+      setDesc(''); 
+      setSetor(SETORES[0]); 
+      setTecSel(''); 
+      setPrioridade('NORMAL'); 
+      setEquipSel(null); 
+      setFormAnexos([]);
+    } catch (e) {
+      Alert.alert('Erro', 'Falha ao salvar chamado.');
+    } finally {
+      setIsSavingChamado(false); // Libera o botão
+    }
   };
 
   const prepararAssumir = (id) => { setChamadoParaAssumir(id); setConfirmModalVisible(true); };
@@ -220,12 +241,17 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     if (!chamadoParaAssumir) return;
     const chamadoTarget = chamados.find(c => c.id === chamadoParaAssumir);
     const msgSistema = { user: 'SISTEMA', texto: `✅ ${user.login} assumiu o chamado da fila.`, time: Date.now() };
+    
+    // Atualização rápida na UI
+    setConfirmModalVisible(false); 
+    setChamadoParaAssumir(null); 
+    setAbaAtiva('MEUS');
+
     await DataService.atualizarChamado(chamadoParaAssumir, {
       tecnico: user.login, status: 'EM ATENDIMENTO', historico: [msgSistema, ...(chamadoTarget.historico || [])]
     });
     
     registrarLog(`🙋‍♂️ ASSUMIU CHAMADO #${chamadoParaAssumir.substring(0,4)}`);
-    setConfirmModalVisible(false); setChamadoParaAssumir(null); setAbaAtiva('MEUS');
   };
 
   const enviarMensagem = async (msgManual = null) => {
@@ -233,6 +259,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     if (!msgFinal.trim()) return;
     const novaMsg = { user: user.login, texto: msgFinal, time: Date.now() };
     const novoHistorico = [novaMsg, ...(selectedChamado.historico || [])];
+    
     await DataService.atualizarChamado(selectedChamado.id, { historico: novoHistorico });
     setSelectedChamado({ ...selectedChamado, historico: novoHistorico });
     
@@ -243,12 +270,15 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   const transferirChamado = async (chamadoId, tecnicoAtual, novoTecnico) => {
     const chamadoTarget = chamados.find(c => c.id === chamadoId);
     const msgSistema = { user: 'SISTEMA', texto: `🔄 Transferido para ${novoTecnico}`, time: Date.now() };
+    
+    setTransferId(null); 
+    Alert.alert('Sucesso', 'Chamado transferido!');
+
     await DataService.atualizarChamado(chamadoId, {
       tecnico: novoTecnico, historico: [msgSistema, ...(chamadoTarget.historico || [])]
     });
     
     registrarLog(`🔄 TRANSFERIU CHAMADO PARA ${novoTecnico}`);
-    setTransferId(null); Alert.alert('Sucesso', 'Chamado transferido!');
   };
 
   const fecharChamado = async () => {
@@ -256,14 +286,16 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     try {
       const msgFechamento = { user: 'SISTEMA', texto: `🏁 CHAMADO FECHADO POR ${user.login}.\n📝 SOLUÇÃO: ${solucao}`, time: Date.now() };
       const tecnicoFinal = selectedChamado.tecnico ? selectedChamado.tecnico : user.login;
+      
+      setModalVisible(false); 
+      if (showPush) showPush("🏁 Chamado Finalizado!");
+
       await DataService.atualizarChamado(selectedChamado.id, {
         status: 'FECHADO', tecnico: tecnicoFinal, historico: [msgFechamento, ...(selectedChamado.historico || [])], checklist: selectedChamado.checklist || []
       });
       
       registrarLog(`✅ FECHOU CHAMADO #${selectedChamado.id.substring(0,4)}`);
-      
-      setSolucao(''); setMsgErro(''); setModalVisible(false); 
-      if (showPush) showPush("🏁 Chamado Finalizado!");
+      setSolucao(''); setMsgErro(''); 
     } catch (error) { Alert.alert("Erro", "Falha ao fechar no banco."); }
   };
 
@@ -275,11 +307,11 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
 
   const abrirModalDetalhes = (c) => { setSelectedChamado(c); setMsgErro(''); setSolucao(''); setModalVisible(true); };
 
-  const handleExcluir = async (id) => {
+  const handleExcluir = (id) => {
     if (user.perfil !== 'ADM') return Alert.alert('Acesso Negado', 'Apenas Administradores podem excluir chamados.');
     
-    const acao = async () => {
-      await DataService.deletarChamado(id);
+    const acao = () => {
+      DataService.deletarChamado(id).catch(e => console.log(e));
       registrarLog(`🗑️ EXCLUIU CHAMADO #${id.substring(0,4)}`);
       if (showPush) showPush("🗑️ Chamado apagado.");
     };
@@ -352,7 +384,6 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
           <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%', borderWidth: 1, borderColor: theme.border }]} placeholder="Descrição" value={desc} onChangeText={setDesc} />
           
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-            {/* LIMPEZA DO TÉCNICO AO TROCAR SETOR */}
             <TouchableOpacity style={[styles.input, { flex: 1, marginRight: 5, backgroundColor: theme.inputBg, borderColor: theme.border, borderWidth: 1, justifyContent: 'center' }]} onPress={() => setShowSetores(!showSetores)}>
               <Text style={{ color: theme.text }}>{setor} ↓</Text>
             </TouchableOpacity>
@@ -379,7 +410,6 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
 
           {showTecs && (
             <View style={{ backgroundColor: theme.card, borderRadius: 12, marginBottom: 10, borderWidth: 1, borderColor: theme.border }}>
-              {/* FILTRADO PELO SETOR ATUAL */}
               {tecnicosDoSetorAtual.map((t) => (
                 <TouchableOpacity key={t.login} style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: theme.border }} onPress={() => { setTecSel(t.login); setShowTecs(false); }}>
                   <Text style={{ color: theme.text }}>{t.login}</Text>
@@ -441,7 +471,14 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
             </View>
           )}
 
-          <Btn title="ABRIR CHAMADO" onPress={abrir} theme={theme} />
+          {/* BOTÃO COM TRAVA E MENSAGEM */}
+          <TouchableOpacity 
+            style={[styles.input, { backgroundColor: isSavingChamado ? '#555' : theme.primary, alignItems: 'center', justifyContent: 'center', width: '100%', borderColor: 'transparent' }]} 
+            onPress={abrir}
+            disabled={isSavingChamado}
+          >
+            <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSavingChamado ? 'A ABRIR CHAMADO...' : 'ABRIR CHAMADO'}</Text>
+          </TouchableOpacity>
         </Card>
 
         {chamadosVisiveis.length === 0 && (
@@ -500,7 +537,6 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                 </Card>
               </TouchableOpacity>
               
-              {/* LISTA DE TRANSFERÊNCIA BLINDADA PELO PRÉDIO DO CHAMADO */}
               {transferId === c.id && !isSelectMode && (
                 <View style={{ backgroundColor: theme.card, borderRadius: 10, marginBottom: 15, padding: 10, marginLeft: 20, borderWidth: 1, borderColor: theme.primary }}>
                   <Text style={{ color: theme.subtext, marginBottom: 5, fontSize: 12 }}>Selecione o novo técnico ({c.predio}):</Text>
@@ -516,7 +552,6 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
         })}
       </ScrollView>
 
-      {/* MODAL DA CÂMARA */}
       <Modal visible={isCameraOpen} animationType="slide" transparent={false} onRequestClose={() => setIsCameraOpen(false)}>
         <View style={{ flex: 1, backgroundColor: '#000' }}>
           <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back">
@@ -533,7 +568,6 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
         </View>
       </Modal>
 
-      {/* MODAL DETALHES DO CHAMADO */}
       <Modal visible={modalVisible} animationType="slide" transparent={true} onRequestClose={() => setModalVisible(false)}>
         {selectedChamado && (
           <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'flex-end' }}>
