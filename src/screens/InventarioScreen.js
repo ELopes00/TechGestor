@@ -10,8 +10,8 @@ import * as XLSX from 'xlsx';
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
 
-// IMPORTAÇÃO DOS DADOS FIXOS
-import { EQUIPAMENTOS, PREDIOS, SERVIDORES, SETORES_UNIDADES } from '../../constants/const';
+// IMPORTAÇÃO DOS DADOS FIXOS (AGORA COM OS TÉCNICOS)
+import { EQUIPAMENTOS, PREDIOS, RESPONSAVEIS_TECNICOS, SETORES_UNIDADES } from '../../constants/const';
 
 const PILLS_EQUIPAMENTOS = ['Monitor', 'CPU', 'Impressora', 'Scanner', 'Nobreak', 'Equipamento de Vídeoconferência', 'Notebook', 'Tablet', 'Telefone IP'];
 
@@ -713,12 +713,12 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
                   
                   <Text style={styles.label}>Responsável equipamentos</Text>
                   <View style={{ zIndex: activeDropdown === 'responsavel' ? 100 : 1 }}>
-                    {renderAutocomplete(responsavel, setResponsavel, 'responsavel', 'Buscar servidor...', SERVIDORES, s => s.nome, s => { setResponsavel(s.nome); setMatricula(s.matricula); })}
+                    {renderAutocomplete(responsavel, setResponsavel, 'responsavel', 'Buscar técnico...', RESPONSAVEIS_TECNICOS, s => s.nome, s => { setResponsavel(s.nome); setMatricula(s.matricula); })}
                   </View>
 
                   <Text style={styles.label}>Responsável Peça (Opcional)</Text>
                   <View style={{ zIndex: activeDropdown === 'responsavelPeca' ? 100 : 1 }}>
-                    {renderAutocomplete(responsavelPeca, setResponsavelPeca, 'responsavelPeca', 'Buscar servidor...', SERVIDORES, s => s.nome, s => setResponsavelPeca(s.nome))}
+                    {renderAutocomplete(responsavelPeca, setResponsavelPeca, 'responsavelPeca', 'Buscar técnico...', RESPONSAVEIS_TECNICOS, s => s.nome, s => setResponsavelPeca(s.nome))}
                   </View>
                 </View>
               )}

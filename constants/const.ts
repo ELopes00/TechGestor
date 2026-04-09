@@ -2061,4 +2061,16 @@ export const SERVIDORES: Servidor[] = [
   { nome: "THIAGO RUSSI RODRIGUES", matricula: "M051519" },
   { nome: "GUILHERME VERSIANI GUSMÃO FONSECA", matricula: "M051520" },
   { nome: "RUBERVAL BARBOSA DE OLIVEIRA JÚNIOR", matricula: "M051521" }
+  
+  // DADOS DOS RESPONSÁVEIS TÉCNICOS
+export const RESPONSAVEIS_TECNICOS: Servidor[] = [
+  { nome: "HELLEN CRYS DE SOUSA DA SILVA", matricula: "" },
+  { nome: "JAMERSON RAFAEL DA SILVA VIANA", matricula: "" },
+  { nome: "KEITTONY RODRIGO FERREIRA DE CARVALHO", matricula: "" },
+  { nome: "FILIPE DA COSTA NASCIMENTO", matricula: "" },
+  { nome: "ADRIEL PEDRO SIQUEIRA CARVALHO", matricula: "" },
+  { nome: "RAFAEL ARAUJO SOARES", matricula: "" },
+  { nome: "FERNANDO NASCIMENTO OLIVEIRA", matricula: "" },
+  { nome: "BRENO SIMÃO FLORES", matricula: "" },
+  { nome: "RICARDO SILVA ARAUJO MARQUES", matricula: "" }
 ];
