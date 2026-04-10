@@ -2058,11 +2058,12 @@ export const SERVIDORES: Servidor[] = [
   { nome: "MARCELO BATISTELA MOREIRA", matricula: "M051516" },
   { nome: "ANITA DE LIMA OLIVEIRA", matricula: "M051517" },
   { nome: "RAFAELLY DA SILVA LAMPERT", matricula: "M051518" },
-  { nome: "THIAGO RUSSI RODRIGUES", matricula: "M051519" },
+ { nome: "THIAGO RUSSI RODRIGUES", matricula: "M051519" },
   { nome: "GUILHERME VERSIANI GUSMÃO FONSECA", matricula: "M051520" },
   { nome: "RUBERVAL BARBOSA DE OLIVEIRA JÚNIOR", matricula: "M051521" }
-  
-  // DADOS DOS RESPONSÁVEIS TÉCNICOS
+];
+
+// DADOS DOS RESPONSÁVEIS TÉCNICOS
 export const RESPONSAVEIS_TECNICOS: Servidor[] = [
   { nome: "HELLEN CRYS DE SOUSA DA SILVA", matricula: "" },
   { nome: "JAMERSON RAFAEL DA SILVA VIANA", matricula: "" },
@@ -2072,5 +2073,9 @@ export const RESPONSAVEIS_TECNICOS: Servidor[] = [
   { nome: "RAFAEL ARAUJO SOARES", matricula: "" },
   { nome: "FERNANDO NASCIMENTO OLIVEIRA", matricula: "" },
   { nome: "BRENO SIMÃO FLORES", matricula: "" },
-  { nome: "RICARDO SILVA ARAUJO MARQUES", matricula: "" }
+  { nome: "RICARDO SILVA ARAUJO MARQUES", matricula: "" },
+  { nome: "JONAS DE SOUSA SILVA", matricula: "" },
+  { nome: "ANGEL FABIO REBELO DE LIMA", matricula: "" },
+  { nome: "BRUNO MELO DE BENEDETTO", matricula: "" },
+  { nome: "FRANCISCO WILKER SOUSA CASTRO JUNIOR", matricula: "" }
 ];

@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Agora procura as chaves no ficheiro .env (separei teste e produção)
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -13,11 +12,6 @@ const firebaseConfig = {
   measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
-
-// Inicializa e exporta o Banco de Dados (Firestore)
 export const db = getFirestore(app);
-
-// Inicializa e exporta a Autenticação
 export const auth = getAuth(app);
