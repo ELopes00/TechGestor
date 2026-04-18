@@ -4,18 +4,40 @@ import * as FileSystem from 'expo-file-system';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { useEffect, useState } from 'react';
-import { Alert, Keyboard, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as XLSX from 'xlsx';
 
 import { Btn, Card } from '../components';
+import ProntuarioItem from '../components/ProntuarioItem';
 import { DataService } from '../services/DataService';
 
-// IMPORTAÇÃO DOS DADOS FIXOS (CORRIGIDA)
 import { EQUIPAMENTOS, PREDIOS, RESPONSAVEIS_TECNICOS, SERVIDORES, SETORES_UNIDADES } from '../../constants/const';
 
 const PILLS_EQUIPAMENTOS = ['Monitor', 'CPU', 'Impressora', 'Scanner', 'Nobreak', 'Equipamento de Vídeoconferência', 'Notebook', 'Tablet', 'Telefone IP'];
+const LOCAIS_FISICOS = ['Secretária', 'Gabinete', 'Sala de Audiência', 'Sala do(a) Magistrada(o)', 'Sala única', 'Outros Locais'];
 
-export default function InventarioScreen({ inventario, chamados, addLog, theme, users }) {
+export default function InventarioScreen({ inventario, chamados, addLog, theme, users = [], user }) {
+
+  const [activeUser, setActiveUser] = useState(user);
+
+  useEffect(() => {
+    if (user) {
+      setActiveUser(user);
+    } else {
+      const unsubscribe = DataService.observarAuth((firebaseUser) => {
+        if (firebaseUser && users.length > 0) {
+          const matchedUser = users.find(u => u.uid === firebaseUser.uid);
+          if (matchedUser) {
+            setActiveUser(matchedUser);
+          }
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [user, users]);
+
+  const isAdmin = activeUser && activeUser.perfil === 'ADM';
+  const nomeUser = activeUser ? (activeUser.nomeCompleto || activeUser.login) : "Usuário";
 
   const [search, setSearch] = useState('');
   const [itemEmprestimo, setItemEmprestimo] = useState(null);
@@ -91,7 +113,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
     const acao = () => {
       const idsParaApagar = [...selectedInventoryItems];
       setSelectedInventoryItems([]);
-      setTimeout(() => mostraAlerta('Sucesso', 'Itens excluídos com sucesso!'), 100);
+      setTimeout(() => mostraAlerta('Sucesso', 'Itens excluídos com sucesso.'), 100);
       idsParaApagar.forEach(id => DataService.deletarItemInventario(id).catch(e => console.log('Erro:', e)));
       if (addLog) addLog(`EXCLUIU ${idsParaApagar.length} ITENS DO INVENTÁRIO EM LOTE.`);
     };
@@ -175,11 +197,11 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
         emprestadoPara: null, dataCadastro: Date.now() 
       };
       
-      await DataService.salvarItemInventario(payload);
+      await DataService.salvarItemInventario(payload, nomeUser);
       if(addLog) addLog(`CRIOU ITEM INVENTÁRIO: ${responsavel}`);
       
       fecharModal(); 
-      setTimeout(() => mostraAlerta('Sucesso', 'Peça de inventário finalizada!'), 300);
+      setTimeout(() => mostraAlerta('Sucesso', 'Peça de inventário finalizada.'), 300);
     } catch (error) { 
       mostraAlerta('Erro', 'Falha ao salvar no banco de dados.'); 
       setIsSaving(false); 
@@ -265,21 +287,21 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
         const cpu = payload.equipamentosUnificados.find(e => e.tipo === 'CPU' || e.tipo === 'Computador');
         if (cpu) { payload.pat = cpu.tombo; payload.cpuTombo = cpu.tombo; payload.cpuMarca = cpu.marca; }
         itensImportados++;
-        return DataService.salvarItemInventario(payload);
+        return DataService.salvarItemInventario(payload, nomeUser);
       });
 
       await Promise.all(promessas);
-      mostraAlerta('Sucesso!', `Foram importadas ${itensImportados} Peças de Inventário.`);
+      mostraAlerta('Sucesso', `Foram importadas ${itensImportados} Peças de Inventário.`);
       if(addLog) addLog(`Importou ${itensImportados} peças via Planilha.`);
 
-    } catch (error) { mostraAlerta('Erro', 'Falha ao ler o arquivo. Confirme se é o Excel/CSV correto.'); }
+    } catch (error) { mostraAlerta('Erro', 'Falha ao ler o arquivo. Confirme o formato do documento.'); }
   };
 
   const handleExcelButton = () => {
     if (Platform.OS === 'web') {
       if (window.confirm("Deseja IMPORTAR a planilha de respostas do formulário?")) importarPlanilha();
     } else {
-      Alert.alert('Importar', 'O que deseja fazer?', [{ text: '📥 Importar Planilha do Formulário', onPress: importarPlanilha }, { text: 'Cancelar', style: 'cancel' }]);
+      Alert.alert('Importar', 'Selecione uma ação:', [{ text: 'Importar Planilha do Formulário', onPress: importarPlanilha }, { text: 'Cancelar', style: 'cancel' }]);
     }
   };
 
@@ -297,7 +319,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
         eqps.forEach(eq => {
           exportData.push({
-            'Responsável': item.responsavel || item.nome || 'Sem Responsável',
+            'Responsável Pelo Bem': item.responsavel || item.nome || 'Sem Responsável',
             'Matrícula': item.matricula || '',
             'Prédio': item.predio || '',
             'Setor/Unidade': item.setor || '',
@@ -318,7 +340,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
       if (Platform.OS === 'web') {
         XLSX.writeFile(wb, "Inventario_TechGestor.xlsx");
-        mostraAlerta('Sucesso', 'Download do Excel iniciado!');
+        mostraAlerta('Sucesso', 'Download iniciado.');
       } else {
         const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
         const uri = FileSystem.cacheDirectory + 'Inventario_TechGestor.xlsx';
@@ -332,22 +354,22 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
       if(addLog) addLog(`Exportou o inventário para Excel.`);
     } catch (error) {
       console.log(error);
-      mostraAlerta('Erro', 'Falha ao gerar o arquivo Excel.');
+      mostraAlerta('Erro', 'Falha ao gerar o arquivo.');
     }
   };
 
   const exportarPDF = async () => {
-    const html = `<html><head><style>body{font-family:sans-serif; padding:20px;} table{width:100%; border-collapse:collapse; margin-top:20px;} th,td{border:1px solid #ddd; padding:10px; text-align:left;} th{background-color:#1DB954; color:white;}</style></head><body><h2>TechGestor - Relatório de Inventário</h2><table><tr><th>Responsável</th><th>Setor</th><th>Tombo Principal</th></tr>${inventarioFiltrado.map(i => `<tr><td>${i.responsavel || i.nome}</td><td>${i.setor || 'N/A'}</td><td>${i.pat || 'N/A'}</td></tr>`).join('')}</table></body></html>`;
+    const html = `<html><head><style>body{font-family:sans-serif; padding:20px;} table{width:100%; border-collapse:collapse; margin-top:20px;} th,td{border:1px solid #ddd; padding:10px; text-align:left;} th{background-color:#1DB954; color:white;}</style></head><body><h2>TechGestor - Relatório de Inventário</h2><table><tr><th>Responsável Pelo Bem</th><th>Setor</th><th>Tombo Principal</th></tr>${inventarioFiltrado.map(i => `<tr><td>${i.responsavel || i.nome}</td><td>${i.setor || 'N/A'}</td><td>${i.pat || 'N/A'}</td></tr>`).join('')}</table></body></html>`;
     try { const { uri } = await Print.printToFileAsync({ html }); await Sharing.shareAsync(uri); } catch (e) { mostraAlerta('Erro', 'Falha ao gerar PDF.'); }
   };
 
   const emprestar = async () => {
     if (!quemVaiPegar) return;
-    try { await DataService.atualizarItemInventario(itemEmprestimo.id, { emprestadoPara: quemVaiPegar, dataEmprestimo: Date.now() }); if(addLog) addLog(`EMPRESTOU ${itemEmprestimo.nome} PARA ${quemVaiPegar}`); setItemEmprestimo(null); setQuemVaiPegar(''); } catch (error) { mostraAlerta('Erro', 'Falha ao atualizar o empréstimo.'); }
+    try { await DataService.atualizarItemInventario(itemEmprestimo.id, { emprestadoPara: quemVaiPegar, dataEmprestimo: Date.now() }, nomeUser); if(addLog) addLog(`EMPRESTOU ${itemEmprestimo.nome} PARA ${quemVaiPegar}`); setItemEmprestimo(null); setQuemVaiPegar(''); } catch (error) { mostraAlerta('Erro', 'Falha ao processar operação.'); }
   };
 
   const devolver = async (item) => {
-    try { await DataService.atualizarItemInventario(item.id, { emprestadoPara: null, dataEmprestimo: null }); if(addLog) addLog(`RECEBEU DEVOLUÇÃO: ${item.nome} DE ${item.emprestadoPara}`); } catch (error) { mostraAlerta('Erro', 'Falha ao processar devolução.'); }
+    try { await DataService.atualizarItemInventario(item.id, { emprestadoPara: null, dataEmprestimo: null }, nomeUser); if(addLog) addLog(`RECEBEU DEVOLUÇÃO: ${item.nome} DE ${item.emprestadoPara}`); } catch (error) { mostraAlerta('Erro', 'Falha ao processar operação.'); }
   };
 
   const abrirProntuario = (item) => {
@@ -366,7 +388,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
   const salvarDefeito = async () => {
     if (isSaving) return;
     if (!defectText) return mostraAlerta('Aviso', 'Descreva o defeito.');
-    if (selectedDefectEqs.length === 0) return mostraAlerta('Aviso', 'Selecione ao menos um equipamento.');
+    if (selectedDefectEqs.length === 0) return mostraAlerta('Aviso', 'Selecione o equipamento correspondente.');
 
     setIsSaving(true);
 
@@ -376,7 +398,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
             return eq;
         });
 
-        await DataService.atualizarItemInventario(selectedItemHistory.id, { equipamentosUnificados: updatedEqs });
+        await DataService.atualizarItemInventario(selectedItemHistory.id, { equipamentosUnificados: updatedEqs }, nomeUser);
 
         for (const tombo of selectedDefectEqs) {
             const eq = updatedEqs.find(e => e.tombo === tombo);
@@ -391,10 +413,10 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
         
         setHistoryModalVisible(false);
         setIsSaving(false);
-        setTimeout(() => mostraAlerta('Sucesso', 'Defeito registrado! Equipamentos marcados como Indisponíveis.'), 300);
+        setTimeout(() => mostraAlerta('Sucesso', 'Defeito registrado e status atualizado.'), 300);
 
     } catch (e) { 
-      mostraAlerta('Erro', 'Falha ao salvar o defeito.'); 
+      mostraAlerta('Erro', 'Falha ao gravar os dados.'); 
       setIsSaving(false);
     }
   };
@@ -405,11 +427,11 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
           if (eq.id === eqLiberar.id) return { ...eq, status: 'Disponível' };
           return eq;
       });
-      await DataService.atualizarItemInventario(selectedItemHistory.id, { equipamentosUnificados: updatedEqs });
+      await DataService.atualizarItemInventario(selectedItemHistory.id, { equipamentosUnificados: updatedEqs }, nomeUser);
       setSelectedItemHistory({...selectedItemHistory, equipamentosUnificados: updatedEqs});
       setSelectedEqProntuario({...selectedEqProntuario, status: 'Disponível'});
-      mostraAlerta('Sucesso', 'Equipamento marcado como Disponível!');
-    } catch(e) { mostraAlerta('Erro', 'Falha ao atualizar status.'); }
+      mostraAlerta('Sucesso', 'Status atualizado com sucesso.');
+    } catch(e) { mostraAlerta('Erro', 'Falha ao atualizar o registo.'); }
   };
 
   const iniciarEdicaoProntuario = () => {
@@ -419,7 +441,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
   const salvarEdicaoProntuario = async () => {
     if (isSaving) return;
-    if (!editEqData.tombo) return mostraAlerta('Aviso', 'O tombo não pode ficar vazio.');
+    if (!editEqData.tombo) return mostraAlerta('Aviso', 'O campo de identificação é obrigatório.');
     
     setIsSaving(true);
     try {
@@ -438,36 +460,37 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
         payloadUpdate.cpuMarca = editEqData.marca;
       }
 
-      await DataService.atualizarItemInventario(selectedItemHistory.id, payloadUpdate);
+      await DataService.atualizarItemInventario(selectedItemHistory.id, payloadUpdate, nomeUser);
       
       const newItem = { ...selectedItemHistory, ...payloadUpdate };
       setSelectedItemHistory(newItem);
       setSelectedEqProntuario(updatedEqs.find(e => e.id === selectedEqProntuario.id));
       setIsEditingEq(false);
       setIsSaving(false);
-      mostraAlerta('Sucesso', 'Equipamento atualizado com sucesso!');
+      mostraAlerta('Sucesso', 'Registo atualizado.');
     } catch(e) { 
-      mostraAlerta('Erro', 'Falha ao salvar edição.'); 
+      mostraAlerta('Erro', 'Falha ao processar os dados.'); 
       setIsSaving(false);
     }
   };
 
   const salvarEdicaoResponsavel = async () => {
     if (isSaving) return;
-    if (!editResponsavelName) return mostraAlerta('Aviso', 'O nome do responsável não pode ficar vazio.');
+    if (!editResponsavelName) return mostraAlerta('Aviso', 'Preencha o campo corretamente.');
     
     setIsSaving(true);
     try {
       await DataService.atualizarItemInventario(selectedItemHistory.id, { 
         responsavel: editResponsavelName,
         nome: editResponsavelName 
-      });
+      }, nomeUser);
+      
       setSelectedItemHistory({ ...selectedItemHistory, responsavel: editResponsavelName, nome: editResponsavelName });
       setIsEditingResponsavel(false);
       setIsSaving(false);
-      mostraAlerta('Sucesso', 'Nome do Responsável atualizado!');
+      mostraAlerta('Sucesso', 'Informação atualizada.');
     } catch(e) { 
-      mostraAlerta('Erro', 'Falha ao atualizar o nome.'); 
+      mostraAlerta('Erro', 'Falha na comunicação com a base de dados.'); 
       setIsSaving(false);
     }
   };
@@ -485,9 +508,9 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
   };
 
   const openScanner = (target) => {
-    if (Platform.OS === 'web') return mostraAlerta('Aviso', 'O leitor funciona apenas no aplicativo mobile.');
-    if (hasPermission === null) return mostraAlerta('Aviso', 'Solicitando permissão da câmera...');
-    if (hasPermission === false) return mostraAlerta('Erro', 'Sem acesso à câmera.');
+    if (Platform.OS === 'web') return mostraAlerta('Aviso', 'Funcionalidade reservada à aplicação móvel.');
+    if (hasPermission === null) return mostraAlerta('Aviso', 'A verificar permissões do dispositivo.');
+    if (hasPermission === false) return mostraAlerta('Erro', 'Permissão negada.');
     setScannerTarget(target); setScanned(false); setIsScannerOpen(true);
   };
 
@@ -538,32 +561,32 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
           <Text style={{ fontWeight: 'bold', fontSize: 22, color: '#1DB954' }}>Inventário</Text>
           <View style={{ flexDirection: 'row' }}>
             <TouchableOpacity onPress={exportarPDF} style={{ backgroundColor: '#1DB954', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 6, marginLeft: 10 }}>
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>📄 PDF</Text>
+              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>EXPORTAR PDF</Text>
             </TouchableOpacity>
             
             <TouchableOpacity onPress={exportarExcel} style={{ backgroundColor: '#207245', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 6, marginLeft: 10 }}>
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>📤 EXPORTAR</Text>
+              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>EXPORTAR EXCEL</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handleExcelButton} style={{ backgroundColor: '#FFAE00', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 6, marginLeft: 10 }}>
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>📥 IMPORTAR</Text>
+              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>IMPORTAR DADOS</Text>
             </TouchableOpacity>
           </View>
         </View>
         
         <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#1e1e1e', borderRadius: 8, borderWidth: 1, borderColor: '#333', paddingHorizontal: 12, marginBottom: 15 }}>
           <Text style={{ fontSize: 16, marginRight: 8, color: '#fff' }}>Busca:</Text>
-          <TextInput style={{ flex: 1, color: '#fff', paddingVertical: 12, fontSize: 14 }} placeholder="Buscar Responsável ou Setor..." placeholderTextColor="#888" value={search} onChangeText={setSearch} />
-          <TouchableOpacity onPress={() => openScanner('busca')} style={styles.btnScan}><Text style={{ color: '#fff', fontWeight: 'bold' }}>📷</Text></TouchableOpacity>
+          <TextInput style={{ flex: 1, color: '#fff', paddingVertical: 12, fontSize: 14 }} placeholder="Filtrar registos..." placeholderTextColor="#888" value={search} onChangeText={setSearch} />
+          <TouchableOpacity onPress={() => openScanner('busca')} style={styles.btnScan}><Text style={{ color: '#fff', fontWeight: 'bold' }}>SCAN</Text></TouchableOpacity>
         </View>
         
         {selectedInventoryItems.length > 0 ? (
           <TouchableOpacity onPress={apagarSelecionados} style={{ backgroundColor: '#ff4444', padding: 15, borderRadius: 8, alignItems: 'center', marginBottom: 20 }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>🗑️ APAGAR {selectedInventoryItems.length} SELECIONADOS</Text>
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>APAGAR REGISTOS SELECIONADOS ({selectedInventoryItems.length})</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={() => setIsAddModalOpen(true)} style={{ backgroundColor: '#1DB954', padding: 15, borderRadius: 8, alignItems: 'center', marginBottom: 20 }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>+ INICIAR LEVANTAMENTO</Text>
+            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>INICIAR NOVO LEVANTAMENTO</Text>
           </TouchableOpacity>
         )}
 
@@ -582,8 +605,8 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
         {itemEmprestimo && (
           <Card theme={theme} style={{ borderColor: '#FFAE00', borderWidth: 2, marginBottom: 20 }}>
-            <Text style={{ color: theme.text, fontWeight: 'bold', marginBottom: 5 }}>Emprestar: {itemEmprestimo.nome}</Text>
-            <Text style={{ color: theme.subtext, marginBottom: 5 }}>Selecione quem está retirando:</Text>
+            <Text style={{ color: theme.text, fontWeight: 'bold', marginBottom: 5 }}>Processo de Empréstimo: {itemEmprestimo.nome}</Text>
+            <Text style={{ color: theme.subtext, marginBottom: 5 }}>Defina o destinatário:</Text>
             {users.map((u) => (
               <TouchableOpacity key={u.login} style={{ padding: 10, borderBottomWidth: 1, borderColor: theme.border }} onPress={() => setQuemVaiPegar(u.login)}>
                 <Text style={{ color: quemVaiPegar === u.login ? '#FFAE00' : theme.text }}>{u.login}</Text>
@@ -607,15 +630,15 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 16 }}>{item.responsavel || item.nome || 'Sem Responsável'}</Text>
+                <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 16 }}>{item.responsavel || item.nome || 'Não Atribuído'}</Text>
                 {item.emprestadoPara && <Text style={{ color: '#FFAE00', fontSize: 10, fontWeight: 'bold', marginLeft: 5 }}>(EMPRESTADO)</Text>}
               </View>
-              <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>📍 Local: {item.predio || ''} - {item.setor || 'Sem setor'}</Text>
+              <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>Localização: {item.predio || ''} - {item.setor || 'N/A'}</Text>
               
               <View style={{ marginTop: 8 }}>
                 {item.equipamentosUnificados && item.equipamentosUnificados.map((eq, i) => (
                   <Text key={i} style={{ color: eq.status === 'Indisponível' ? '#ff4444' : theme.subtext, fontSize: 11, marginTop: 3 }}>
-                    • {eq.tipo}: {eq.marca || 'S/ Marca'} (Tombo: {eq.tombo}) {eq.status === 'Indisponível' ? ' ❌ DEFEITO' : ''}
+                    • {eq.tipo}: {eq.marca || 'S/D'} (Ref: {eq.tombo}) {eq.status === 'Indisponível' ? ' - FALHA TÉCNICA' : ''}
                   </Text>
                 ))}
               </View>
@@ -623,14 +646,14 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
             <View style={{ alignItems: 'flex-end', marginLeft: 10 }}>
               <View style={{ flexDirection: 'column', marginBottom: 8 }}>
-                <TouchableOpacity onPress={() => abrirProntuario(item)} style={{ backgroundColor: theme.inputBg, padding: 8, borderRadius: 5, marginBottom: 5, borderWidth: 1, borderColor: theme.border, alignItems: 'center' }}><Text style={{ fontSize: 12, color: theme.primary, fontWeight: 'bold' }}>Prontuário</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => abrirProntuario(item)} style={{ backgroundColor: theme.inputBg, padding: 8, borderRadius: 5, marginBottom: 5, borderWidth: 1, borderColor: theme.border, alignItems: 'center' }}><Text style={{ fontSize: 12, color: theme.primary, fontWeight: 'bold' }}>Analisar Registo</Text></TouchableOpacity>
                 {item.emprestadoPara ? (
-                  <TouchableOpacity onPress={() => devolver(item)} style={{ backgroundColor: '#FFAE00', padding: 8, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 10, color: '#000', fontWeight: 'bold' }}>DEVOLVER</Text></TouchableOpacity>
+                  <TouchableOpacity onPress={() => devolver(item)} style={{ backgroundColor: '#FFAE00', padding: 8, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 10, color: '#000', fontWeight: 'bold' }}>PROCESSAR DEVOLUÇÃO</Text></TouchableOpacity>
                 ) : (
-                  <TouchableOpacity onPress={() => setItemEmprestimo(item)} style={{ backgroundColor: '#1DB954', padding: 8, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 10, color: '#fff', fontWeight: 'bold' }}>EMPRESTAR</Text></TouchableOpacity>
+                  <TouchableOpacity onPress={() => setItemEmprestimo(item)} style={{ backgroundColor: '#1DB954', padding: 8, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 10, color: '#fff', fontWeight: 'bold' }}>AUTORIZAR EMPRÉSTIMO</Text></TouchableOpacity>
                 )}
               </View>
-              <TouchableOpacity onPress={() => handleExcluir(item)} style={{ padding: 4 }}><Text style={{ fontSize: 12, color: '#ff4444', fontWeight: 'bold' }}>Excluir</Text></TouchableOpacity>
+              <TouchableOpacity onPress={() => handleExcluir(item)} style={{ padding: 4 }}><Text style={{ fontSize: 12, color: '#ff4444', fontWeight: 'bold' }}>Remover</Text></TouchableOpacity>
             </View>
           </Card>
         ))}
@@ -639,32 +662,34 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
       <Modal visible={isAddModalOpen} transparent animationType="slide">
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center', padding: 15 }}>
           <View style={{ width: '100%', maxWidth: 500, backgroundColor: '#121212', borderRadius: 12, overflow: 'hidden', maxHeight: '95%' }}>
-            <View style={{ backgroundColor: '#1DB954', padding: 15, alignItems: 'center' }}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>TECHGESTOR</Text></View>
+            <View style={{ backgroundColor: '#1DB954', padding: 15, alignItems: 'center' }}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>SISTEMA DE LEVANTAMENTO</Text></View>
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" style={{ padding: 20 }}>
               
               {currentStep === 1 && (
                 <View style={{ zIndex: 10 }}>
-                  <Text style={styles.tituloPasso}>Informações de Local</Text>
+                  <Text style={styles.tituloPasso}>Dados de Localização</Text>
                   
                   <Text style={styles.label}>Prédio</Text>
                   <View style={{ zIndex: activeDropdown === 'predio' ? 100 : 1 }}>
-                    {renderAutocomplete(predio, setPredio, 'predio', 'Buscar prédio...', PREDIOS, p => p, p => setPredio(p))}
+                    {renderAutocomplete(predio, setPredio, 'predio', 'Definir edifício...', PREDIOS, p => p, p => setPredio(p))}
                   </View>
 
-                  <Text style={styles.label}>Setor / Unidade</Text>
+                  <Text style={styles.label}>Departamento</Text>
                   <View style={{ zIndex: activeDropdown === 'setor' ? 100 : 1 }}>
-                    {renderAutocomplete(setor, setSetor, 'setor', 'Buscar setor...', SETORES_UNIDADES, s => s, s => setSetor(s))}
+                    {renderAutocomplete(setor, setSetor, 'setor', 'Definir secção...', SETORES_UNIDADES, s => s, s => setSetor(s))}
                   </View>
 
-                  <Text style={styles.label}>Local do Equipamento</Text>
-                  <TextInput style={styles.inputModal} placeholder="Ex: Gabinete, Sala de Audiência..." placeholderTextColor="#666" value={local} onChangeText={setLocal} />
+                  <Text style={styles.label}>Posicionamento Físico</Text>
+                  <View style={{ zIndex: activeDropdown === 'local' ? 100 : 1 }}>
+                    {renderAutocomplete(local, setLocal, 'local', 'Especificar localização...', LOCAIS_FISICOS, l => l, l => setLocal(l))}
+                  </View>
                 </View>
               )}
 
               {currentStep === 2 && (
                 <View style={{ zIndex: 10 }}>
-                  <Text style={styles.tituloPasso}>Informações de Equipamento</Text>
-                  <Text style={styles.label}>Tipo de Equipamento</Text>
+                  <Text style={styles.tituloPasso}>Especificações Técnicas</Text>
+                  <Text style={styles.label}>Categoria do Hardware</Text>
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 }}>
                     {PILLS_EQUIPAMENTOS.map(tipo => (
                       <TouchableOpacity key={tipo} onPress={() => { setSelectedPill(tipo); setMarcaAtual(''); setTomboAtual(''); }} style={[styles.pill, selectedPill === tipo ? styles.pillActive : styles.pillInactive, { marginBottom: 10 }]}>
@@ -673,32 +698,32 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
                     ))}
                   </View>
 
-                  <Text style={[styles.label, { textTransform: 'uppercase' }]}>ADIÇÃO DE {selectedPill}</Text>
+                  <Text style={[styles.label, { textTransform: 'uppercase' }]}>REGISTO: {selectedPill}</Text>
                   <View style={{ zIndex: activeDropdown === 'marcaAtual' ? 100 : 1 }}>
-                    <Text style={styles.label}>Marca/Modelo</Text>
-                    {renderAutocomplete(marcaAtual, setMarcaAtual, 'marcaAtual', 'Buscar marca...', getMarcas(selectedPill), m => m, m => setMarcaAtual(m))}
+                    <Text style={styles.label}>Fabricante / Modelo</Text>
+                    {renderAutocomplete(marcaAtual, setMarcaAtual, 'marcaAtual', 'Especificar fabricante...', getMarcas(selectedPill), m => m, m => setMarcaAtual(m))}
                     
-                    <Text style={styles.label}>Tombo</Text>
+                    <Text style={styles.label}>Código de Patrimônio</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <TextInput style={[styles.inputModal, { flex: 1, marginVertical: 0 }]} value={tomboAtual} onChangeText={setTomboAtual} keyboardType="numeric" placeholder="Nº do patrimônio" placeholderTextColor="#666"/>
-                      <TouchableOpacity onPress={() => openScanner('equipamento_atual')} style={styles.btnScan}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>📷 SCAN</Text></TouchableOpacity>
+                      <TextInput style={[styles.inputModal, { flex: 1, marginVertical: 0 }]} value={tomboAtual} onChangeText={setTomboAtual} keyboardType="numeric" placeholder="Número de série interno" placeholderTextColor="#666"/>
+                      <TouchableOpacity onPress={() => openScanner('equipamento_atual')} style={styles.btnScan}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>LEITURA DIGITAL</Text></TouchableOpacity>
                     </View>
                   </View>
 
-                  <TouchableOpacity onPress={handleAdicionarEquipamento} style={{ alignSelf: 'center', marginTop: 20, padding: 10 }}><Text style={{ color: '#1DB954', fontWeight: 'bold', fontSize: 14 }}>Adicionar mais +</Text></TouchableOpacity>
+                  <TouchableOpacity onPress={handleAdicionarEquipamento} style={{ alignSelf: 'center', marginTop: 20, padding: 10 }}><Text style={{ color: '#1DB954', fontWeight: 'bold', fontSize: 14 }}>Vincular novo componente</Text></TouchableOpacity>
 
                   {listaEquipamentos.length > 0 && (
                     <View style={{ marginTop: 20, borderTopWidth: 1, borderTopColor: '#333', paddingTop: 15 }}>
-                      <Text style={{ color: '#aaa', fontSize: 12, marginBottom: 10 }}>Itens na Peça atual:</Text>
+                      <Text style={{ color: '#aaa', fontSize: 12, marginBottom: 10 }}>Componentes vinculados no processo atual:</Text>
                       {listaEquipamentos.map((eq) => (
                         <View key={eq.id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#2a2a2a', padding: 12, borderRadius: 6, marginBottom: 8 }}>
                           <View style={{ flex: 1 }}>
                             <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>{eq.tipo}</Text>
-                            <Text style={{ color: '#aaa', fontSize: 12 }}>Tombo: {eq.tombo} | {eq.marca || 'N/A'}</Text>
+                            <Text style={{ color: '#aaa', fontSize: 12 }}>Ref: {eq.tombo} | {eq.marca || 'S/D'}</Text>
                           </View>
                           <View style={{ flexDirection: 'row' }}>
-                            <TouchableOpacity onPress={() => editarEquipamento(eq)} style={{ padding: 10 }}><Text style={{ color: '#FFAE00', fontWeight: 'bold', fontSize: 12 }}>✏️</Text></TouchableOpacity>
-                            <TouchableOpacity onPress={() => removerEquipamento(eq.id)} style={{ padding: 10 }}><Text style={{ color: '#ff4444', fontWeight: 'bold', fontSize: 16 }}>X</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => editarEquipamento(eq)} style={{ padding: 10 }}><Text style={{ color: '#FFAE00', fontWeight: 'bold', fontSize: 12 }}>ALTERAR</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => removerEquipamento(eq.id)} style={{ padding: 10 }}><Text style={{ color: '#ff4444', fontWeight: 'bold', fontSize: 12 }}>REMOVER</Text></TouchableOpacity>
                           </View>
                         </View>
                       ))}
@@ -709,16 +734,16 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
               {currentStep === 3 && (
                 <View style={{ zIndex: 10 }}>
-                  <Text style={styles.tituloPasso}>Identificação do responsável</Text>
+                  <Text style={styles.tituloPasso}>Atribuição de Responsabilidade</Text>
                   
-                  <Text style={styles.label}>Responsável equipamentos</Text>
+                  <Text style={styles.label}>Responsável Pelo Bem</Text>
                   <View style={{ zIndex: activeDropdown === 'responsavel' ? 100 : 1 }}>
-                    {renderAutocomplete(responsavel, setResponsavel, 'responsavel', 'Buscar funcionário...', SERVIDORES, s => s.nome, s => { setResponsavel(s.nome); setMatricula(s.matricula); })}
+                    {renderAutocomplete(responsavel, setResponsavel, 'responsavel', 'Pesquisar colaborador...', SERVIDORES, s => s.nome, s => { setResponsavel(s.nome); setMatricula(s.matricula); })}
                   </View>
 
-                  <Text style={styles.label}>Responsável Peça (Opcional)</Text>
+                  <Text style={styles.label}>Técnico Inventariante</Text>
                   <View style={{ zIndex: activeDropdown === 'responsavelPeca' ? 100 : 1 }}>
-                    {renderAutocomplete(responsavelPeca, setResponsavelPeca, 'responsavelPeca', 'Buscar técnico...', RESPONSAVEIS_TECNICOS, s => s.nome, s => setResponsavelPeca(s.nome))}
+                    {renderAutocomplete(responsavelPeca, setResponsavelPeca, 'responsavelPeca', 'Pesquisar equipa técnica...', RESPONSAVEIS_TECNICOS, s => s.nome, s => setResponsavelPeca(s.nome))}
                   </View>
                 </View>
               )}
@@ -728,26 +753,29 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
                   <Text style={[styles.tituloPasso, { textTransform: 'uppercase' }]}>PEÇA DE INVENTÁRIO</Text>
                   <View style={{ backgroundColor: '#1e1e1e', padding: 15, borderRadius: 8, borderWidth: 1, borderColor: '#333' }}>
                     <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Prédio:</Text> {predio}</Text>
-                    <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Setor:</Text> {setor}</Text>
-                    <Text style={[styles.resumoTexto, { marginBottom: 15 }]}><Text style={{fontWeight: 'bold'}}>Unidade:</Text> {local}</Text>
-                    <Text style={[styles.resumoTexto, { fontWeight: 'bold', color: '#1DB954' }]}>Equipamentos:</Text>
-                    {listaEquipamentos.map((eq, index) => (<Text key={index} style={styles.resumoTexto}>• {eq.tipo} tombo {eq.tombo} marca {eq.marca || 'N/A'}</Text>))}
+                    <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Departamento:</Text> {setor}</Text>
+                    <Text style={[styles.resumoTexto, { marginBottom: 15 }]}><Text style={{fontWeight: 'bold'}}>Localização Específica:</Text> {local}</Text>
+                    <Text style={[styles.resumoTexto, { fontWeight: 'bold', color: '#1DB954' }]}>Relação de Hardware:</Text>
+                    {listaEquipamentos.map((eq, index) => (<Text key={index} style={styles.resumoTexto}>- {eq.tipo} | Cód: {eq.tombo} | Fab: {eq.marca || 'S/D'}</Text>))}
                     <View style={{ marginVertical: 10, height: 1, backgroundColor: '#333' }} />
-                    <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Responsável pelo equipamento:</Text> {responsavel}</Text>
-                    <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Responsável pela Peça:</Text> {responsavelPeca || responsavel}</Text>
+                    
+                    {/* MODIFICADO AQUI: Utilizador Atribuído para Responsável Pelo Bem */}
+                    <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Responsável Pelo Bem:</Text> {responsavel}</Text>
+                    
+                    <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Técnico Inventariante:</Text> {responsavelPeca || responsavel}</Text>
                   </View>
                 </View>
               )}
 
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30, marginBottom: 10 }}>
-                {currentStep === 1 ? (<TouchableOpacity onPress={fecharModal} style={[styles.btnNav, { backgroundColor: 'transparent', borderColor: '#ff4444', borderWidth: 1 }]}><Text style={{ color: '#ff4444', fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>) : (<TouchableOpacity onPress={etapaAnterior} style={[styles.btnNav, { backgroundColor: 'transparent', borderColor: '#1DB954', borderWidth: 1 }]}><Text style={{ color: '#1DB954', fontWeight: 'bold' }}>VOLTAR</Text></TouchableOpacity>)}
+                {currentStep === 1 ? (<TouchableOpacity onPress={fecharModal} style={[styles.btnNav, { backgroundColor: 'transparent', borderColor: '#ff4444', borderWidth: 1 }]}><Text style={{ color: '#ff4444', fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>) : (<TouchableOpacity onPress={etapaAnterior} style={[styles.btnNav, { backgroundColor: 'transparent', borderColor: '#1DB954', borderWidth: 1 }]}><Text style={{ color: '#1DB954', fontWeight: 'bold' }}>RETROCEDER</Text></TouchableOpacity>)}
                 
                 {currentStep === 4 ? (
                   <TouchableOpacity onPress={adicionarItem} disabled={isSaving} style={[styles.btnNav, { backgroundColor: isSaving ? '#555' : '#1DB954' }]}>
-                    <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? 'A SALVAR...' : 'Finalizar peça →'}</Text>
+                    <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? 'A PROCESSAR...' : 'CONSOLIDAR DADOS'}</Text>
                   </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity onPress={proximaEtapa} style={[styles.btnNav, { backgroundColor: '#1DB954' }]}><Text style={{ color: '#fff', fontWeight: 'bold' }}>Avançar e Salvar →</Text></TouchableOpacity>
+                  <TouchableOpacity onPress={proximaEtapa} style={[styles.btnNav, { backgroundColor: '#1DB954' }]}><Text style={{ color: '#fff', fontWeight: 'bold' }}>PROSSEGUIR</Text></TouchableOpacity>
                 )}
               </View>
 
@@ -759,7 +787,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
       <Modal visible={isScannerOpen} animationType="slide" transparent={false} onRequestClose={() => setIsScannerOpen(false)}>
         <View style={{ flex: 1, backgroundColor: '#000' }}>
           <CameraView style={{ flex: 1 }} facing="back" onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}>
-            <View style={{ flex: 1, backgroundColor: 'transparent', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: 40 }}><TouchableOpacity onPress={() => setIsScannerOpen(false)} style={{ backgroundColor: '#ff4444', padding: 15, borderRadius: 10 }}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>CANCELAR LEITURA</Text></TouchableOpacity></View>
+            <View style={{ flex: 1, backgroundColor: 'transparent', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: 40 }}><TouchableOpacity onPress={() => setIsScannerOpen(false)} style={{ backgroundColor: '#ff4444', padding: 15, borderRadius: 10 }}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>INTERROMPER LEITURA</Text></TouchableOpacity></View>
           </CameraView>
           <View style={{ position: 'absolute', top: '35%', left: '15%', width: '70%', height: '30%', borderWidth: 2, borderColor: '#1DB954', borderRadius: 10, backgroundColor: 'rgba(29, 185, 84, 0.1)' }} pointerEvents="none" />
         </View>
@@ -767,162 +795,168 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
       <Modal visible={historyModalVisible} animationType="slide" transparent={true} onRequestClose={() => setHistoryModalVisible(false)}>
         {selectedItemHistory && (
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', padding: 20 }}>
-            <View style={{ backgroundColor: theme.card, borderRadius: 15, padding: 20, maxHeight: '80%', borderWidth: 1, borderColor: theme.border }}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', padding: 20 }}>
               
-              <View style={{ borderBottomWidth: 1, borderBottomColor: theme.border, paddingBottom: 15, marginBottom: 15 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <Text style={{ color: theme.tert || '#1DB954', fontSize: 18, fontWeight: 'bold' }}>🏥 Prontuário</Text>
-                  <TouchableOpacity onPress={() => setIsAddingDefect(!isAddingDefect)} style={{ backgroundColor: isAddingDefect ? '#555' : '#ff4444', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6 }}>
-                    <Text style={{ color: '#fff', fontSize: 11, fontWeight: 'bold' }}>{isAddingDefect ? 'VER HISTÓRICO' : '+ REGISTRAR DEFEITO'}</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {isEditingResponsavel ? (
-                  <View style={{ marginTop: 5 }}>
-                    <TextInput 
-                      style={[styles.inputModal, { padding: 8, minHeight: 35, marginBottom: 5 }]}
-                      value={editResponsavelName} onChangeText={setEditResponsavelName}
-                      placeholder="Nome do Responsável" placeholderTextColor="#666"
-                    />
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                      <TouchableOpacity onPress={() => setIsEditingResponsavel(false)} style={{ padding: 8, marginRight: 10 }}><Text style={{ color: '#aaa', fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>
-                      <TouchableOpacity onPress={salvarEdicaoResponsavel} disabled={isSaving} style={{ backgroundColor: isSaving ? '#555' : '#1DB954', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 }}>
-                        <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? '...' : 'SALVAR'}</Text>
+              <View style={{ backgroundColor: theme.card, borderRadius: 15, padding: 20, maxHeight: '85%', borderWidth: 1, borderColor: theme.border, flexShrink: 1 }}>
+                
+                <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: theme.border, paddingBottom: 15, marginBottom: 15 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <Text style={{ color: theme.tert || '#1DB954', fontSize: 18, fontWeight: 'bold' }}>Painel Analítico</Text>
+                      <TouchableOpacity onPress={() => setIsAddingDefect(!isAddingDefect)} style={{ backgroundColor: isAddingDefect ? '#555' : '#ff4444', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6 }}>
+                        <Text style={{ color: '#fff', fontSize: 11, fontWeight: 'bold' }}>{isAddingDefect ? 'CANCELAR AÇÃO' : 'APONTAR FALHA'}</Text>
                       </TouchableOpacity>
                     </View>
-                  </View>
-                ) : (
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={{ color: theme.text, fontSize: 14, fontWeight: 'bold', marginRight: 10 }}>
-                      {selectedItemHistory.responsavel || selectedItemHistory.nome || 'Sem Responsável'}
-                    </Text>
-                    <TouchableOpacity onPress={() => { setEditResponsavelName(selectedItemHistory.responsavel || selectedItemHistory.nome || ''); setIsEditingResponsavel(true); }}>
-                      <Text style={{ color: '#FFAE00', fontSize: 12, fontWeight: 'bold' }}>✏️ EDITAR NOME</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
 
-              {isAddingDefect ? (
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  <Text style={{ color: '#ff4444', fontWeight: 'bold', marginBottom: 10 }}>Selecione os equipamentos com defeito:</Text>
-                  {(selectedItemHistory.equipamentosUnificados || []).map((eq, i) => (
-                    <TouchableOpacity 
-                      key={i} onPress={() => toggleDefectEq(eq.tombo)}
-                      style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#1e1e1e', padding: 12, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: selectedDefectEqs.includes(eq.tombo) ? '#ff4444' : '#333' }}
-                    >
-                      <View style={{ width: 20, height: 20, borderRadius: 4, borderWidth: 2, borderColor: selectedDefectEqs.includes(eq.tombo) ? '#ff4444' : '#888', backgroundColor: selectedDefectEqs.includes(eq.tombo) ? '#ff4444' : 'transparent', marginRight: 10, alignItems: 'center', justifyContent: 'center' }}>
-                        {selectedDefectEqs.includes(eq.tombo) && <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>✓</Text>}
-                      </View>
-                      <Text style={{ color: '#fff', fontSize: 12 }}>{eq.tipo} - {eq.marca || 'S/ Marca'} ({eq.tombo})</Text>
-                    </TouchableOpacity>
-                  ))}
-
-                  <Text style={{ color: '#888', fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>Descrição do Defeito:</Text>
-                  <TextInput 
-                    style={[styles.inputModal, { minHeight: 80, textAlignVertical: 'top' }]} placeholder="Ex: Monitor não liga, cabo queimado..." placeholderTextColor="#666" 
-                    value={defectText} onChangeText={setDefectText} multiline 
-                  />
-
-                  <TouchableOpacity onPress={salvarDefeito} disabled={isSaving} style={{ backgroundColor: isSaving ? '#555' : '#ff4444', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 20 }}>
-                    <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? 'A REGISTRAR...' : 'SALVAR DEFEITO E MARCAR INDISPONÍVEL'}</Text>
-                  </TouchableOpacity>
-                </ScrollView>
-              ) : (
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: '#aaa', fontSize: 12, marginBottom: 8 }}>Selecione o equipamento:</Text>
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 }}>
-                    {(selectedItemHistory.equipamentosUnificados || [{ tipo: 'Equipamento Principal', tombo: selectedItemHistory.pat }]).map((eq, i) => (
-                      <TouchableOpacity 
-                        key={i} onPress={() => { setSelectedEqProntuario(eq); setIsEditingEq(false); }}
-                        style={[styles.pill, selectedEqProntuario?.tombo === eq.tombo ? styles.pillActive : styles.pillInactive, { marginBottom: 8, paddingVertical: 6, paddingHorizontal: 12 }]}
-                      >
-                        <Text style={{ color: selectedEqProntuario?.tombo === eq.tombo ? '#fff' : '#aaa', fontSize: 11, fontWeight: 'bold' }}>{eq.tipo} ({eq.tombo})</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-
-                  <View style={{ backgroundColor: '#1a1a1a', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#333', marginBottom: 15 }}>
-                    {isEditingEq ? (
-                      <View>
-                        <Text style={{ color: '#1DB954', fontWeight: 'bold', marginBottom: 10 }}>Editar Equipamento</Text>
-                        <TextInput style={[styles.inputModal, { marginBottom: 5, padding: 8, minHeight: 35 }]} placeholder="Tipo (Ex: Monitor)" placeholderTextColor="#666" value={editEqData.tipo} onChangeText={(t) => setEditEqData({...editEqData, tipo: t})} />
-                        <TextInput style={[styles.inputModal, { marginBottom: 5, padding: 8, minHeight: 35 }]} placeholder="Marca/Modelo" placeholderTextColor="#666" value={editEqData.marca} onChangeText={(t) => setEditEqData({...editEqData, marca: t})} />
-                        <TextInput style={[styles.inputModal, { marginBottom: 10, padding: 8, minHeight: 35 }]} placeholder="Tombo" placeholderTextColor="#666" value={editEqData.tombo} onChangeText={(t) => setEditEqData({...editEqData, tombo: t})} />
+                    {isEditingResponsavel ? (
+                      <View style={{ marginTop: 5 }}>
+                        <TextInput 
+                          style={[styles.inputModal, { padding: 8, minHeight: 35, marginBottom: 5 }]}
+                          value={editResponsavelName} onChangeText={setEditResponsavelName}
+                          placeholder="Especificar responsabilidade..." placeholderTextColor="#666"
+                        />
                         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                          <TouchableOpacity onPress={() => setIsEditingEq(false)} style={{ padding: 8, marginRight: 10 }}><Text style={{ color: '#aaa', fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>
-                          <TouchableOpacity onPress={salvarEdicaoProntuario} disabled={isSaving} style={{ backgroundColor: isSaving ? '#555' : '#1DB954', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 }}>
-                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? '...' : 'SALVAR'}</Text>
+                          <TouchableOpacity onPress={() => setIsEditingResponsavel(false)} style={{ padding: 8, marginRight: 10 }}><Text style={{ color: '#aaa', fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>
+                          <TouchableOpacity onPress={salvarEdicaoResponsavel} disabled={isSaving} style={{ backgroundColor: isSaving ? '#555' : '#1DB954', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 }}>
+                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? 'A PROCESSAR...' : 'APLICAR'}</Text>
                           </TouchableOpacity>
                         </View>
                       </View>
                     ) : (
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <View>
-                          <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 14 }}>{selectedEqProntuario?.tipo}</Text>
-                          <Text style={{ color: '#aaa', fontSize: 12 }}>Marca: {selectedEqProntuario?.marca || 'N/A'}</Text>
-                          <Text style={{ color: '#aaa', fontSize: 12 }}>Tombo: {selectedEqProntuario?.tombo}</Text>
-                          <Text style={{ color: selectedEqProntuario?.status === 'Indisponível' ? '#ff4444' : '#1DB954', fontSize: 12, fontWeight: 'bold', marginTop: 4 }}>Status: {selectedEqProntuario?.status || 'Disponível'}</Text>
-                        </View>
-                        <TouchableOpacity onPress={iniciarEdicaoProntuario} style={{ backgroundColor: '#333', padding: 8, borderRadius: 6 }}>
-                          <Text style={{ color: '#FFAE00', fontSize: 12, fontWeight: 'bold' }}>✏️ EDITAR</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={{ color: theme.text, fontSize: 14, fontWeight: 'bold', marginRight: 10 }}>
+                          {selectedItemHistory.responsavel || selectedItemHistory.nome || 'Não Atribuído'}
+                        </Text>
+                        <TouchableOpacity onPress={() => { setEditResponsavelName(selectedItemHistory.responsavel || selectedItemHistory.nome || ''); setIsEditingResponsavel(true); }}>
+                          <Text style={{ color: '#FFAE00', fontSize: 12, fontWeight: 'bold' }}>ALTERAR DADOS</Text>
                         </TouchableOpacity>
                       </View>
                     )}
                   </View>
 
-                  {(() => {
-                    const history = chamados ? chamados.filter(c => {
-                      if (selectedEqProntuario?.tombo && selectedEqProntuario.tombo !== 'N/A') {
-                        return c.patrimonio === selectedEqProntuario.tombo || (c.equipamento && c.equipamento.tombo === selectedEqProntuario.tombo);
-                      }
-                      return c.equipamento && c.equipamento.id === selectedItemHistory.id;
-                    }) : [];
+                  {isAddingDefect ? (
+                    <View>
+                      <Text style={{ color: '#ff4444', fontWeight: 'bold', marginBottom: 10 }}>Identificar componente comprometido:</Text>
+                      {(selectedItemHistory.equipamentosUnificados || []).map((eq, i) => (
+                        <TouchableOpacity 
+                          key={i} onPress={() => toggleDefectEq(eq.tombo)}
+                          style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#1e1e1e', padding: 12, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: selectedDefectEqs.includes(eq.tombo) ? '#ff4444' : '#333' }}
+                        >
+                          <View style={{ width: 20, height: 20, borderRadius: 4, borderWidth: 2, borderColor: selectedDefectEqs.includes(eq.tombo) ? '#ff4444' : '#888', backgroundColor: selectedDefectEqs.includes(eq.tombo) ? '#ff4444' : 'transparent', marginRight: 10, alignItems: 'center', justifyContent: 'center' }}>
+                            {selectedDefectEqs.includes(eq.tombo) && <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>✓</Text>}
+                          </View>
+                          <Text style={{ color: '#fff', fontSize: 12 }}>{eq.tipo} - {eq.marca || 'S/D'} ({eq.tombo})</Text>
+                        </TouchableOpacity>
+                      ))}
 
-                    return (
-                      <View style={{ flex: 1 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: theme.inputBg, padding: 10, borderRadius: 10, marginBottom: 15 }}>
-                          <View style={{ alignItems: 'center' }}>
-                            <Text style={{ color: theme.text, fontSize: 18, fontWeight: 'bold' }}>{history.length}</Text>
-                            <Text style={{ color: theme.subtext, fontSize: 10 }}>CHAMADOS</Text>
-                          </View>
-                          <View style={{ alignItems: 'center' }}>
-                            {selectedEqProntuario?.status === 'Indisponível' ? (
-                              <TouchableOpacity onPress={() => liberarEquipamento(selectedEqProntuario)} style={{ backgroundColor: '#1DB954', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 }}>
-                                <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>✅ LIBERAR MÁQUINA</Text>
-                              </TouchableOpacity>
-                            ) : (
-                              <Text style={{ color: getHealthStatus(history.length).color, fontSize: 18, fontWeight: 'bold' }}>{getHealthStatus(history.length).label}</Text>
-                            )}
-                            <Text style={{ color: theme.subtext, fontSize: 10, marginTop: 4 }}>SAÚDE</Text>
-                          </View>
-                        </View>
-                        <Text style={{ color: theme.text, fontWeight: 'bold', marginBottom: 10 }}>Histórico de Intervenções deste item:</Text>
-                        <ScrollView>
-                          {history.length === 0 ? (
-                            <Text style={{ color: theme.subtext, fontStyle: 'italic', textAlign: 'center', marginVertical: 10 }}>Nenhum chamado para o tombo {selectedEqProntuario?.tombo}.</Text>
-                          ) : (
-                            history.map((h) => (
-                              <View key={h.id} style={{ backgroundColor: theme.inputBg, padding: 12, borderRadius: 8, marginBottom: 8, borderLeftWidth: 3, borderLeftColor: h.status === 'FECHADO' ? '#1DB954' : '#ff4444' }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                                  <Text style={{ color: h.status === 'FECHADO' ? '#1DB954' : '#ff4444', fontWeight: 'bold', fontSize: 10 }}>{h.status}</Text>
-                                  <Text style={{ color: theme.subtext, fontSize: 10 }}>{new Date(h.dataAbertura).toLocaleDateString()}</Text>
-                                </View>
-                                <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 12 }}>{h.descricao || h.titulo}</Text>
-                                <Text style={{ color: theme.subtext, fontSize: 10, marginTop: 4 }}>👨‍🔧 Técnico: {h.tecnico || 'Não atribuído'}</Text>
-                              </View>
-                            ))
-                          )}
-                        </ScrollView>
+                      <Text style={{ color: '#888', fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>Diagnóstico Técnico Preliminar:</Text>
+                      <TextInput 
+                        style={[styles.inputModal, { minHeight: 80, textAlignVertical: 'top' }]} placeholder="Relatar sintomas do problema..." placeholderTextColor="#666" 
+                        value={defectText} onChangeText={setDefectText} multiline 
+                      />
+
+                      <TouchableOpacity onPress={salvarDefeito} disabled={isSaving} style={{ backgroundColor: isSaving ? '#555' : '#ff4444', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 20 }}>
+                        <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? 'A PROCESSAR...' : 'CONSOLIDAR RELATÓRIO TÉCNICO'}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <View>
+                      <Text style={{ color: '#aaa', fontSize: 12, marginBottom: 8 }}>Selecione o ativo correspondente:</Text>
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 }}>
+                        {(selectedItemHistory.equipamentosUnificados || [{ tipo: 'Equipamento Principal', tombo: selectedItemHistory.pat }]).map((eq, i) => (
+                          <TouchableOpacity 
+                            key={i} onPress={() => { setSelectedEqProntuario(eq); setIsEditingEq(false); }}
+                            style={[styles.pill, selectedEqProntuario?.tombo === eq.tombo ? styles.pillActive : styles.pillInactive, { marginBottom: 8, paddingVertical: 6, paddingHorizontal: 12 }]}
+                          >
+                            <Text style={{ color: selectedEqProntuario?.tombo === eq.tombo ? '#fff' : '#aaa', fontSize: 11, fontWeight: 'bold' }}>{eq.tipo} ({eq.tombo})</Text>
+                          </TouchableOpacity>
+                        ))}
                       </View>
-                    );
-                  })()}
-                </View>
-              )}
-              <Btn title="FECHAR PRONTUÁRIO" onPress={() => setHistoryModalVisible(false)} theme={theme} style={{ marginTop: 15 }} />
+
+                      <View style={{ backgroundColor: '#1a1a1a', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#333', marginBottom: 15 }}>
+                        {isEditingEq ? (
+                          <View>
+                            <Text style={{ color: '#1DB954', fontWeight: 'bold', marginBottom: 10 }}>Modificação de Ativo</Text>
+                            <TextInput style={[styles.inputModal, { marginBottom: 5, padding: 8, minHeight: 35 }]} placeholder="Especificação (Ex: Monitor)" placeholderTextColor="#666" value={editEqData.tipo} onChangeText={(t) => setEditEqData({...editEqData, tipo: t})} />
+                            <TextInput style={[styles.inputModal, { marginBottom: 5, padding: 8, minHeight: 35 }]} placeholder="Fabricante" placeholderTextColor="#666" value={editEqData.marca} onChangeText={(t) => setEditEqData({...editEqData, marca: t})} />
+                            <TextInput style={[styles.inputModal, { marginBottom: 10, padding: 8, minHeight: 35 }]} placeholder="Código Identificador" placeholderTextColor="#666" value={editEqData.tombo} onChangeText={(t) => setEditEqData({...editEqData, tombo: t})} />
+                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                              <TouchableOpacity onPress={() => setIsEditingEq(false)} style={{ padding: 8, marginRight: 10 }}><Text style={{ color: '#aaa', fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>
+                              <TouchableOpacity onPress={salvarEdicaoProntuario} disabled={isSaving} style={{ backgroundColor: isSaving ? '#555' : '#1DB954', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 }}>
+                                <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? 'A PROCESSAR...' : 'APLICAR DADOS'}</Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        ) : (
+                          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <View>
+                              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 14 }}>{selectedEqProntuario?.tipo}</Text>
+                              <Text style={{ color: '#aaa', fontSize: 12 }}>Fabricante: {selectedEqProntuario?.marca || 'S/D'}</Text>
+                              <Text style={{ color: '#aaa', fontSize: 12 }}>Identificador: {selectedEqProntuario?.tombo}</Text>
+                              <Text style={{ color: selectedEqProntuario?.status === 'Indisponível' ? '#ff4444' : '#1DB954', fontSize: 12, fontWeight: 'bold', marginTop: 4 }}>Estado Operacional: {selectedEqProntuario?.status || 'Ativo'}</Text>
+                            </View>
+                            <TouchableOpacity onPress={iniciarEdicaoProntuario} style={{ backgroundColor: '#333', padding: 8, borderRadius: 6 }}>
+                              <Text style={{ color: '#FFAE00', fontSize: 12, fontWeight: 'bold' }}>GERIR ATIVO</Text>
+                            </TouchableOpacity>
+                          </View>
+                        )}
+                      </View>
+
+                      {(() => {
+                        const history = chamados ? chamados.filter(c => {
+                          if (selectedEqProntuario?.tombo && selectedEqProntuario.tombo !== 'N/A') {
+                            return c.patrimonio === selectedEqProntuario.tombo || (c.equipamento && c.equipamento.tombo === selectedEqProntuario.tombo);
+                          }
+                          return c.equipamento && c.equipamento.id === selectedItemHistory.id;
+                        }) : [];
+
+                        return (
+                          <View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: theme.inputBg, padding: 10, borderRadius: 10, marginBottom: 15 }}>
+                              <View style={{ alignItems: 'center' }}>
+                                <Text style={{ color: theme.text, fontSize: 18, fontWeight: 'bold' }}>{history.length}</Text>
+                                <Text style={{ color: theme.subtext, fontSize: 10 }}>PROCESSOS ABERTOS</Text>
+                              </View>
+                              <View style={{ alignItems: 'center' }}>
+                                {selectedEqProntuario?.status === 'Indisponível' ? (
+                                  <TouchableOpacity onPress={() => liberarEquipamento(selectedEqProntuario)} style={{ backgroundColor: '#1DB954', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 }}>
+                                    <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>REABILITAR COMPONENTE</Text>
+                                  </TouchableOpacity>
+                                ) : (
+                                  <Text style={{ color: getHealthStatus(history.length).color, fontSize: 18, fontWeight: 'bold' }}>{getHealthStatus(history.length).label}</Text>
+                                )}
+                                <Text style={{ color: theme.subtext, fontSize: 10, marginTop: 4 }}>ESTADO TÉCNICO</Text>
+                              </View>
+                            </View>
+                            <Text style={{ color: theme.text, fontWeight: 'bold', marginBottom: 10 }}>Registo de Intervenções:</Text>
+                            {history.length === 0 ? (
+                              <Text style={{ color: theme.subtext, fontStyle: 'italic', textAlign: 'center', marginVertical: 10 }}>Sem registo de manutenção prévio.</Text>
+                            ) : (
+                              history.map((h) => (
+                                <View key={h.id} style={{ backgroundColor: theme.inputBg, padding: 12, borderRadius: 8, marginBottom: 8, borderLeftWidth: 3, borderLeftColor: h.status === 'FECHADO' ? '#1DB954' : '#ff4444' }}>
+                                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                                    <Text style={{ color: h.status === 'FECHADO' ? '#1DB954' : '#ff4444', fontWeight: 'bold', fontSize: 10 }}>{h.status}</Text>
+                                    <Text style={{ color: theme.subtext, fontSize: 10 }}>{new Date(h.dataAbertura).toLocaleDateString()}</Text>
+                                  </View>
+                                  <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 12 }}>{h.descricao || h.titulo}</Text>
+                                  <Text style={{ color: theme.subtext, fontSize: 10, marginTop: 4 }}>Responsável: {h.tecnico || 'Pendente'}</Text>
+                                </View>
+                              ))
+                            )}
+                          </View>
+                        );
+                      })()}
+                    </View>
+                  )}
+
+                  <ProntuarioItem itemId={selectedItemHistory.id} isAdmin={isAdmin} nomeUsuario={nomeUser} />
+                </ScrollView>
+                
+                <Btn title="ENCERRAR ANÁLISE" onPress={() => setHistoryModalVisible(false)} theme={theme} style={{ marginTop: 15 }} />
+              </View>
             </View>
-          </View>
+          </KeyboardAvoidingView>
         )}
       </Modal>
 

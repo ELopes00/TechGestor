@@ -1,3 +1,5 @@
+import 'react-native-gesture-handler';
+
 /**
  * ==========================================
  * TECHGESTOR - Sistema de Gestão de TI
@@ -77,7 +79,7 @@ export default function App() {
     return () => unsubAuth();
   }, []);
 
-  // 2. Só puxa as listas se o Firebase confirmar o login
+  // 2. So puxa as listas se o Firebase confirmar o login
   useEffect(() => {
     let unsubU = () => {};
     let unsubC = () => {};
@@ -98,7 +100,7 @@ export default function App() {
     return () => { unsubU(); unsubC(); unsubE(); unsubI(); unsubA(); unsubL(); };
   }, [authUser]);
 
-  // 3. TERCEIRO: Define o perfil do utilizador (ADM, Técnico, etc)
+  // 3. TERCEIRO: Define o perfil do utilizador (ADM, Tecnico, etc)
   useEffect(() => {
     if (authUser) {
       const dadosUsuario = users.find(u => u.uid === authUser.uid || u.id === authUser.uid);
@@ -133,17 +135,17 @@ export default function App() {
           });
         }
 
-        // CORREÇÃO AQUI: ID Oficial do Projeto
+        // CORRECAO: ID Oficial do Projeto
         const tokenData = await Notifications.getExpoPushTokenAsync({ projectId: 'b0198725-e695-4696-8706-ec75061f83cf' });
         if (tokenData && tokenData.data && DataService.salvarPushToken) {
           await DataService.salvarPushToken(user.uid, tokenData.data);
         }
-      } catch (e) { console.log("Aviso de Notificação:", e.message); }
+      } catch (e) { console.log("Aviso de Notificacao:", e.message); }
     }
     if (user && user.uid) setupPush();
   }, [user?.uid]);
 
-  // FUNÇÃO DE LOGS
+  // FUNCAO DE LOGS
   const gerirLogs = (msg) => {
     const autorDoLog = user ? (user.login || user.nomeCompleto) : "Administrador (Auto)";
 
@@ -154,7 +156,7 @@ export default function App() {
     }
   };
 
-  // 2. LOGOUT PARA PASSAR PARA A TELA DE PERFIL
+  // LOGOUT PARA PASSAR PARA A TELA DE PERFIL
   const handleLogout = async () => {
     try {
       await DataService.logout();

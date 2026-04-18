@@ -8,8 +8,20 @@ import { DataService } from '../services/DataService';
 import { CHECKLIST_PADRAO, FRASES_RAPIDAS, SETORES } from '../utils/constants';
 import { getCorPrioridade, getTempoDecorrido, isSlaVencido } from '../utils/helpers';
 
+// STATUS ATUALIZADOS CONFORME O PEDIDO
+const STATUS_OPCOES = [
+  'Aguardando atendimento', 'Em andamento', 'Em separação de equipamentos', 'Instalado', 'finalizado'
+];
+
 export default function ChamadosScreen({ user, chamados, users, inventario, addLog, theme, showPush }) {
+  
+  // NOVOS CAMPOS DO FORMULÁRIO
+  const [tituloChamado, setTituloChamado] = useState('');
+  const [solicitante, setSolicitante] = useState('');
+  const [sala, setSala] = useState('');
+  const [observacao, setObservacao] = useState('');
   const [desc, setDesc] = useState('');
+  
   const [setor, setSetor] = useState(SETORES[0]);
   const [tecSel, setTecSel] = useState('');
   const [equipSel, setEquipSel] = useState(null);
@@ -33,12 +45,14 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   const [msgErro, setMsgErro] = useState('');
   const [solucao, setSolucao] = useState('');
 
-  // ESTADOS DA SELEÇÃO MÚLTIPLA E TRAVA DE SALVAMENTO
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [novoStatusSel, setNovoStatusSel] = useState('');
+  const [notaStatus, setNotaStatus] = useState('');
+
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [isSavingChamado, setIsSavingChamado] = useState(false);
 
-  // ESTADOS DA CÂMARA DE FOTOS
   const [hasPermission, setHasPermission] = useState(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [cameraTarget, setCameraTarget] = useState(''); 
@@ -55,10 +69,11 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   const registrarLog = (msg) => { if (addLog) addLog(msg); };
 
   const todosTecnicos = users.filter((u) => u.perfil === 'TECNICO' || u.perfil === 'ADM');
-  const tecnicosDoSetorAtual = todosTecnicos.filter(u => u.predio === setor);
+  const tecnicosDoSetorAtual = todosTecnicos.filter(u => u.predio === setor); 
 
   const chamadosVisiveis = chamados.filter((c) => {
-    const matchesSearch = c.descricao?.toLowerCase().includes(searchText.toLowerCase()) || c.id?.includes(searchText) || c.tecnico?.toLowerCase().includes(searchText.toLowerCase());
+    const termo = searchText.toLowerCase();
+    const matchesSearch = c.descricao?.toLowerCase().includes(termo) || c.titulo?.toLowerCase().includes(termo) || c.solicitante?.toLowerCase().includes(termo) || c.tecnico?.toLowerCase().includes(termo);
     const matchesPriority = filtroPrioridade === 'TODOS' ? true : c.prioridade === filtroPrioridade;
     let matchesTab = false;
     
@@ -68,7 +83,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     } else if (abaAtiva === 'FILA') {
       const semTecnico = !c.tecnico || c.tecnico === '';
       const mesmoPredio = c.predio === user.predio || user.perfil === 'ADM';
-      const naoEstaFechado = c.status !== 'FECHADO';
+      const naoEstaFechado = c.status !== 'FECHADO' && c.status !== 'finalizado';
       matchesTab = semTecnico && mesmoPredio && naoEstaFechado;
     }
     return matchesTab && matchesSearch && matchesPriority;
@@ -79,7 +94,6 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     else setSelectedIds([...selectedIds, id]);
   };
 
-  // 👇 EXCLUSÃO EM LOTE ULTRARRÁPIDA 👇
   const bulkExcluir = () => {
     if (selectedIds.length === 0) return;
     if (user.perfil !== 'ADM') return Alert.alert('Erro', 'Apenas Administradores podem excluir chamados.');
@@ -88,9 +102,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
       const idsParaApagar = [...selectedIds];
       setIsSelectMode(false); 
       setSelectedIds([]);
-      
       setTimeout(() => { if (showPush) showPush(`🗑️ ${idsParaApagar.length} chamados excluídos.`); }, 100);
-
       idsParaApagar.forEach(id => DataService.deletarChamado(id).catch(e => console.log('Erro:', e)));
       registrarLog(`🗑️ ADM EXCLUIU ${idsParaApagar.length} CHAMADOS EM LOTE`);
     };
@@ -100,30 +112,22 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     else { Alert.alert("Atenção", msg, [{ text: "Cancelar" }, { text: "Excluir", style: 'destructive', onPress: acaoExcluir }]); }
   };
 
-  // ASSUMIR EM LOTE
   const bulkAssumir = () => {
     if (selectedIds.length === 0) return;
-    
     const msgSistema = { user: 'SISTEMA', texto: `✅ ${user.login} assumiu em lote.`, time: Date.now() };
     const idsParaAssumir = [...selectedIds];
     
-    setIsSelectMode(false); 
-    setSelectedIds([]); 
-    setAbaAtiva('MEUS');
-
+    setIsSelectMode(false); setSelectedIds([]); setAbaAtiva('MEUS');
     setTimeout(() => { if (showPush) showPush(`🙋‍♂️ ${idsParaAssumir.length} chamados assumidos!`); }, 100);
 
     idsParaAssumir.forEach(id => {
       const chamadoTarget = chamados.find(c => c.id === id);
       if (chamadoTarget) {
         DataService.atualizarChamado(id, { 
-          tecnico: user.login, 
-          status: 'EM ATENDIMENTO', 
-          historico: [msgSistema, ...(chamadoTarget.historico || [])] 
+          tecnico: user.login, status: 'Em andamento', historico: [msgSistema, ...(chamadoTarget.historico || [])] 
         }).catch(e => console.log(e));
       }
     });
-    
     registrarLog(`🙋‍♂️ ASSUMIU ${idsParaAssumir.length} CHAMADOS EM LOTE`);
   };
 
@@ -172,14 +176,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.5, base64: true });
       setIsCameraOpen(false); 
-      
-      const novaFoto = { 
-        id: Date.now().toString(), 
-        nome: `Foto_${Date.now()}.jpg`, 
-        uri: photo.uri, 
-        type: 'imagem', 
-        base64: photo.base64 
-      };
+      const novaFoto = { id: Date.now().toString(), nome: `Foto_${Date.now()}.jpg`, uri: photo.uri, type: 'imagem', base64: photo.base64 };
 
       if (cameraTarget === 'form') {
         setFormAnexos([...formAnexos, novaFoto]);
@@ -193,46 +190,46 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   };
 
   const abrir = async () => {
-    if (!desc) return Alert.alert('Erro', 'A descrição é obrigatória.');
-    if (isSavingChamado) return; // Trava de segurança
+    if (!tituloChamado || !solicitante || !desc || !sala) {
+      return Alert.alert('Erro', 'Preencha os campos obrigatórios: Chamado, Solicitante, Sala e Descrição.');
+    }
+    if (isSavingChamado) return; 
     
     setIsSavingChamado(true);
-
     const novoChamado = {
-      descricao: desc, predio: setor, status: 'ABERTO', tecnico: tecSel || '',
-      prioridade, dataAbertura: Date.now(), equipamento: equipSel, historico: [],
-      anexos: formAnexos, checklist: CHECKLIST_PADRAO, abertoPor: user.login
+      titulo: tituloChamado,
+      solicitante,
+      sala,
+      observacao,
+      descricao: desc, 
+      predio: setor, 
+      status: 'Aguardando atendimento', 
+      tecnico: tecSel || '',
+      prioridade, 
+      dataAbertura: Date.now(), 
+      equipamento: equipSel, 
+      historico: [],
+      anexos: formAnexos, 
+      checklist: CHECKLIST_PADRAO, 
+      abertoPor: user.login
     };
 
     try {
       await DataService.salvarChamado(novoChamado);
-      
-      registrarLog(`✨ ABRIU CHAMADO: ${desc.substring(0, 30)}...`);
+      registrarLog(`✨ ABRIU CHAMADO: ${tituloChamado}`);
       if (showPush) showPush(`🔔 Novo Chamado Criado`);
 
       if (tecSel) {
         const tecnicoTarget = users.find(u => u.login === tecSel);
         if (tecnicoTarget && tecnicoTarget.expoPushToken && DataService.enviarPushNotification) {
-          DataService.enviarPushNotification(
-            tecnicoTarget.expoPushToken, 
-            '🚨 Novo Chamado Escalonado!', 
-            `${desc.substring(0, 30)}... Sala: ${setor}`
-          ).catch(e => console.log(e));
+          DataService.enviarPushNotification(tecnicoTarget.expoPushToken, '🚨 Novo Chamado Escalonado!', `${tituloChamado} - Sala: ${sala}`).catch(e => console.log(e));
         }
       }
-
-      // Limpeza Mágica dos Campos
-      setDesc(''); 
-      setSetor(SETORES[0]); 
-      setTecSel(''); 
-      setPrioridade('NORMAL'); 
-      setEquipSel(null); 
-      setFormAnexos([]);
-    } catch (e) {
-      Alert.alert('Erro', 'Falha ao salvar chamado.');
-    } finally {
-      setIsSavingChamado(false); // Libera o botão
-    }
+      
+      // Limpar formulário
+      setTituloChamado(''); setSolicitante(''); setSala(''); setObservacao(''); setDesc(''); 
+      setSetor(SETORES[0]); setTecSel(''); setPrioridade('NORMAL'); setEquipSel(null); setFormAnexos([]);
+    } catch (e) { Alert.alert('Erro', 'Falha ao salvar chamado.'); } finally { setIsSavingChamado(false); }
   };
 
   const prepararAssumir = (id) => { setChamadoParaAssumir(id); setConfirmModalVisible(true); };
@@ -242,15 +239,10 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     const chamadoTarget = chamados.find(c => c.id === chamadoParaAssumir);
     const msgSistema = { user: 'SISTEMA', texto: `✅ ${user.login} assumiu o chamado da fila.`, time: Date.now() };
     
-    // Atualização rápida na UI
-    setConfirmModalVisible(false); 
-    setChamadoParaAssumir(null); 
-    setAbaAtiva('MEUS');
-
+    setConfirmModalVisible(false); setChamadoParaAssumir(null); setAbaAtiva('MEUS');
     await DataService.atualizarChamado(chamadoParaAssumir, {
-      tecnico: user.login, status: 'EM ATENDIMENTO', historico: [msgSistema, ...(chamadoTarget.historico || [])]
+      tecnico: user.login, status: 'Em andamento', historico: [msgSistema, ...(chamadoTarget.historico || [])]
     });
-    
     registrarLog(`🙋‍♂️ ASSUMIU CHAMADO #${chamadoParaAssumir.substring(0,4)}`);
   };
 
@@ -262,36 +254,57 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     
     await DataService.atualizarChamado(selectedChamado.id, { historico: novoHistorico });
     setSelectedChamado({ ...selectedChamado, historico: novoHistorico });
-    
     registrarLog(`📝 COMENTOU CHAMADO #${selectedChamado.id.substring(0,4)}`);
     setChatMsg('');
   };
 
-  const transferirChamado = async (chamadoId, tecnicoAtual, novoTecnico) => {
+  const transferirChamado = async (chamadoId, tecnicoAtual, novoTecnico, novoPredio) => {
     const chamadoTarget = chamados.find(c => c.id === chamadoId);
-    const msgSistema = { user: 'SISTEMA', texto: `🔄 Transferido para ${novoTecnico}`, time: Date.now() };
+    const destinoStr = novoTecnico ? novoTecnico : `Fila (${novoPredio})`;
+    const msgSistema = { user: 'SISTEMA', texto: `🔄 Transferido para ${destinoStr}`, time: Date.now() };
     
     setTransferId(null); 
     Alert.alert('Sucesso', 'Chamado transferido!');
-
-    await DataService.atualizarChamado(chamadoId, {
-      tecnico: novoTecnico, historico: [msgSistema, ...(chamadoTarget.historico || [])]
+    await DataService.atualizarChamado(chamadoId, { 
+      tecnico: novoTecnico, 
+      predio: novoPredio || chamadoTarget.predio, 
+      status: novoTecnico ? 'Em andamento' : 'Aguardando atendimento',
+      historico: [msgSistema, ...(chamadoTarget.historico || [])] 
     });
+    registrarLog(`🔄 TRANSFERIU CHAMADO PARA ${destinoStr}`);
+  };
+
+  const alterarStatusChamado = async () => {
+    if (!novoStatusSel) return;
+    if (novoStatusSel === 'finalizado' || novoStatusSel === 'FECHADO') {
+      setShowStatusModal(false);
+      return Alert.alert('Aviso', 'Para marcar como Finalizado, preencha o campo Solução/Notas e clique em FECHAR CHAMADO.');
+    }
+
+    const txtNota = notaStatus.trim() ? `\n📝 Nota: ${notaStatus}` : '';
+    const msgSistema = { user: 'SISTEMA', texto: `🔄 Status atualizado: ${novoStatusSel}${txtNota}`, time: Date.now() };
     
-    registrarLog(`🔄 TRANSFERIU CHAMADO PARA ${novoTecnico}`);
+    await DataService.atualizarChamado(selectedChamado.id, {
+      status: novoStatusSel, historico: [msgSistema, ...(selectedChamado.historico || [])]
+    });
+
+    setSelectedChamado({ ...selectedChamado, status: novoStatusSel, historico: [msgSistema, ...(selectedChamado.historico || [])] });
+    registrarLog(`🔄 ALTEROU STATUS CHAMADO #${selectedChamado.id.substring(0,4)} para ${novoStatusSel}`);
+    
+    setShowStatusModal(false); setNotaStatus(''); setNovoStatusSel('');
   };
 
   const fecharChamado = async () => {
     if (!solucao || solucao.trim().length === 0) return setMsgErro("⚠️ Descreva a solução.");
     try {
-      const msgFechamento = { user: 'SISTEMA', texto: `🏁 CHAMADO FECHADO POR ${user.login}.\n📝 SOLUÇÃO: ${solucao}`, time: Date.now() };
+      const msgFechamento = { user: 'SISTEMA', texto: `🏁 CHAMADO FINALIZADO POR ${user.login}.\n📝 SOLUÇÃO: ${solucao}`, time: Date.now() };
       const tecnicoFinal = selectedChamado.tecnico ? selectedChamado.tecnico : user.login;
       
       setModalVisible(false); 
       if (showPush) showPush("🏁 Chamado Finalizado!");
 
       await DataService.atualizarChamado(selectedChamado.id, {
-        status: 'FECHADO', tecnico: tecnicoFinal, historico: [msgFechamento, ...(selectedChamado.historico || [])], checklist: selectedChamado.checklist || []
+        status: 'finalizado', tecnico: tecnicoFinal, historico: [msgFechamento, ...(selectedChamado.historico || [])], checklist: selectedChamado.checklist || []
       });
       
       registrarLog(`✅ FECHOU CHAMADO #${selectedChamado.id.substring(0,4)}`);
@@ -305,26 +318,33 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     setSelectedChamado({ ...selectedChamado, checklist: novoChecklist });
   };
 
-  const abrirModalDetalhes = (c) => { setSelectedChamado(c); setMsgErro(''); setSolucao(''); setModalVisible(true); };
+  const abrirModalDetalhes = (c) => { setSelectedChamado(c); setMsgErro(''); setSolucao(''); setModalVisible(true); setShowStatusModal(false); };
 
   const handleExcluir = (id) => {
     if (user.perfil !== 'ADM') return Alert.alert('Acesso Negado', 'Apenas Administradores podem excluir chamados.');
-    
     const acao = () => {
       DataService.deletarChamado(id).catch(e => console.log(e));
       registrarLog(`🗑️ EXCLUIU CHAMADO #${id.substring(0,4)}`);
       if (showPush) showPush("🗑️ Chamado apagado.");
     };
-    
-    if (Platform.OS === 'web') { 
-      if (window.confirm("Deseja apagar este chamado permanentemente?")) acao(); 
-    } else { 
-      Alert.alert("Excluir", "Deseja apagar este chamado permanentemente?", [
-        { text: "Cancelar", style: "cancel" }, 
-        { text: "Excluir", style: "destructive", onPress: acao }
-      ]); 
-    }
+    if (Platform.OS === 'web') { if (window.confirm("Deseja apagar este chamado permanentemente?")) acao(); } 
+    else { Alert.alert("Excluir", "Deseja apagar este chamado permanentemente?", [{ text: "Cancelar", style: "cancel" }, { text: "Excluir", style: "destructive", onPress: acao }]); }
   };
+
+  const getTempoResolucao = (chamado) => {
+    const msgFinal = chamado.historico?.find(h => h.texto.includes('CHAMADO FINALIZADO') || h.texto.includes('CHAMADO FECHADO') || h.texto.includes('Status atualizado: finalizado'));
+    if (msgFinal && chamado.dataAbertura) {
+      const endTime = msgFinal.time;
+      const diff = endTime - chamado.dataAbertura;
+      const horas = Math.floor(diff / (1000 * 60 * 60));
+      const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const dataFormatada = new Date(endTime).toLocaleString('pt-BR');
+      return `${dataFormatada} (Levou ${horas}h ${minutos}m)`;
+    }
+    return 'Indisponível';
+  };
+
+  const isChamadoFechado = (status) => status === 'FECHADO' || status === 'finalizado';
 
   return (
     <View style={{ flex: 1 }}>
@@ -369,28 +389,31 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
         )}
 
         <Card theme={theme} style={{ padding: 10, marginBottom: 10 }}>
-          <TextInput style={{ backgroundColor: theme.inputBg, color: theme.text, padding: 8, borderRadius: 8, borderWidth: 1, borderColor: theme.border }} placeholder="🔍 Buscar por erro, ID ou técnico..." placeholderTextColor={theme.subtext} value={searchText} onChangeText={setSearchText} />
-          <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'space-between' }}>
-            {['TODOS', 'ALTA', 'MEDIA', 'NORMAL'].map((p) => (
-              <TouchableOpacity key={p} onPress={() => setFiltroPrioridade(p)} style={{ padding: 5, borderBottomWidth: 2, borderBottomColor: filtroPrioridade === p ? theme.primary : 'transparent' }}>
-                <Text style={{ color: filtroPrioridade === p ? theme.primary : theme.subtext, fontSize: 10, fontWeight: 'bold' }}>{p}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <TextInput style={{ backgroundColor: theme.inputBg, color: theme.text, padding: 8, borderRadius: 8, borderWidth: 1, borderColor: theme.border }} placeholder="🔍 Buscar por erro, assunto ou técnico..." placeholderTextColor={theme.subtext} value={searchText} onChangeText={setSearchText} />
         </Card>
 
         <Card theme={theme}>
           <Text style={{ color: theme.primary, fontWeight: 'bold', marginBottom: 10 }}>Novo Chamado</Text>
-          <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%', borderWidth: 1, borderColor: theme.border }]} placeholder="Descrição" value={desc} onChangeText={setDesc} />
           
+          <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%', borderWidth: 1, borderColor: theme.border }]} placeholder="Chamado (Assunto principal)" value={tituloChamado} onChangeText={setTituloChamado} placeholderTextColor={theme.subtext} />
+          
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <TextInput style={[styles.input, { flex: 1, marginRight: 5, backgroundColor: theme.inputBg, color: theme.text, borderWidth: 1, borderColor: theme.border }]} placeholder="Solicitante" value={solicitante} onChangeText={setSolicitante} placeholderTextColor={theme.subtext} />
+            <TextInput style={[styles.input, { flex: 1, marginLeft: 5, backgroundColor: theme.inputBg, color: theme.text, borderWidth: 1, borderColor: theme.border }]} placeholder="Sala" value={sala} onChangeText={setSala} placeholderTextColor={theme.subtext} />
+          </View>
+
+          <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%', borderWidth: 1, borderColor: theme.border }]} placeholder="Descrição do Problema" value={desc} onChangeText={setDesc} placeholderTextColor={theme.subtext} />
+          
+          <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%', borderWidth: 1, borderColor: theme.border, height: 60, textAlignVertical: 'top' }]} placeholder="Observação (Opcional)" value={observacao} onChangeText={setObservacao} multiline placeholderTextColor={theme.subtext} />
+
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
             <TouchableOpacity style={[styles.input, { flex: 1, marginRight: 5, backgroundColor: theme.inputBg, borderColor: theme.border, borderWidth: 1, justifyContent: 'center' }]} onPress={() => setShowSetores(!showSetores)}>
-              <Text style={{ color: theme.text }}>{setor} ↓</Text>
+              <Text style={{ color: theme.text }}>Setor: {setor} ↓</Text>
             </TouchableOpacity>
             
             <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
               <TouchableOpacity style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, borderColor: theme.border, borderWidth: 1, justifyContent: 'center', marginRight: 5 }]} onPress={() => setShowTecs(!showTecs)}>
-                <Text style={{ color: tecSel ? theme.text : theme.subtext, fontSize: 12 }}>{tecSel || 'Fila ↓'}</Text>
+                <Text style={{ color: tecSel ? theme.text : theme.subtext, fontSize: 12 }}>{tecSel || 'Técnico ↓'}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={autoEscalar} style={{ backgroundColor: theme.primary, padding: 10, borderRadius: 8 }}>
                 <Text style={{ fontSize: 16 }}>⚡</Text>
@@ -419,7 +442,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
           )}
 
           <TouchableOpacity style={[styles.input, { width: '100%', backgroundColor: theme.inputBg, borderColor: theme.border, borderWidth: 1, justifyContent: 'center', marginBottom: 10 }]} onPress={() => setShowEquips(!showEquips)}>
-            <Text style={{ color: equipSel ? theme.text : theme.subtext }}>{equipSel ? `Equipamento: ${equipSel.nome} (${equipSel.pat})` : 'Selecionar Equipamento ↓'}</Text>
+            <Text style={{ color: equipSel ? theme.text : theme.subtext }}>{equipSel ? `Equipamento: ${equipSel.nome} (${equipSel.pat})` : 'Vincular Equipamento ↓'}</Text>
           </TouchableOpacity>
 
           {showEquips && (
@@ -471,12 +494,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
             </View>
           )}
 
-          {/* BOTÃO COM TRAVA E MENSAGEM */}
-          <TouchableOpacity 
-            style={[styles.input, { backgroundColor: isSavingChamado ? '#555' : theme.primary, alignItems: 'center', justifyContent: 'center', width: '100%', borderColor: 'transparent' }]} 
-            onPress={abrir}
-            disabled={isSavingChamado}
-          >
+          <TouchableOpacity style={[styles.input, { backgroundColor: isSavingChamado ? '#555' : theme.primary, alignItems: 'center', justifyContent: 'center', width: '100%', borderColor: 'transparent' }]} onPress={abrir} disabled={isSavingChamado}>
             <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSavingChamado ? 'A ABRIR CHAMADO...' : 'ABRIR CHAMADO'}</Text>
           </TouchableOpacity>
         </Card>
@@ -486,13 +504,13 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
         )}
 
         {chamadosVisiveis.map((c) => {
-          const vencido = c.status !== 'FECHADO' && isSlaVencido(c.dataAbertura);
+          const vencido = !isChamadoFechado(c.status) && isSlaVencido(c.dataAbertura);
           const isSelected = selectedIds.includes(c.id);
 
           return (
             <View key={c.id}>
               <TouchableOpacity activeOpacity={0.8} onPress={() => { if (isSelectMode) toggleSelection(c.id); else abrirModalDetalhes(c); }}>
-                <Card theme={theme} style={{ borderLeftWidth: 6, borderLeftColor: c.status === 'FECHADO' ? theme.subtext : vencido ? theme.warning : getCorPrioridade(c.prioridade), borderColor: isSelected ? theme.primary : vencido ? theme.warning : theme.border, borderWidth: isSelected ? 2 : vencido ? 1 : 0, backgroundColor: isSelected ? theme.inputBg : theme.card }}>
+                <Card theme={theme} style={{ borderLeftWidth: 6, borderLeftColor: isChamadoFechado(c.status) ? theme.subtext : vencido ? theme.warning : getCorPrioridade(c.prioridade), borderColor: isSelected ? theme.primary : vencido ? theme.warning : theme.border, borderWidth: isSelected ? 2 : vencido ? 1 : 0, backgroundColor: isSelected ? theme.inputBg : theme.card }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ flex: 1 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
@@ -501,14 +519,15 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                             {isSelected && <Text style={{ color: '#fff', fontSize: 10 }}>✓</Text>}
                           </View>
                         )}
-                        <View style={{ backgroundColor: c.status === 'FECHADO' ? theme.subtext : vencido ? theme.warning : getCorPrioridade(c.prioridade), paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginRight: 8 }}>
-                          <Text style={{ color: '#fff', fontSize: 9, fontWeight: 'bold' }}>{c.status === 'FECHADO' ? 'FECHADO' : vencido ? 'ATRASADO' : c.prioridade}</Text>
+                        <View style={{ backgroundColor: isChamadoFechado(c.status) ? theme.subtext : vencido ? theme.warning : getCorPrioridade(c.prioridade), paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginRight: 8 }}>
+                          <Text style={{ color: '#fff', fontSize: 9, fontWeight: 'bold' }}>{isChamadoFechado(c.status) ? 'FINALIZADO' : vencido ? 'ATRASADO' : c.prioridade}</Text>
                         </View>
                         <Text style={{ color: vencido ? theme.warning : theme.subtext, fontSize: 10, fontWeight: vencido ? 'bold' : 'normal' }}>⏱ {getTempoDecorrido(c.dataAbertura)}</Text>
                       </View>
-                      <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 16 }}>{c.descricao}</Text>
+                      <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 16 }}>{c.titulo || c.descricao}</Text>
+                      <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>Solicitante: {c.solicitante || 'N/A'} | Sala: {c.sala || 'N/A'}</Text>
+                      <Text style={{ color: theme.sec, fontSize: 11, fontWeight: 'bold', marginTop: 4 }}>Status: {c.status}</Text>
                       {c.equipamento && <Text style={{ color: theme.primary, fontSize: 11, marginTop: 2 }}>🖥 {c.equipamento.nome} ({c.equipamento.pat})</Text>}
-                      {c.anexos && c.anexos.length > 0 && <Text style={{ color: theme.subtext, fontSize: 10, marginTop: 2 }}>📎 {c.anexos.length} anexo(s)</Text>}
                     </View>
 
                     {!isSelectMode && user.perfil === 'ADM' && (
@@ -527,7 +546,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                           <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>🙋‍♂️ ASSUMIR</Text>
                         </TouchableOpacity>
                       )}
-                      {abaAtiva === 'MEUS' && c.status !== 'FECHADO' && (
+                      {abaAtiva === 'MEUS' && !isChamadoFechado(c.status) && (
                         <TouchableOpacity style={{ backgroundColor: theme.inputBg, padding: 5, borderRadius: 5, borderWidth: 1, borderColor: theme.border }} onPress={() => setTransferId(transferId === c.id ? null : c.id)}>
                           <Text style={{ color: theme.text, fontSize: 10 }}>⇄ Transferir</Text>
                         </TouchableOpacity>
@@ -539,10 +558,19 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
               
               {transferId === c.id && !isSelectMode && (
                 <View style={{ backgroundColor: theme.card, borderRadius: 10, marginBottom: 15, padding: 10, marginLeft: 20, borderWidth: 1, borderColor: theme.primary }}>
-                  <Text style={{ color: theme.subtext, marginBottom: 5, fontSize: 12 }}>Selecione o novo técnico ({c.predio}):</Text>
-                  {todosTecnicos.filter((t) => t.login !== c.tecnico && t.predio === c.predio).map((t) => (
-                    <TouchableOpacity key={t.login} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: theme.border }} onPress={() => transferirChamado(c.id, c.tecnico, t.login)}>
-                      <Text style={{ color: theme.primary, fontWeight: 'bold' }}>➜ {t.login}</Text>
+                  <Text style={{ color: theme.subtext, marginBottom: 5, fontSize: 12 }}>Transferir para Fila do Setor:</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
+                    {SETORES.map(s => (
+                      <TouchableOpacity key={s} onPress={() => transferirChamado(c.id, c.tecnico, '', s)} style={{ backgroundColor: theme.inputBg, padding: 8, borderRadius: 8, marginRight: 8, borderWidth: 1, borderColor: theme.border }}>
+                        <Text style={{ color: theme.primary, fontSize: 11, fontWeight: 'bold' }}>🏢 {s}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+
+                  <Text style={{ color: theme.subtext, marginBottom: 5, fontSize: 12 }}>Ou transferir direto para Técnico/Admin:</Text>
+                  {todosTecnicos.filter((t) => t.login !== c.tecnico).map((t) => (
+                    <TouchableOpacity key={t.login} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: theme.border }} onPress={() => transferirChamado(c.id, c.tecnico, t.login, t.predio)}>
+                      <Text style={{ color: theme.text, fontWeight: 'bold' }}>➜ {t.login} <Text style={{ color: theme.sec, fontSize: 10 }}>({t.predio})</Text></Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -559,9 +587,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
               <TouchableOpacity onPress={() => setIsCameraOpen(false)} style={{ backgroundColor: '#333', padding: 15, borderRadius: 50, width: 80, alignItems: 'center' }}>
                 <Text style={{ color: '#fff', fontSize: 12 }}>Voltar</Text>
               </TouchableOpacity>
-              
               <TouchableOpacity onPress={tirarFoto} style={{ backgroundColor: '#fff', width: 70, height: 70, borderRadius: 35, borderWidth: 5, borderColor: '#1DB954' }} />
-              
               <View style={{ width: 80 }} />
             </View>
           </CameraView>
@@ -579,10 +605,66 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
               
               <ScrollView style={{ flex: 1, marginBottom: 10 }} keyboardShouldPersistTaps="handled">
                 <Card theme={theme}>
-                  <Text style={{ color: theme.subtext, fontSize: 12 }}>Descrição:</Text>
-                  <Text style={{ color: theme.text, fontSize: 16, marginBottom: 10 }}>{selectedChamado.descricao}</Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
+                    <Text style={{ color: theme.sec, fontWeight: 'bold', fontSize: 16 }}>Status: {selectedChamado.status}</Text>
+                    {!isChamadoFechado(selectedChamado.status) && (
+                      <TouchableOpacity onPress={() => setShowStatusModal(!showStatusModal)} style={{ backgroundColor: theme.primary, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 }}>
+                        <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>MUDAR STATUS</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {showStatusModal && (
+                    <View style={{ backgroundColor: theme.inputBg, padding: 15, borderRadius: 10, marginBottom: 15, borderWidth: 1, borderColor: theme.border }}>
+                      <Text style={{ color: theme.text, fontWeight: 'bold', marginBottom: 10 }}>Alterar Status para:</Text>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+                        {STATUS_OPCOES.map(st => (
+                          <TouchableOpacity key={st} onPress={() => setNovoStatusSel(st)} style={{ backgroundColor: novoStatusSel === st ? theme.primary : theme.card, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, marginRight: 8, borderWidth: 1, borderColor: novoStatusSel === st ? theme.primary : theme.border }}>
+                            <Text style={{ color: novoStatusSel === st ? '#fff' : theme.subtext, fontSize: 12 }}>{st}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
+                      <TextInput 
+                        style={[styles.input, { backgroundColor: theme.card, color: theme.text, width: '100%', height: 60, textAlignVertical: 'top', marginVertical: 10 }]} 
+                        placeholder="Nota opcional sobre a mudança..." 
+                        placeholderTextColor={theme.subtext} multiline 
+                        value={notaStatus} onChangeText={setNotaStatus} 
+                      />
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Btn title="CANCELAR" outline theme={theme} onPress={() => { setShowStatusModal(false); setNovoStatusSel(''); setNotaStatus(''); }} style={{ flex: 1, marginRight: 5 }} />
+                        <Btn title="CONFIRMAR" theme={theme} onPress={alterarStatusChamado} style={{ flex: 1, marginLeft: 5 }} />
+                      </View>
+                    </View>
+                  )}
+
+                  {isChamadoFechado(selectedChamado.status) && (
+                    <View style={{ backgroundColor: 'rgba(29, 185, 84, 0.1)', padding: 10, borderRadius: 8, marginBottom: 15, borderWidth: 1, borderColor: theme.primary }}>
+                      <Text style={{ color: theme.primary, fontWeight: 'bold', fontSize: 12 }}>⏱ Tempo de solução: {getTempoResolucao(selectedChamado)}</Text>
+                    </View>
+                  )}
+
+                  <View style={{ backgroundColor: theme.inputBg, padding: 12, borderRadius: 8, borderWidth: 1, borderColor: theme.border, marginBottom: 15 }}>
+                    <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Título / Assunto:</Text>
+                    <Text style={{ color: theme.text, fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>{selectedChamado.titulo || '---'}</Text>
+                    
+                    <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Solicitante:</Text>
+                    <Text style={{ color: theme.text, fontSize: 14, marginBottom: 8 }}>{selectedChamado.solicitante || 'Não informado'}</Text>
+
+                    <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Localização (Setor / Sala):</Text>
+                    <Text style={{ color: theme.text, fontSize: 14, marginBottom: 8 }}>{selectedChamado.predio} / {selectedChamado.sala || 'Não informada'}</Text>
+                    
+                    <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Descrição do Problema:</Text>
+                    <Text style={{ color: theme.text, fontSize: 14, marginBottom: selectedChamado.observacao ? 8 : 0 }}>{selectedChamado.descricao}</Text>
+
+                    {selectedChamado.observacao ? (
+                      <>
+                        <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Observação Adicional:</Text>
+                        <Text style={{ color: theme.text, fontSize: 14 }}>{selectedChamado.observacao}</Text>
+                      </>
+                    ) : null}
+                  </View>
                   
-                  <Text style={{ color: theme.subtext, fontSize: 12 }}>Equipamento:</Text>
+                  <Text style={{ color: theme.subtext, fontSize: 12 }}>Equipamento Vinculado:</Text>
                   <Text style={{ color: theme.text, marginBottom: 10 }}>{selectedChamado.equipamento ? `${selectedChamado.equipamento.nome} - Pat: ${selectedChamado.equipamento.pat}` : 'Não informado'}</Text>
                   
                   <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 5 }}>Documentos Anexados:</Text>
@@ -608,7 +690,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                       </View>
                     )}
                     
-                    {selectedChamado.status !== 'FECHADO' && (
+                    {!isChamadoFechado(selectedChamado.status) && (
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, marginBottom: 15 }}>
                         <TouchableOpacity onPress={anexarNoDetalhe} style={{ padding: 10, backgroundColor: theme.inputBg, borderRadius: 8, flex: 1, marginRight: 5, alignItems: 'center', borderWidth: 1, borderColor: theme.border }}>
                           <Text style={{ color: theme.text, fontSize: 12, fontWeight: 'bold' }}>📎 Arquivo</Text>
@@ -623,7 +705,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                   <Text style={{ color: theme.primary, fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>📝 Protocolo de Atendimento</Text>
                   <View style={{ backgroundColor: theme.inputBg, padding: 10, borderRadius: 10, marginBottom: 10 }}>
                     {selectedChamado.checklist && selectedChamado.checklist.map((item) => (
-                      <TouchableOpacity key={item.id} onPress={() => selectedChamado.status !== 'FECHADO' && toggleCheck(item.id)} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                      <TouchableOpacity key={item.id} onPress={() => !isChamadoFechado(selectedChamado.status) && toggleCheck(item.id)} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
                         <View style={{ width: 20, height: 20, borderRadius: 4, borderWidth: 1, borderColor: theme.text, marginRight: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: item.checked ? theme.primary : 'transparent' }}>
                           {item.checked && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
                         </View>
@@ -632,19 +714,19 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                     ))}
                   </View>
 
-                  {selectedChamado.status !== 'FECHADO' && (
+                  {!isChamadoFechado(selectedChamado.status) && (
                     <View style={{ marginTop: 15, marginBottom: 10 }}>
                       <Text style={{ color: theme.primary, fontWeight: 'bold', marginBottom: 5 }}>Solução / Notas (Obrigatório):</Text>
                       <TextInput style={{ backgroundColor: theme.inputBg, color: theme.text, padding: 10, borderRadius: 8, height: 80, textAlignVertical: 'top', borderWidth: 1, borderColor: theme.border }} multiline placeholder="Descreva o que foi feito..." placeholderTextColor={theme.subtext} value={solucao} onChangeText={setSolucao} />
                     </View>
                   )}
                   {msgErro ? <Text style={{ color: '#ff4444', fontWeight: 'bold', textAlign: 'center', marginBottom: 5 }}>{msgErro}</Text> : null}
-                  {selectedChamado.status !== 'FECHADO' && (<Btn title="FECHAR CHAMADO" theme={theme} onPress={fecharChamado} />)}
+                  {!isChamadoFechado(selectedChamado.status) && (<Btn title="FECHAR CHAMADO DEFINITIVAMENTE" theme={theme} onPress={fecharChamado} />)}
                 </Card>
 
                 <Text style={{ color: theme.primary, marginTop: 10, marginBottom: 5, fontWeight: 'bold' }}>Histórico / Chat</Text>
                 
-                {selectedChamado.status !== 'FECHADO' && (
+                {!isChamadoFechado(selectedChamado.status) && (
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', marginBottom: 10, maxHeight: 40 }}>
                     {FRASES_RAPIDAS.map((frase, index) => (
                       <TouchableOpacity key={index} style={{ backgroundColor: theme.inputBg, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 15, marginRight: 8, borderWidth: 1, borderColor: theme.border }} onPress={() => enviarMensagem(frase)}>
@@ -658,16 +740,16 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                   <Text style={{ color: theme.subtext }}>Nenhuma mensagem ainda.</Text>
                 ) : (
                   selectedChamado.historico.map((msg, i) => (
-                    <View key={i} style={{ alignSelf: msg.user === user.login ? 'flex-end' : msg.user === 'SISTEMA' ? 'center' : 'flex-start', backgroundColor: msg.user === user.login ? theme.messageUser : msg.user === 'SISTEMA' ? theme.border : theme.messageTec, padding: 10, borderRadius: 10, marginBottom: 5, maxWidth: '85%' }}>
-                      <Text style={{ color: theme.text, fontSize: 10, fontWeight: 'bold', marginBottom: 2 }}>{msg.user}</Text>
-                      <Text style={{ color: theme.text }}>{msg.texto}</Text>
-                      <Text style={{ color: theme.subtext, fontSize: 8, textAlign: 'right', marginTop: 2 }}>{new Date(msg.time).toLocaleTimeString().slice(0, 5)}</Text>
+                    <View key={i} style={{ alignSelf: msg.user === user.login ? 'flex-end' : msg.user === 'SISTEMA' ? 'center' : 'flex-start', backgroundColor: msg.user === user.login ? theme.messageUser || theme.primary : msg.user === 'SISTEMA' ? theme.border : theme.messageTec || theme.inputBg, padding: 10, borderRadius: 10, marginBottom: 5, maxWidth: '85%' }}>
+                      <Text style={{ color: msg.user === user.login ? '#fff' : theme.text, fontSize: 10, fontWeight: 'bold', marginBottom: 2 }}>{msg.user}</Text>
+                      <Text style={{ color: msg.user === user.login ? '#fff' : theme.text }}>{msg.texto}</Text>
+                      <Text style={{ color: msg.user === user.login ? '#eee' : theme.subtext, fontSize: 8, textAlign: 'right', marginTop: 2 }}>{new Date(msg.time).toLocaleTimeString().slice(0, 5)}</Text>
                     </View>
                   ))
                 )}
               </ScrollView>
 
-              {selectedChamado.status !== 'FECHADO' && (
+              {!isChamadoFechado(selectedChamado.status) && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <TextInput style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, color: theme.text, marginVertical: 0, marginRight: 10 }]} placeholder="Digite uma mensagem..." value={chatMsg} onChangeText={setChatMsg} />
                   <TouchableOpacity onPress={() => enviarMensagem(null)} style={{ backgroundColor: theme.primary, padding: 12, borderRadius: 12 }}>

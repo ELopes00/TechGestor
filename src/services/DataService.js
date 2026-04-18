@@ -1,6 +1,6 @@
 import { deleteApp, getApps, initializeApp } from 'firebase/app';
 import { createUserWithEmailAndPassword, EmailAuthProvider, getAuth, onAuthStateChanged, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updatePassword } from 'firebase/auth';
-import { addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, orderBy, query, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, orderBy, query, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 
 const gerarEmailFake = (login) => `${login.trim().toLowerCase().replace(/\s+/g, '')}@techgestor.app`;
@@ -15,14 +15,105 @@ export const DataService = {
   async deletarChamado(id) { await deleteDoc(doc(db, "chamados", id)); },
   async atualizarChamado(id, dadosNovos) { await updateDoc(doc(db, "chamados", id), dadosNovos); },
 
-  // --- INVENTÁRIO ---
+  // --- INVENTÁRIO COM PRONTUÁRIO (AUDITORIA TOTAL) ---
   subscribeInventario(callback) {
     const q = query(collection(db, "inventario"));
     return onSnapshot(q, (snapshot) => { callback(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))); });
   },
-  async salvarItemInventario(item) { await addDoc(collection(db, "inventario"), item); },
-  async deletarItemInventario(id) { await deleteDoc(doc(db, "inventario", id)); },
-  async atualizarItemInventario(id, dadosNovos) { await updateDoc(doc(db, "inventario", id), dadosNovos); },
+  
+  async salvarItemInventario(item, usuarioLogado = "Usuário") { 
+    const docRef = await addDoc(collection(db, "inventario"), item); 
+    // Registo de nascimento do item
+    await this.registrarNoProntuario(docRef.id, "CADASTRO", "Equipamento registrado no sistema.", usuarioLogado);
+  },
+  
+  async deletarItemInventario(id, usuarioLogado = "Usuário") { 
+    // Registo no log geral do sistema para evitar perdas fantasmas
+    await this.salvarLog(`EXCLUIU ITEM DO INVENTÁRIO (ID: ${id})`, usuarioLogado);
+    await deleteDoc(doc(db, "inventario", id)); 
+  },
+  
+  async atualizarItemInventario(id, dadosNovos, usuarioLogado = "Usuário") { 
+    // 1. Puxar os dados como estavam ANTES da alteração
+    const itemRef = doc(db, "inventario", id);
+    const itemSnap = await getDoc(itemRef);
+    const dadosAntigos = itemSnap.exists() ? itemSnap.data() : {};
+
+    // 2. Fazer a atualização real no banco de dados
+    await updateDoc(itemRef, dadosNovos); 
+
+    // 🧠 O TRADUTOR: Transforma arrays e objetos complexos em texto legível
+    const formatarValor = (valor) => {
+      if (valor === null || valor === undefined || valor === '') return "vazio";
+      if (Array.isArray(valor)) {
+        // Se for a lista de equipamentos, pega só o nome e o tombo
+        return valor.map(v => v.tombo ? `${v.tipo} (${v.tombo})` : "Item").join(', ');
+      }
+      if (typeof valor === 'object') return "Dados Complexos";
+      return String(valor).trim();
+    };
+
+    // 3. O Detetive: varrer os campos e descobrir o que mudou
+    let alteracoes = [];
+    for (const campo in dadosNovos) {
+      if (campo !== 'id' && campo !== 'prontuario' && campo !== 'ultimaAtualizacao') {
+        
+        // JSON.stringify garante que ele saiba comparar arrays/listas corretamente
+        const valAntigoStr = JSON.stringify(dadosAntigos[campo] || "");
+        const valNovoStr = JSON.stringify(dadosNovos[campo] || "");
+
+        if (valAntigoStr !== valNovoStr) {
+          const textoAntigo = formatarValor(dadosAntigos[campo]);
+          const textoNovo = formatarValor(dadosNovos[campo]);
+          alteracoes.push(`${campo.toUpperCase()}: de '${textoAntigo}' para '${textoNovo}'`);
+        }
+      }
+    }
+
+    // 4. Se houveram mudanças reais, grava a string no prontuário
+    if (alteracoes.length > 0) {
+      const detalhesDaMudanca = alteracoes.join(" | ");
+      await this.registrarNoProntuario(id, "MODIFICAÇÃO", detalhesDaMudanca, usuarioLogado);
+    }
+  },
+
+  // --- GESTÃO DO PRONTUÁRIO (SUBCOLEÇÃO) ---
+  async registrarNoProntuario(itemId, acao, detalhes, usuario) {
+    try {
+      const prontuarioRef = collection(db, "inventario", itemId, "prontuario");
+      await addDoc(prontuarioRef, {
+        acao: acao,
+        detalhes: detalhes,
+        usuario: usuario,
+        data: Date.now()
+      });
+    } catch (error) {
+      console.log("Erro ao registrar no prontuário: ", error);
+    }
+  },
+
+  async limparProntuarioItem(itemId, usuarioLogado) {
+    try {
+      const prontuarioRef = collection(db, "inventario", itemId, "prontuario");
+      const snapshot = await getDocs(prontuarioRef);
+      
+      const promessas = snapshot.docs.map(docSnap => deleteDoc(doc(db, "inventario", itemId, "prontuario", docSnap.id)));
+      
+      await Promise.all(promessas);
+
+      await this.registrarNoProntuario(itemId, "LIMPEZA DE SISTEMA", "O histórico antigo foi apagado permanentemente.", usuarioLogado);
+      await this.salvarLog(`LIMPOU O PRONTUÁRIO DO ITEM ID: ${itemId}`, usuarioLogado);
+    } catch (error) {
+      console.log("Erro ao limpar prontuário:", error);
+    }
+  },
+
+  subscribeProntuarioItem(itemId, callback) {
+    const q = query(collection(db, "inventario", itemId, "prontuario"), orderBy("data", "desc"));
+    return onSnapshot(q, (snapshot) => { 
+      callback(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))); 
+    });
+  },
 
   // --- EVENTOS ---
   subscribeEventos(callback) {
@@ -96,8 +187,6 @@ export const DataService = {
     const authTemporario = getAuth(appTemporario);
     const userCred = await createUserWithEmailAndPassword(authTemporario, emailFormatado, senha);
     
-    // Adicionei o campo "senha" aqui no registo para ficar visível no Firestore para o Admin,
-    // mas lembrando que a senha real fica no "cofre" do Google.
     await setDoc(doc(db, "usuarios", userCred.user.uid), {
       login: loginUsuario, senha: senha, nomeCompleto, emailContato: emailOpcional,
       perfil, predio, inicio, saida, status: 'ONLINE', uid: userCred.user.uid
@@ -125,17 +214,11 @@ export const DataService = {
     if (!user) return { sucesso: false, erro: "Usuário não logado" };
 
     try {
-      // 1. Provar que é o dono da conta (Reautenticação)
       const cred = EmailAuthProvider.credential(user.email, senhaAtual);
       await reauthenticateWithCredential(user, cred);
-      
-      // 2. Mudar a senha no cofre da Google (Auth)
       await updatePassword(user, novaSenha);
-      
-      // 3. Atualizar a "etiqueta" no Firestore para o Admin saber qual é a nova
       await updateDoc(doc(db, "usuarios", user.uid), { senha: novaSenha });
 
-      // Pegar o login para o log ficar bonito
       const userDoc = await getDoc(doc(db, "usuarios", user.uid));
       const nome = userDoc.data()?.login || user.email;
 

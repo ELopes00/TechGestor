@@ -6,7 +6,7 @@ import { BarChart } from 'react-native-chart-kit';
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
 
-const SETORES = ['Administrativo', 'Criminal', 'Civel', 'Palacio', 'Latife'];
+const SETORES = ['Administrativo', 'Criminal', 'Civel', 'Palacio', 'Latife', 'Chamado Externo', 'SUBCS'];
 
 export default function AdminScreen({ users, chamados = [], eventos = [], addLog, theme }) {
   const [abaAtiva, setAbaAtiva] = useState('USUARIOS'); 
@@ -26,17 +26,15 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
   const [tecnicoFiltro, setTecnicoFiltro] = useState('TODOS'); 
   const [showTecsRelatorio, setShowTecsRelatorio] = useState(false); 
 
-  // --- RELÓGIO AUTOMÁTICO PARA ATUALIZAR STATUS COM O TEMPO ---
   const [horaAtual, setHoraAtual] = useState(new Date().getHours());
 
   useEffect(() => {
     const interval = setInterval(() => {
       setHoraAtual(new Date().getHours());
-    }, 60000); // Verifica a hora a cada 1 minuto
+    }, 60000); 
     return () => clearInterval(interval);
   }, []);
 
-  // --- A LÓGICA INTELIGENTE DE EXPEDIENTE ---
   const getStatusReal = (u) => {
     const horaInicio = u.inicio || 8;
     const horaSaida = u.saida || 17;

@@ -1,4 +1,5 @@
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons'; // <-- Importação do ícone profissional
 import { DataService } from '../services/DataService';
 
 export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, setIsDarkMode, user, isMobile, isMenuOpen, setIsMenuOpen }) {
@@ -37,10 +38,10 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
     try {
       await DataService.atualizarUsuario(user.uid || user.id, { status: novoStatus });
       if (DataService.salvarLog) {
-        DataService.salvarLog(`Técnico ${isAlmoco ? 'retornou do' : 'saiu para o'} almoço.`, user.login);
+        DataService.salvarLog(`Técnico ${isAlmoco ? 'retornou da' : 'entrou em'} pausa.`, user.login);
       }
     } catch (error) {
-      console.log("Erro ao mudar status de almoço", error);
+      console.log("Erro ao mudar status", error);
     }
   };
 
@@ -57,9 +58,8 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
           <NavItem id="DASHBOARD" icon="🏠" label="Início" />
           <NavItem id="CHAMADOS" icon="📋" label="Chamados" />
           <NavItem id="EVENTOS" icon="🎉" label="Eventos" />
-          <NavItem id="INVENTARIO" icon="📦" label="Estoque" />
+          <NavItem id="INVENTARIO" icon="📦" label="Inventário" />
           <NavItem id="AGENDAMENTO" icon="📅" label="Agenda" />
-          
           <NavItem id="PERFIL" icon="👤" label="Perfil" />
 
           {user?.perfil === 'ADM' && (
@@ -77,17 +77,18 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
           style={[styles.btnMenu, { marginBottom: 15, backgroundColor: isAlmoco ? theme.tert : 'transparent', borderRadius: 12 }]} 
           onPress={toggleAlmoco}
         >
-          <Text style={{ fontSize: 22 }}>{isAlmoco ? '🍽️' : '🍔'}</Text>
-          <Text style={[styles.txtMenu, { color: isAlmoco ? '#fff' : theme.text, fontSize: 8 }]}>ALMOÇO</Text>
+          <Text style={{ fontSize: 20 }}>{isAlmoco ? '▶️' : '⏸️'}</Text>
+          <Text style={[styles.txtMenu, { color: isAlmoco ? '#fff' : theme.text, fontSize: 8 }]}>{isAlmoco ? 'RETORNAR' : 'PAUSA'}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={{ marginBottom: 25 }} onPress={() => setIsDarkMode(!isDarkMode)}>
           <Text style={{ fontSize: 22 }}>{isDarkMode ? '☀️' : '🌑'}</Text>
         </TouchableOpacity>
         
-      
-        <TouchableOpacity onPress={() => DataService.logout()}>
-          <Text style={{ fontSize: 22 }}>🚪</Text>
+        {/* NOVO BOTÃO DE LOGOUT COM ÍCONE PROFISSIONAL */}
+        <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => DataService.logout()}>
+          <MaterialIcons name="logout" size={26} color={theme.text} />
+          <Text style={[styles.txtMenu, { color: theme.text, fontSize: 8, marginTop: 4 }]}>SAIR</Text>
         </TouchableOpacity>
 
       </View>
