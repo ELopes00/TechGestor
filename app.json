@@ -37,6 +37,9 @@
     "web": {
       "favicon": "./assets/images/icon.png"
     },
+    "notification": {
+      "vapidPublicKey": "BBhYCB8zuQtu-d1MVsFhcaWngZ1OR3Q0ubzWCIt28q5sT3YmTaDFrqk5eAXh6pVsLcCe5sU-HXO-kqGRGysS1Og"
+    },
     "plugins": [
       [
         "expo-camera",
