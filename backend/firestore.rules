@@ -1,0 +1,82 @@
+rules_version = '2';
+
+// ---------------------------------------------------------------------------
+// TechGestor 2.0 — Regras de segurança do Firestore
+// Realinhado com o app real em 12/08/2026: papéis "ADM" e "TECNICO"
+// (campo `perfil`), coleções chamados/eventos/inventario/agendamentos/logs
+// de escrita ampla entre autenticados (como o app original já opera),
+// com exclusões e gestão de conta restritas a ADM.
+// ---------------------------------------------------------------------------
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function estaAutenticado() {
+      return request.auth != null;
+    }
+
+    function meuUsuario() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+
+    function ehAdmin() {
+      return estaAutenticado() && meuUsuario().perfil == 'ADM';
+    }
+
+    // -- usuarios ------------------------------------------------------------
+    match /usuarios/{uid} {
+      allow read: if estaAutenticado();
+      // ADM cria/edita qualquer conta; qualquer um edita a própria (status,
+      // pausa/almoço, expoPushToken, troca de senha refletida no documento).
+      allow create: if ehAdmin();
+      allow update: if ehAdmin() || request.auth.uid == uid;
+      allow delete: if ehAdmin();
+    }
+
+    // -- predios / setores / categoriasEquipamento / servidores -----------------
+    // Diretórios de referência do Inventário: todo autenticado lê, só ADM escreve.
+    match /predios/{predioId} {
+      allow read: if estaAutenticado();
+      allow write: if ehAdmin();
+    }
+    match /setores/{setorId} {
+      allow read: if estaAutenticado();
+      allow write: if ehAdmin();
+    }
+    match /categoriasEquipamento/{categoriaId} {
+      allow read: if estaAutenticado();
+      allow write: if ehAdmin();
+    }
+    match /servidores/{servidorId} {
+      allow read: if estaAutenticado();
+      allow write: if ehAdmin();
+    }
+
+    // -- chamados / eventos / inventario / agendamentos --------------------------
+    // Qualquer autenticado (ADM ou TECNICO) cria e atualiza — reflete o
+    // comportamento real do app (fila compartilhada, qualquer técnico pode
+    // assumir/transferir/comentar). Exclusão fica restrita a ADM.
+    match /chamados/{chamadoId} {
+      allow read, create, update: if estaAutenticado();
+      allow delete: if ehAdmin();
+    }
+    match /eventos/{eventoId} {
+      allow read, create, update: if estaAutenticado();
+      allow delete: if ehAdmin();
+    }
+    match /inventario/{itemId} {
+      allow read, create, update: if estaAutenticado();
+      allow delete: if ehAdmin();
+    }
+    match /agendamentos/{agendamentoId} {
+      allow read, create: if estaAutenticado();
+      allow delete: if estaAutenticado(); // conclusão/cancelamento apaga o registo (ver DataService)
+    }
+
+    // -- logs (auditoria) ---------------------------------------------------------
+    match /logs/{logId} {
+      allow read: if estaAutenticado();
+      allow create: if estaAutenticado();
+      // Logs nunca são editados/apagados — trilha de auditoria imutável.
+    }
+  }
+}

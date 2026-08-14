@@ -1,0 +1,78 @@
+[
+  {
+    "categoria": "Computador",
+    "marcasModelos": [
+      "Effect ZE-80G1-SFF",
+      "Lenovo ThinkCentre M75q",
+      "Positivo Minipro 810",
+      "Positivo Minipro 820",
+      "Positivo Minipro C8400",
+      "Positivo Master D520",
+      "Itautec Infoway ST-4265",
+      "Dell Workstation",
+      "Dell OptiPlex 7020",
+      "HP Z2 Workstation",
+      "Outros"
+    ]
+  },
+  {
+    "categoria": "Monitor",
+    "marcasModelos": [
+      "HP P22a G4",
+      "Positivo 22MP55PY",
+      "Positivo 23MB35PH",
+      "Positivo E2241PX",
+      "Positivo 24BL550J",
+      "LG E2241PX",
+      "LG 22MP55PY",
+      "LG E2050TV",
+      "Datem 30M35PD",
+      "Dell P2014HT",
+      "Outros"
+    ]
+  },
+  {
+    "categoria": "Scanner",
+    "marcasModelos": [
+      "Avision AD345G",
+      "Avision AV176U",
+      "Kodak ScanMate i1150",
+      "Canon DR-C130",
+      "Epson ScanSnap S1500",
+      "Fujitsu S1500",
+      "Outros"
+    ]
+  },
+  {
+    "categoria": "Impressora",
+    "marcasModelos": [
+      "HP Pro 4003dw",
+      "HP Pro M404dw",
+      "HP Pro 400",
+      "Oki 5112",
+      "HP 200 Mobile Printer",
+      "Samsung ProXpress M4080FX",
+      "CCE Ultra Thin N325",
+      "Xerox VersaLink C8000",
+      "HP Color Pro MFP M479",
+      "Lexmark",
+      "Outros"
+    ]
+  },
+  {
+    "categoria": "Nobreak",
+    "marcasModelos": ["Ragtech Easy Way 1200", "Outros"]
+  },
+  {
+    "categoria": "Equipamento de Videoconferência",
+    "marcasModelos": ["Logitech V-U0032", "Logitech V-U0037", "GoPresence Teams 10x", "Outros"]
+  },
+  {
+    "categoria": "Notebook",
+    "marcasModelos": ["ASUS S400C", "Positivo N6440", "HP ProBook 440 G7", "Outros"]
+  },
+  {
+    "categoria": "Tablet",
+    "marcasModelos": ["Samsung Galaxy Tab A7", "Outros"]
+  }
+]

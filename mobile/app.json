@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "TechGestor",
+    "slug": "techgestor-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#152f56"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "br.jus.tjrr.techgestor",
+      "permissions": [
+        "NOTIFICATIONS",
+        "CAMERA"
+        
+  
+    },
+    "plugins": [
+      "expo-notifications",
+      "expo-asset",
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "// projectId": "rode `eas init` (ou `npx expo install expo-dev-client && eas build:configure`) e cole o ID gerado aqui — não reaproveite o do app original, ele aponta pra conta/projeto deles no Expo."
+      }
+    }
+  }
+}
