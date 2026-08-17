@@ -1,4 +1,10 @@
 {
+  "hosting": {
+    "public": "web/out",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "cleanUrls": true,
+    "trailingSlash": false
+  },
   "firestore": {
     "rules": "backend/firestore.rules",
     "indexes": "backend/firestore.indexes.json"

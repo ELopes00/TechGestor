@@ -10,6 +10,30 @@ para uma próxima frente.
 > equipamento, servidores) em `backend/seed/` — ver seção própria abaixo.
 > Nenhuma conta de usuário/técnico vem pré-criada.
 
+## Deploy
+
+Web no ar em **https://celab-7f3d9.web.app** (Firebase Hosting, plano
+Spark gratuito). 17/08/2026: depois de tentar Vercel (que funcionou,
+mas foi apagado a pedido do time) e de repetidas tentativas frustradas
+de subir o Blaze do projeto (ver [[techgestor2_push_gratuito_2026-08-14]]
+nas memórias — nunca propagou), a saída foi exportar o `web/` como site
+**estático** (`next.config.js` tem `output: "export"`) e publicar via
+`firebase deploy --only hosting`. Isso funciona 100% no Spark, sem
+Blaze nenhum.
+
+**Trade-off consciente**: a rota de servidor `web/src/app/api/push-mobile/route.ts`
+(proxy pro Expo Push, ver `enviarPushMobile` em `dataService.ts`) não
+funciona nessa versão — hospedagem estática não roda código de
+servidor. O Next.js simplesmente ignora essa rota no build estático
+(não dá erro), mas a notificação push pro mobile não sai daqui até o
+site voltar a rodar num host com servidor (Vercel de novo, ou Blaze
+resolvido). O resto do app (tudo que já é Firestore direto do
+navegador) funciona normal.
+
+Pra atualizar o site depois de mudanças: `npm run build` dentro de
+`web/` gera `web/out/`, depois `firebase deploy --only hosting
+--project celab-7f3d9` na raiz do repo publica.
+
 ## Stack
 
 | Camada  | Tecnologia |
