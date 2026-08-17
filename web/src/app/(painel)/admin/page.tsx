@@ -110,7 +110,7 @@ function AbaEquipe({ autor, campo }: { autor: string; campo: string }) {
             </button>
           ))}
         </div>
-        <button onClick={criar} disabled={salvando} className="mt-4 rounded-md bg-accent-btn px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">
+        <button onClick={criar} disabled={salvando} className="mt-4 rounded-md bg-accent-btn px-4 py-2 text-sm font-bold uppercase tracking-wide text-white disabled:opacity-60">
           {salvando ? "Salvando..." : `Salvar ${perfil}`}
         </button>
       </div>
@@ -161,8 +161,8 @@ function AbaEquipe({ autor, campo }: { autor: string; campo: string }) {
               ))}
             </div>
             <div className="mt-4 flex gap-2">
-              <button onClick={() => setEditando(null)} className="flex-1 rounded-md border border-surface-border py-2 text-sm font-semibold text-institucional-600">Cancelar</button>
-              <button onClick={salvarEdicao} className="flex-1 rounded-md bg-accent-btn py-2 text-sm font-semibold text-white">Salvar</button>
+              <button onClick={() => setEditando(null)} className="flex-1 rounded-md border border-surface-border py-2 text-sm font-bold uppercase text-institucional-600">Cancelar</button>
+              <button onClick={salvarEdicao} className="flex-1 rounded-md bg-accent-btn py-2 text-sm font-bold uppercase text-white">Salvar</button>
             </div>
 
             <div className="mt-4 border-t border-surface-border pt-4">
@@ -186,7 +186,7 @@ function AbaEquipe({ autor, campo }: { autor: string; campo: string }) {
               </div>
             </div>
 
-            <button onClick={() => excluir(editando)} className="mt-4 w-full rounded-md bg-alerta-critico py-2 text-sm font-semibold text-white">🗑️ Excluir usuário</button>
+            <button onClick={() => excluir(editando)} className="mt-4 w-full rounded-md bg-alerta-critico py-2 text-sm font-bold uppercase text-white">🗑️ Excluir usuário</button>
           </div>
         </div>
       )}

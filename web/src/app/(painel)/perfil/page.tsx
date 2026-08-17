@@ -67,14 +67,14 @@ export default function PerfilPage() {
       <Topbar titulo="Perfil" />
       <main className="flex-1 space-y-6 overflow-y-auto p-6 max-w-lg">
         <div className="rounded-xl border border-surface-border bg-surface p-5 shadow-sm">
-          <p className="text-xs text-institucional-400">Logado como</p>
+          <p className="text-xs text-institucional-400">Logado como:</p>
           <p className="text-lg font-semibold text-institucional-900">{usuario?.login}</p>
-          <p className="mt-1 text-sm text-institucional-600">Perfil: {usuario?.perfil === "ADM" ? "Administrador" : "Técnico"}</p>
-          <p className="text-sm text-institucional-600">Unidade: {usuario?.predio || "Geral"}</p>
+          <p className="mt-1 text-sm font-semibold text-alerta-ok">Perfil: {usuario?.perfil === "ADM" ? "Administrador" : "Técnico"}</p>
+          <p className="text-sm text-institucional-600">Prédio: {usuario?.predio || "Geral"}</p>
         </div>
 
         <div className="rounded-xl border border-surface-border bg-surface p-5 shadow-sm">
-          <p className="mb-4 text-sm font-semibold text-institucional-800">🔒 Alterar minha senha</p>
+          <p className="mb-4 text-sm font-semibold text-alerta-ok">🔒 Alterar Minha Senha</p>
 
           {mensagem && (
             <div className={`mb-4 rounded-lg px-3 py-2 text-sm ${mensagem.tipo === "erro" ? "bg-alerta-criticoBg text-alerta-critico" : "bg-alerta-okBg text-alerta-ok"}`}>
@@ -84,21 +84,21 @@ export default function PerfilPage() {
 
           <div className="space-y-3">
             <div>
-              <label className="mb-1 block text-xs text-institucional-500">Senha atual</label>
+              <label className="mb-1 block text-xs text-institucional-500">Senha Atual:</label>
               <input type="password" className={campo} value={senhaAtual} onChange={(e) => setSenhaAtual(e.target.value)} placeholder="Digite sua senha atual" />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-institucional-500">Nova senha</label>
+              <label className="mb-1 block text-xs text-institucional-500">Nova Senha:</label>
               <input type="password" className={campo} value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} placeholder="Mínimo 6 caracteres" />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-institucional-500">Confirmar nova senha</label>
+              <label className="mb-1 block text-xs text-institucional-500">Confirmar Nova Senha:</label>
               <input type="password" className={campo} value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} placeholder="Repita a nova senha" />
             </div>
           </div>
 
-          <button onClick={trocarSenha} disabled={salvando} className="mt-4 w-full rounded-md bg-accent-btn py-2.5 text-sm font-semibold text-white disabled:opacity-60">
-            {salvando ? "Salvando..." : "Salvar nova senha"}
+          <button onClick={trocarSenha} disabled={salvando} className="mt-4 w-full rounded-md bg-alerta-ok py-2.5 text-sm font-bold uppercase tracking-wide text-white disabled:opacity-60">
+            {salvando ? "Salvando..." : "Salvar Nova Senha"}
           </button>
         </div>
 
@@ -112,13 +112,13 @@ export default function PerfilPage() {
               {pushMsg.texto}
             </div>
           )}
-          <button onClick={ativarNotificacoes} disabled={ativandoPush} className="w-full rounded-md border border-institucional-700 py-2.5 text-sm font-semibold text-institucional-700 disabled:opacity-60">
-            {ativandoPush ? "Ativando..." : "Ativar notificações neste navegador"}
+          <button onClick={ativarNotificacoes} disabled={ativandoPush} className="w-full rounded-md border border-institucional-700 py-2.5 text-sm font-bold uppercase tracking-wide text-institucional-700 disabled:opacity-60">
+            {ativandoPush ? "Ativando..." : "Ativar Notificações Neste Navegador"}
           </button>
         </div>
 
-        <button onClick={aoSair} className="w-full rounded-md bg-alerta-critico py-2.5 text-sm font-semibold text-white">
-          Sair do sistema
+        <button onClick={aoSair} className="w-full rounded-md bg-alerta-critico py-2.5 text-sm font-bold uppercase tracking-wide text-white">
+          Sair do Sistema (Logout)
         </button>
       </main>
     </>

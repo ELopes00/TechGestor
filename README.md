@@ -126,6 +126,21 @@ Implementado e testado nessa passada:
   cartão de tarefa em si, então esse ficou como já estava.
 - **Início**: card "Meu Status Atual" com toggle Online/Offline, KPI de
   Eventos Ativos, "Monitor da Equipe" (grid com status ao vivo de todos).
+- **Perfil**: revisitado tela a tela em 17/08/2026, último par da
+  varredura junto com Admin. Ajustes finos pra bater com o real:
+  "Logado como:" com dois pontos, "Perfil: X" em verde
+  (`text-alerta-ok`), "Unidade" renomeado pra "Prédio" (rótulo do app
+  real), "🔒 Alterar Minha Senha" em verde e Title Case, rótulos dos
+  campos de senha com dois pontos, botão "SALVAR NOVA SENHA" maiúsculo e
+  verde (era azul), "SAIR DO SISTEMA (LOGOUT)" maiúsculo. O card
+  "🔔 Notificações" (ativar push no navegador) é uma adição nossa — o
+  app real não tem essa seção aqui — mantido de propósito, só com o
+  botão maiúsculo pra bater com o padrão visual do resto do app.
+- **Admin**: confirmado de novo que não existe no menu do app real
+  (só Início/Chamados/Eventos/Inventário/Agenda/Perfil/Pausa/Sair) —
+  não há "tela por tela" pra comparar aqui. Aplicado só o padrão
+  visual (botões primários maiúsculos) pra consistência com as outras
+  telas revisadas.
 
 ⚠️ **Storage do Firebase precisa ser ativado manualmente** no projeto de
 teste antes do anexo de arquivos funcionar — é um setup único só pelo
