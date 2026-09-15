@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#000000"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -37,9 +32,6 @@
     "web": {
       "favicon": "./assets/images/icon.png"
     },
-    "notification": {
-      "vapidPublicKey": "BBhYCB8zuQtu-d1MVsFhcaWngZ1OR3Q0ubzWCIt28q5sT3YmTaDFrqk5eAXh6pVsLcCe5sU-HXO-kqGRGysS1Og"
-    },
     "plugins": [
       [
         "expo-camera",
@@ -54,7 +46,18 @@
         }
       ],
       "expo-notifications",
-      "expo-document-picker"
+      "expo-document-picker",
+      "expo-sharing",
+      "expo-status-bar",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
+        }
+      ],
+      "expo-font"
     ],
     "extra": {
       "eas": {
