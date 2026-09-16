@@ -4,6 +4,7 @@ import { Alert, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, Toucha
 
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
+import { RADIUS, SHADOW } from '../theme/themes';
 import { SETORES } from '../utils/constants';
 
 const STATUS_OPCOES = [
@@ -187,7 +188,8 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
 
   return (
     <ScrollView style={{ padding: 20 }}>
-      <Text style={{ color: theme.primary, fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>🎉 Gestão de Eventos</Text>
+      <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800', marginBottom: 4 }}>Gestão de Eventos</Text>
+      <Text style={{ color: theme.subtext, fontSize: 13, marginBottom: 18 }}>Eventos internos e externos da equipe</Text>
       
       {user.perfil === 'ADM' && (
         <Card theme={theme}>
@@ -437,10 +439,10 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
 }
 
 const styles = StyleSheet.create({
-  input: { padding: 12, borderRadius: 10, marginVertical: 5, borderWidth: 1, borderColor: '#333' },
-  btnAuto: { padding: 12, borderRadius: 10, marginLeft: 5 },
-  tab: { flex: 1, padding: 12, borderRadius: 10, alignItems: 'center' },
-  tecItem: { padding: 15, borderBottomWidth: 1, borderBottomColor: '#222' },
-  modalContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  modalContent: { width: '100%', maxWidth: 350, borderRadius: 15, padding: 20, alignItems: 'center' }
+  input: { padding: 12, borderRadius: RADIUS.md, marginVertical: 5, borderWidth: 1, borderColor: 'rgba(140,150,160,0.28)' },
+  btnAuto: { padding: 12, borderRadius: RADIUS.md, marginLeft: 5 },
+  tab: { flex: 1, padding: 12, borderRadius: RADIUS.md, alignItems: 'center', marginRight: 6 },
+  tecItem: { padding: 15, borderBottomWidth: 1, borderBottomColor: 'rgba(140,150,160,0.2)' },
+  modalContainer: { flex: 1, backgroundColor: 'rgba(4,6,8,0.72)', justifyContent: 'center', alignItems: 'center', padding: 20 },
+  modalContent: { width: '100%', maxWidth: 350, borderRadius: RADIUS.xl, padding: 22, alignItems: 'center', ...SHADOW.lg }
 });

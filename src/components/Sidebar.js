@@ -1,28 +1,44 @@
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons'; // <-- Importação do ícone profissional
+import { MaterialIcons } from '@expo/vector-icons';
 import { DataService } from '../services/DataService';
+import { RADIUS } from '../theme/themes';
+
+const NAV_ICONS = {
+  DASHBOARD: 'space-dashboard',
+  CHAMADOS: 'assignment',
+  EVENTOS: 'event',
+  INVENTARIO: 'inventory-2',
+  AGENDAMENTO: 'calendar-month',
+  PERFIL: 'person-outline',
+  ADMIN: 'tune',
+  LOGS: 'receipt-long',
+};
 
 export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, setIsDarkMode, user, isMobile, isMenuOpen, setIsMenuOpen }) {
-  
-  const NavItem = ({ id, icon, label }) => (
-    <TouchableOpacity 
-      style={[styles.btnMenu, telaAtiva === id && { backgroundColor: theme.sidebarActive, borderRadius: 12 }]} 
-      onPress={() => {
-        setTelaAtiva(id);
-        if (isMobile) setIsMenuOpen(false);
-      }}>
-      <Text style={{ fontSize: 24 }}>{icon}</Text>
-      <Text style={[styles.txtMenu, { color: telaAtiva === id ? theme.primary : theme.text }]}>{label}</Text>
-    </TouchableOpacity>
-  );
 
-  const isAlmoco = user?.status === 'ALMOCO'; 
+  const NavItem = ({ id, label }) => {
+    const active = telaAtiva === id;
+    return (
+      <TouchableOpacity
+        activeOpacity={0.75}
+        style={[styles.btnMenu, active && { backgroundColor: theme.sidebarActive }]}
+        onPress={() => {
+          setTelaAtiva(id);
+          if (isMobile) setIsMenuOpen(false);
+        }}>
+        <MaterialIcons name={NAV_ICONS[id]} size={22} color={active ? theme.primary : theme.subtext} />
+        <Text style={[styles.txtMenu, { color: active ? theme.primary : theme.subtext }]}>{label}</Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const isAlmoco = user?.status === 'ALMOCO';
 
   const toggleAlmoco = async () => {
     const horaAtual = new Date().getHours();
     const horaInicio = user?.inicio || 8;
     const horaSaida = user?.saida || 17;
-    
+
     let noHorario = false;
     if (horaInicio < horaSaida) {
       noHorario = horaAtual >= horaInicio && horaAtual < horaSaida;
@@ -47,48 +63,52 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
 
   return (
     <View style={[
-      styles.sidebar, 
-      { backgroundColor: theme.card, borderColor: theme.border },
+      styles.sidebar,
+      { backgroundColor: theme.barBg, borderColor: theme.border },
       isMobile && { position: 'absolute', zIndex: 50, display: isMenuOpen ? 'flex' : 'none', height: '100%' }
     ]}>
-      <View style={styles.logoContainer}><Text style={[styles.logo, { color: theme.primary }]}>TG</Text></View>
-      
+      <View style={styles.logoContainer}>
+        <View style={[styles.logoBadge, { backgroundColor: theme.primarySoft }]}>
+          <Text style={[styles.logo, { color: theme.primary }]}>TG</Text>
+        </View>
+      </View>
+
       <View style={styles.menuItems}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }}>
-          <NavItem id="DASHBOARD" icon="🏠" label="Início" />
-          <NavItem id="CHAMADOS" icon="📋" label="Chamados" />
-          <NavItem id="EVENTOS" icon="🎉" label="Eventos" />
-          <NavItem id="INVENTARIO" icon="📦" label="Inventário" />
-          <NavItem id="AGENDAMENTO" icon="📅" label="Agenda" />
-          <NavItem id="PERFIL" icon="👤" label="Perfil" />
+          <NavItem id="DASHBOARD" label="Início" />
+          <NavItem id="CHAMADOS" label="Chamados" />
+          <NavItem id="EVENTOS" label="Eventos" />
+          <NavItem id="INVENTARIO" label="Estoque" />
+          <NavItem id="AGENDAMENTO" label="Agenda" />
+          <NavItem id="PERFIL" label="Perfil" />
 
           {user?.perfil === 'ADM' && (
             <>
-              <NavItem id="ADMIN" icon="⚙️" label="Admin" />
-              <NavItem id="LOGS" icon="📜" label="Logs" />
+              <View style={[styles.divider, { backgroundColor: theme.border }]} />
+              <NavItem id="ADMIN" label="Admin" />
+              <NavItem id="LOGS" label="Logs" />
             </>
           )}
         </ScrollView>
       </View>
 
-      <View style={{ alignItems: 'center', paddingBottom: 20, paddingTop: 10 }}>
-        
-        <TouchableOpacity 
-          style={[styles.btnMenu, { marginBottom: 15, backgroundColor: isAlmoco ? theme.tert : 'transparent', borderRadius: 12 }]} 
+      <View style={{ alignItems: 'center', paddingBottom: 18, paddingTop: 10 }}>
+
+        <TouchableOpacity
+          activeOpacity={0.75}
+          style={[styles.btnMenu, { marginBottom: 12, backgroundColor: isAlmoco ? theme.tert : 'transparent' }]}
           onPress={toggleAlmoco}
         >
-          <Text style={{ fontSize: 20 }}>{isAlmoco ? '▶️' : '⏸️'}</Text>
-          <Text style={[styles.txtMenu, { color: isAlmoco ? '#fff' : theme.text, fontSize: 8 }]}>{isAlmoco ? 'RETORNAR' : 'PAUSA'}</Text>
+          <MaterialIcons name={isAlmoco ? 'play-arrow' : 'pause'} size={22} color={isAlmoco ? '#fff' : theme.subtext} />
+          <Text style={[styles.txtMenu, { color: isAlmoco ? '#fff' : theme.subtext, fontSize: 8 }]}>{isAlmoco ? 'RETORNAR' : 'PAUSA'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={{ marginBottom: 25 }} onPress={() => setIsDarkMode(!isDarkMode)}>
-          <Text style={{ fontSize: 22 }}>{isDarkMode ? '☀️' : '🌑'}</Text>
+        <TouchableOpacity style={styles.iconOnlyBtn} onPress={() => setIsDarkMode(!isDarkMode)} activeOpacity={0.7}>
+          <MaterialIcons name={isDarkMode ? 'light-mode' : 'dark-mode'} size={20} color={theme.subtext} />
         </TouchableOpacity>
-        
-        {/* NOVO BOTÃO DE LOGOUT COM ÍCONE PROFISSIONAL */}
-        <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => DataService.logout()}>
-          <MaterialIcons name="logout" size={26} color={theme.text} />
-          <Text style={[styles.txtMenu, { color: theme.text, fontSize: 8, marginTop: 4 }]}>SAIR</Text>
+
+        <TouchableOpacity style={[styles.iconOnlyBtn, { marginTop: 4 }]} onPress={() => DataService.logout()} activeOpacity={0.7}>
+          <MaterialIcons name="logout" size={20} color={theme.offline} />
         </TouchableOpacity>
 
       </View>
@@ -97,10 +117,13 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
 }
 
 const styles = StyleSheet.create({
-  sidebar: { width: 85, height: '100%', borderRightWidth: 1, paddingVertical: 30, justifyContent: 'space-between' },
-  logoContainer: { alignItems: 'center', marginBottom: 20 },
-  logo: { fontSize: 28, fontWeight: 'bold' },
+  sidebar: { width: 92, height: '100%', borderRightWidth: 1, paddingVertical: 24, justifyContent: 'space-between' },
+  logoContainer: { alignItems: 'center', marginBottom: 24 },
+  logoBadge: { width: 44, height: 44, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
+  logo: { fontSize: 18, fontWeight: '800', letterSpacing: 0.5 },
   menuItems: { flex: 1, width: '100%' },
-  btnMenu: { alignItems: 'center', paddingVertical: 15, width: '80%', marginVertical: 8 },
-  txtMenu: { fontSize: 10, marginTop: 4, fontWeight: '600', textTransform: 'uppercase' }
+  btnMenu: { alignItems: 'center', paddingVertical: 12, width: '78%', marginVertical: 4, borderRadius: RADIUS.md },
+  txtMenu: { fontSize: 9.5, marginTop: 5, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.2 },
+  divider: { width: '60%', height: 1, marginVertical: 10 },
+  iconOnlyBtn: { width: 36, height: 36, borderRadius: RADIUS.sm, alignItems: 'center', justifyContent: 'center', marginBottom: 6 },
 });

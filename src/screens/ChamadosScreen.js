@@ -5,6 +5,7 @@ import { Alert, Image, Modal, Platform, ScrollView, StyleSheet, Text, TextInput,
 
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
+import { RADIUS } from '../theme/themes';
 import { CHECKLIST_PADRAO, FRASES_RAPIDAS, SETORES } from '../utils/constants';
 import { getCorPrioridade, getTempoDecorrido, isSlaVencido } from '../utils/helpers';
 
@@ -350,20 +351,20 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     <View style={{ flex: 1 }}>
       <ScrollView style={{ padding: 16 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-          <Text style={[styles.sectionTitle, { color: theme.primary, marginBottom: 0 }]}>Chamados</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>Chamados</Text>
           {user.perfil === 'ADM' && !isSelectMode ? (
-            <TouchableOpacity onPress={() => setIsSelectMode(true)} style={{ backgroundColor: theme.inputBg, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: theme.border }}>
-              <Text style={{ color: theme.text, fontSize: 12 }}>☑️ Selecionar Vários</Text>
+            <TouchableOpacity onPress={() => setIsSelectMode(true)} style={{ backgroundColor: theme.cardAlt, paddingHorizontal: 12, paddingVertical: 8, borderRadius: RADIUS.md, borderWidth: 1, borderColor: theme.border }} activeOpacity={0.75}>
+              <Text style={{ color: theme.text, fontSize: 12, fontWeight: '600' }}>Selecionar Vários</Text>
             </TouchableOpacity>
           ) : null}
         </View>
 
-        <View style={{ flexDirection: 'row', marginBottom: 15, backgroundColor: theme.card, borderRadius: 10, padding: 5, borderWidth: 1, borderColor: theme.border }}>
-          <TouchableOpacity onPress={() => { setAbaAtiva('MEUS'); setIsSelectMode(false); setSelectedIds([]); }} style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: abaAtiva === 'MEUS' ? theme.inputBg : 'transparent' }}>
-            <Text style={{ color: abaAtiva === 'MEUS' ? theme.primary : theme.subtext, fontWeight: 'bold' }}>👤 MEUS CHAMADOS</Text>
+        <View style={{ flexDirection: 'row', marginBottom: 15, backgroundColor: theme.card, borderRadius: RADIUS.md, padding: 5, borderWidth: 1, borderColor: theme.border }}>
+          <TouchableOpacity onPress={() => { setAbaAtiva('MEUS'); setIsSelectMode(false); setSelectedIds([]); }} style={{ flex: 1, paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'MEUS' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
+            <Text style={{ color: abaAtiva === 'MEUS' ? theme.primary : theme.subtext, fontWeight: '700', fontSize: 12.5 }}>MEUS CHAMADOS</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { setAbaAtiva('FILA'); setIsSelectMode(false); setSelectedIds([]); }} style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: abaAtiva === 'FILA' ? theme.inputBg : 'transparent' }}>
-            <Text style={{ color: abaAtiva === 'FILA' ? theme.sec : theme.subtext, fontWeight: 'bold' }}>🏢 FILA ({user.predio || 'Geral'})</Text>
+          <TouchableOpacity onPress={() => { setAbaAtiva('FILA'); setIsSelectMode(false); setSelectedIds([]); }} style={{ flex: 1, paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'FILA' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
+            <Text style={{ color: abaAtiva === 'FILA' ? theme.sec : theme.subtext, fontWeight: '700', fontSize: 12.5 }}>FILA ({user.predio || 'Geral'})</Text>
           </TouchableOpacity>
         </View>
 
@@ -780,6 +781,6 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
 }
 
 const styles = StyleSheet.create({
-  sectionTitle: { fontWeight: 'bold', fontSize: 20, marginBottom: 20 },
-  input: { padding: 12, marginVertical: 8, borderRadius: 12, width: 250, height: 45, borderWidth: 1, borderColor: '#333' }
+  sectionTitle: { fontWeight: '800', fontSize: 22, marginBottom: 20 },
+  input: { padding: 12, marginVertical: 8, borderRadius: 12, width: 250, height: 45, borderWidth: 1, borderColor: 'rgba(140,150,160,0.28)' }
 });

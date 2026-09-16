@@ -5,6 +5,7 @@ import { Alert, Dimensions, Modal, Platform, ScrollView, StyleSheet, Text, TextI
 import { BarChart } from 'react-native-chart-kit';
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
+import { RADIUS, SHADOW } from '../theme/themes';
 
 const SETORES = ['Administrativo', 'Criminal', 'Civel', 'Palacio', 'Latife', 'Chamado Externo', 'SUBCS'];
 
@@ -201,20 +202,23 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
   return (
     <ScrollView style={{ padding: 20 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <Text style={{ color: theme.primary, fontSize: 24, fontWeight: 'bold' }}>⚙️ Painel Administrativo</Text>
+        <View>
+          <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800' }}>Painel Administrativo</Text>
+          <Text style={{ color: theme.subtext, fontSize: 13, marginTop: 2 }}>Equipe, acessos e relatórios</Text>
+        </View>
         {abaAtiva === 'RELATORIOS' && (
-          <TouchableOpacity onPress={exportarPDF} style={{ backgroundColor: theme.primary, paddingHorizontal: 15, paddingVertical: 8, borderRadius: 8 }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold' }}>📄 EXPORTAR PDF</Text>
+          <TouchableOpacity onPress={exportarPDF} style={[{ backgroundColor: theme.primary, paddingHorizontal: 16, paddingVertical: 10, borderRadius: RADIUS.md }, SHADOW.sm]} activeOpacity={0.85}>
+            <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>EXPORTAR PDF</Text>
           </TouchableOpacity>
         )}
       </View>
 
-      <View style={{ flexDirection: 'row', marginBottom: 20, backgroundColor: theme.card, borderRadius: 10, padding: 5, borderWidth: 1, borderColor: theme.border }}>
-        <TouchableOpacity onPress={() => setAbaAtiva('USUARIOS')} style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: abaAtiva === 'USUARIOS' ? theme.inputBg : 'transparent' }}>
-          <Text style={{ color: abaAtiva === 'USUARIOS' ? theme.primary : theme.subtext, fontWeight: 'bold', fontSize: 12 }}>👥 EQUIPE</Text>
+      <View style={{ flexDirection: 'row', marginBottom: 20, backgroundColor: theme.card, borderRadius: RADIUS.md, padding: 5, borderWidth: 1, borderColor: theme.border }}>
+        <TouchableOpacity onPress={() => setAbaAtiva('USUARIOS')} style={{ flex: 1, paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'USUARIOS' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
+          <Text style={{ color: abaAtiva === 'USUARIOS' ? theme.primary : theme.subtext, fontWeight: '700', fontSize: 12 }}>EQUIPE</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setAbaAtiva('RELATORIOS')} style={{ flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, backgroundColor: abaAtiva === 'RELATORIOS' ? theme.primary : 'transparent' }}>
-          <Text style={{ color: abaAtiva === 'RELATORIOS' ? '#fff' : theme.subtext, fontWeight: 'bold', fontSize: 12 }}>📊 RELATÓRIOS</Text>
+        <TouchableOpacity onPress={() => setAbaAtiva('RELATORIOS')} style={{ flex: 1, paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'RELATORIOS' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
+          <Text style={{ color: abaAtiva === 'RELATORIOS' ? theme.primary : theme.subtext, fontWeight: '700', fontSize: 12 }}>RELATÓRIOS</Text>
         </TouchableOpacity>
       </View>
 
@@ -420,8 +424,8 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
                 <Btn title="CANCELAR" onPress={() => setModalEditVisible(false)} theme={theme} outline style={{ flex: 1, marginRight: 5 }} />
                 <Btn title="SALVAR" onPress={salvarEdicao} theme={theme} style={{ flex: 1, marginLeft: 5 }} />
               </View>
-              <TouchableOpacity onPress={() => excluirUsuarioDireto(editUser)} style={{ backgroundColor: '#ff4444', padding: 12, borderRadius: 10, alignItems: 'center' }}>
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}>🗑️ EXCLUIR USUÁRIO</Text>
+              <TouchableOpacity onPress={() => excluirUsuarioDireto(editUser)} style={{ backgroundColor: theme.offline, padding: 13, borderRadius: RADIUS.md, alignItems: 'center' }} activeOpacity={0.85}>
+                <Text style={{ color: '#fff', fontWeight: '700', fontSize: 13 }}>EXCLUIR USUÁRIO</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -434,10 +438,10 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
 }
 
 const styles = StyleSheet.create({
-  input: { padding: 12, borderRadius: 10, marginVertical: 5, borderWidth: 1, borderColor: '#333' },
+  input: { padding: 12, borderRadius: RADIUS.md, marginVertical: 5, borderWidth: 1, borderColor: 'rgba(140,150,160,0.28)' },
   row: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 5 },
-  chip: { padding: 8, borderRadius: 8, marginRight: 5, marginBottom: 5 },
-  modalContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  modalContent: { width: '100%', maxWidth: 350, borderRadius: 15, padding: 20, alignItems: 'center' },
-  kpiCard: { flex: 1, padding: 15, borderRadius: 10, borderWidth: 1, alignItems: 'center', justifyContent: 'center' }
+  chip: { padding: 9, borderRadius: RADIUS.pill, marginRight: 6, marginBottom: 6, paddingHorizontal: 12 },
+  modalContainer: { flex: 1, backgroundColor: 'rgba(4,6,8,0.72)', justifyContent: 'center', alignItems: 'center', padding: 20 },
+  modalContent: { width: '100%', maxWidth: 350, borderRadius: RADIUS.xl, padding: 22, alignItems: 'center', ...SHADOW.lg },
+  kpiCard: { flex: 1, padding: 16, borderRadius: RADIUS.md, borderWidth: 1, alignItems: 'center', justifyContent: 'center' }
 });

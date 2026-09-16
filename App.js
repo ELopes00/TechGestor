@@ -28,6 +28,7 @@ import PerfilScreen from './src/screens/PerfilScreen';
 
 import Sidebar from './src/components/Sidebar';
 import { DataService } from './src/services/DataService';
+import { THEMES } from './src/theme/themes';
 
 // COMENTADO PARA PERMITIR VER ERROS NO TELEFONE DURANTE OS TESTES
 // LogBox.ignoreAllLogs();
@@ -59,15 +60,7 @@ export default function App() {
   const isMobile = width < 768; 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const theme = isDarkMode ? {
-    background: '#000000', primary: '#1DB954', text: '#ffffff', card: '#111111',
-    border: '#333333', subtext: '#aaaaaa', online: '#00cc66', offline: '#ff4444',
-    sec: '#FFAE00', tert: '#4488FF', inputBg: '#1a1a1a', sidebarActive: '#1DB95420'
-  } : {
-    background: '#f4f4f4', primary: '#1DB954', text: '#000000', card: '#ffffff',
-    border: '#dddddd', subtext: '#555555', online: '#00cc66', offline: '#ff4444',
-    sec: '#FFAE00', tert: '#4488FF', inputBg: '#eeeeee', sidebarActive: '#1DB95420'
-  };
+  const theme = THEMES[isDarkMode ? 'dark' : 'light'];
 
   // 1. Verifica quem está logado antes de tudo
   useEffect(() => {
@@ -188,15 +181,17 @@ export default function App() {
       <View style={styles.mainContent}>
         
         {isMobile && (
-          <View style={[styles.headerMobile, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <TouchableOpacity onPress={() => setIsMenuOpen(true)}>
-              <Text style={{ fontSize: 28, color: theme.text }}>☰</Text>
+          <View style={[styles.headerMobile, { backgroundColor: theme.barBg, borderColor: theme.border }]}>
+            <TouchableOpacity onPress={() => setIsMenuOpen(true)} style={styles.menuBtn} activeOpacity={0.7}>
+              <Text style={{ fontSize: 22, color: theme.text }}>☰</Text>
             </TouchableOpacity>
-            <Text style={{ marginLeft: 15, fontSize: 18, fontWeight: 'bold', color: theme.primary }}>TechGestor</Text>
+            <Text style={{ marginLeft: 12, fontSize: 17, fontWeight: '700', color: theme.text, letterSpacing: 0.2 }}>
+              Tech<Text style={{ color: theme.primary }}>Gestor</Text>
+            </Text>
           </View>
         )}
 
-        {telaAtiva === 'DASHBOARD' && <DashboardScreen chamados={chamados} eventos={eventos} users={users} theme={theme} />}
+        {telaAtiva === 'DASHBOARD' && <DashboardScreen chamados={chamados} eventos={eventos} users={users} theme={theme} setTelaAtiva={setTelaAtiva} />}
         {telaAtiva === 'CHAMADOS' && <ChamadosScreen user={user} chamados={chamados} eventos={eventos} users={users} inventario={inventario} theme={theme} addLog={gerirLogs} showPush={(msg) => console.log(msg)} />}
         {telaAtiva === 'EVENTOS' && <EventosScreen user={user} eventos={eventos} users={users} theme={theme} addLog={gerirLogs} />}
         {telaAtiva === 'INVENTARIO' && <InventarioScreen inventario={inventario} setInventario={setInventario} chamados={chamados} users={users} theme={theme} addLog={gerirLogs} />}
@@ -214,6 +209,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row' },
   mainContent: { flex: 1 },
-  overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 40 },
-  headerMobile: { flexDirection: 'row', alignItems: 'center', padding: 15, borderBottomWidth: 1 }
+  overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(4,6,8,0.6)', zIndex: 40 },
+  headerMobile: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1 },
+  menuBtn: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
 });

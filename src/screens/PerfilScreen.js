@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Alert, StyleSheet, ScrollView } from 'react-native';
 import { Card, Btn } from '../components';
 import { DataService } from '../services/DataService';
+import { RADIUS } from '../theme/themes';
 
 export default function PerfilScreen({ user, theme, onLogout }) {
   const [senhaAtual, setSenhaAtual] = useState('');
@@ -36,20 +37,24 @@ export default function PerfilScreen({ user, theme, onLogout }) {
 
   return (
     <ScrollView style={{ flex: 1, padding: 16, backgroundColor: theme.background }}>
-      <Text style={[styles.sectionTitle, { color: theme.primary }]}>Meu Perfil</Text>
-      
+      <Text style={[styles.sectionTitle, { color: theme.text }]}>Meu Perfil</Text>
+
       {/* INFORMAÇÕES DO usuario */}
-      <Card theme={theme} style={{ marginBottom: 20 }}>
-        <Text style={{ color: theme.subtext, fontSize: 12 }}>Logado como:</Text>
-        <Text style={{ color: theme.text, fontSize: 18, fontWeight: 'bold', marginBottom: 5 }}>{user.login}</Text>
-        <Text style={{ color: theme.primary, fontSize: 14, marginBottom: 5 }}>Perfil: {user.perfil}</Text>
-        <Text style={{ color: theme.text, fontSize: 14 }}>Prédio: {user.predio || 'Geral'}</Text>
+      <Card theme={theme} style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center' }}>
+        <View style={[styles.avatar, { backgroundColor: theme.primarySoft }]}>
+          <Text style={{ color: theme.primary, fontSize: 20, fontWeight: '800' }}>{(user.login || '?').charAt(0).toUpperCase()}</Text>
+        </View>
+        <View style={{ marginLeft: 14, flex: 1 }}>
+          <Text style={{ color: theme.text, fontSize: 17, fontWeight: '700' }}>{user.login}</Text>
+          <Text style={{ color: theme.primary, fontSize: 12, fontWeight: '600', marginTop: 2 }}>{user.perfil}</Text>
+          <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>{user.predio || 'Geral'}</Text>
+        </View>
       </Card>
 
       {/* ALTERAR SENHA */}
       <Card theme={theme} style={{ marginBottom: 20 }}>
-        <Text style={{ color: theme.primary, fontWeight: 'bold', fontSize: 16, marginBottom: 15 }}>🔒 Alterar Minha Senha</Text>
-        
+        <Text style={{ color: theme.text, fontWeight: '700', fontSize: 15, marginBottom: 16 }}>Alterar Minha Senha</Text>
+
         <Text style={{ color: theme.subtext, fontSize: 12, marginBottom: 5 }}>Senha Atual:</Text>
         <TextInput 
           secureTextEntry 
@@ -94,6 +99,7 @@ export default function PerfilScreen({ user, theme, onLogout }) {
 }
 
 const styles = StyleSheet.create({
-  sectionTitle: { fontWeight: 'bold', fontSize: 20, marginBottom: 20 },
-  input: { padding: 12, borderRadius: 8, borderWidth: 1, marginBottom: 15 }
+  sectionTitle: { fontWeight: '800', fontSize: 22, marginBottom: 16 },
+  avatar: { width: 52, height: 52, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center' },
+  input: { padding: 13, borderRadius: RADIUS.md, borderWidth: 1, marginBottom: 15 }
 });

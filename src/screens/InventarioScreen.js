@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx';
 import { Btn, Card } from '../components';
 import ProntuarioItem from '../components/ProntuarioItem';
 import { DataService } from '../services/DataService';
+import { RADIUS, SHADOW } from '../theme/themes';
 
 import { EQUIPAMENTOS, PREDIOS, RESPONSAVEIS_TECNICOS, SERVIDORES, SETORES_UNIDADES } from '../../constants/const';
 
@@ -557,36 +558,37 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
     <View style={{ flex: 1 }}>
       <ScrollView style={{ padding: 16 }} keyboardShouldPersistTaps="handled">
         
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 22, color: '#1DB954' }}>Inventário</Text>
-          <View style={{ flexDirection: 'row' }}>
-            <TouchableOpacity onPress={exportarPDF} style={{ backgroundColor: '#1DB954', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 6, marginLeft: 10 }}>
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>EXPORTAR PDF</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity onPress={exportarExcel} style={{ backgroundColor: '#207245', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 6, marginLeft: 10 }}>
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>EXPORTAR EXCEL</Text>
-            </TouchableOpacity>
+        <View style={{ marginBottom: 4 }}>
+          <Text style={{ fontWeight: '800', fontSize: 22, color: theme.text }}>Estoque</Text>
+          <Text style={{ color: theme.subtext, fontSize: 13, marginTop: 2 }}>Inventário de equipamentos</Text>
+        </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15, marginTop: 12 }}>
+          <TouchableOpacity onPress={exportarPDF} style={[styles.toolBtn, { backgroundColor: theme.cardAlt, borderColor: theme.border }]} activeOpacity={0.75}>
+            <Text style={{ color: theme.text, fontWeight: '700', fontSize: 12 }}>EXPORTAR PDF</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleExcelButton} style={{ backgroundColor: '#FFAE00', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 6, marginLeft: 10 }}>
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>IMPORTAR DADOS</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={exportarExcel} style={[styles.toolBtn, { backgroundColor: theme.cardAlt, borderColor: theme.border }]} activeOpacity={0.75}>
+            <Text style={{ color: theme.text, fontWeight: '700', fontSize: 12 }}>EXPORTAR EXCEL</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handleExcelButton} style={[styles.toolBtn, { backgroundColor: theme.cardAlt, borderColor: theme.border }]} activeOpacity={0.75}>
+            <Text style={{ color: theme.text, fontWeight: '700', fontSize: 12 }}>IMPORTAR DADOS</Text>
+          </TouchableOpacity>
         </View>
-        
-        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#1e1e1e', borderRadius: 8, borderWidth: 1, borderColor: '#333', paddingHorizontal: 12, marginBottom: 15 }}>
-          <Text style={{ fontSize: 16, marginRight: 8, color: '#fff' }}>Busca:</Text>
-          <TextInput style={{ flex: 1, color: '#fff', paddingVertical: 12, fontSize: 14 }} placeholder="Filtrar registos..." placeholderTextColor="#888" value={search} onChangeText={setSearch} />
-          <TouchableOpacity onPress={() => openScanner('busca')} style={styles.btnScan}><Text style={{ color: '#fff', fontWeight: 'bold' }}>SCAN</Text></TouchableOpacity>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: theme.inputBg, borderRadius: RADIUS.md, borderWidth: 1, borderColor: theme.border, paddingHorizontal: 14, marginBottom: 15 }}>
+          <Text style={{ fontSize: 14, marginRight: 8, color: theme.subtext, fontWeight: '600' }}>Busca</Text>
+          <TextInput style={{ flex: 1, color: theme.text, paddingVertical: 13, fontSize: 14 }} placeholder="Filtrar registos..." placeholderTextColor={theme.subtext} value={search} onChangeText={setSearch} />
+          <TouchableOpacity onPress={() => openScanner('busca')} style={[styles.btnScan, { borderColor: theme.primary }]} activeOpacity={0.75}><Text style={{ color: theme.primary, fontWeight: '700', fontSize: 12 }}>SCAN</Text></TouchableOpacity>
         </View>
-        
+
         {selectedInventoryItems.length > 0 ? (
-          <TouchableOpacity onPress={apagarSelecionados} style={{ backgroundColor: '#ff4444', padding: 15, borderRadius: 8, alignItems: 'center', marginBottom: 20 }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>APAGAR REGISTOS SELECIONADOS ({selectedInventoryItems.length})</Text>
+          <TouchableOpacity onPress={apagarSelecionados} style={[{ backgroundColor: theme.offline, padding: 15, borderRadius: RADIUS.md, alignItems: 'center', marginBottom: 20 }, SHADOW.sm]} activeOpacity={0.85}>
+            <Text style={{ color: '#fff', fontWeight: '700', fontSize: 15 }}>APAGAR REGISTOS SELECIONADOS ({selectedInventoryItems.length})</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={() => setIsAddModalOpen(true)} style={{ backgroundColor: '#1DB954', padding: 15, borderRadius: 8, alignItems: 'center', marginBottom: 20 }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>INICIAR NOVO LEVANTAMENTO</Text>
+          <TouchableOpacity onPress={() => setIsAddModalOpen(true)} style={[{ backgroundColor: theme.primary, padding: 15, borderRadius: RADIUS.md, alignItems: 'center', marginBottom: 20 }, SHADOW.sm]} activeOpacity={0.85}>
+            <Text style={{ color: '#fff', fontWeight: '700', fontSize: 15 }}>INICIAR NOVO LEVANTAMENTO</Text>
           </TouchableOpacity>
         )}
 
@@ -950,7 +952,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
                     </View>
                   )}
 
-                  <ProntuarioItem itemId={selectedItemHistory.id} isAdmin={isAdmin} nomeUsuario={nomeUser} />
+                  <ProntuarioItem itemId={selectedItemHistory.id} isAdmin={isAdmin} nomeUsuario={nomeUser} theme={theme} />
                 </ScrollView>
                 
                 <Btn title="ENCERRAR ANÁLISE" onPress={() => setHistoryModalVisible(false)} theme={theme} style={{ marginTop: 15 }} />
@@ -965,17 +967,18 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 }
 
 const styles = StyleSheet.create({
-  tituloPasso: { fontWeight: 'bold', fontSize: 20, color: '#1DB954', textAlign: 'center', marginBottom: 20 },
-  label: { color: '#888', fontSize: 12, fontWeight: 'bold', marginBottom: 5, marginTop: 10 },
-  inputModal: { backgroundColor: '#1e1e1e', borderColor: '#333', borderWidth: 1, color: '#fff', padding: 12, borderRadius: 8, fontSize: 14, minHeight: 45 },
-  btnScan: { backgroundColor: '#2a2a2a', padding: 10, borderRadius: 8, marginLeft: 5, borderWidth: 1, borderColor: '#1DB954' },
-  btnNav: { paddingVertical: 12, paddingHorizontal: 20, borderRadius: 25, minWidth: 100, alignItems: 'center' },
-  pill: { paddingVertical: 8, paddingHorizontal: 15, borderRadius: 20, borderWidth: 1, marginRight: 10 },
-  pillActive: { backgroundColor: '#1DB954', borderColor: '#1DB954' },
-  pillInactive: { backgroundColor: 'transparent', borderColor: '#555' },
-  resumoTexto: { color: '#ddd', fontSize: 13, marginBottom: 5, lineHeight: 22 },
-  dropdownContainer: { backgroundColor: '#333', borderRadius: 8, borderWidth: 1, borderColor: '#1DB954', marginBottom: 10, marginTop: -4, maxHeight: 180, overflow: 'hidden' },
-  dropdownItem: { padding: 12, borderBottomWidth: 1, borderBottomColor: '#444' },
-  dropdownText: { color: '#fff', fontSize: 13, fontWeight: 'bold' },
-  dropdownSubText: { color: '#aaa', fontSize: 10, marginTop: 2 }
+  toolBtn: { paddingHorizontal: 14, paddingVertical: 9, borderRadius: RADIUS.md, marginRight: 8, marginBottom: 8, borderWidth: 1 },
+  tituloPasso: { fontWeight: '800', fontSize: 19, color: '#22C55E', textAlign: 'center', marginBottom: 20 },
+  label: { color: '#8B96A3', fontSize: 12, fontWeight: '700', marginBottom: 5, marginTop: 10 },
+  inputModal: { backgroundColor: '#1B222B', borderColor: '#232B34', borderWidth: 1, color: '#F1F4F7', padding: 12, borderRadius: RADIUS.md, fontSize: 14, minHeight: 45 },
+  btnScan: { backgroundColor: '#1B222B', padding: 10, borderRadius: RADIUS.md, marginLeft: 8, borderWidth: 1, borderColor: '#22C55E' },
+  btnNav: { paddingVertical: 12, paddingHorizontal: 20, borderRadius: RADIUS.pill, minWidth: 100, alignItems: 'center' },
+  pill: { paddingVertical: 8, paddingHorizontal: 15, borderRadius: RADIUS.pill, borderWidth: 1, marginRight: 10 },
+  pillActive: { backgroundColor: '#22C55E', borderColor: '#22C55E' },
+  pillInactive: { backgroundColor: 'transparent', borderColor: '#3A4552' },
+  resumoTexto: { color: '#D5DAE0', fontSize: 13, marginBottom: 5, lineHeight: 22 },
+  dropdownContainer: { backgroundColor: '#1B222B', borderRadius: RADIUS.md, borderWidth: 1, borderColor: '#22C55E', marginBottom: 10, marginTop: -4, maxHeight: 180, overflow: 'hidden' },
+  dropdownItem: { padding: 12, borderBottomWidth: 1, borderBottomColor: '#232B34' },
+  dropdownText: { color: '#F1F4F7', fontSize: 13, fontWeight: '700' },
+  dropdownSubText: { color: '#8B96A3', fontSize: 10, marginTop: 2 }
 });

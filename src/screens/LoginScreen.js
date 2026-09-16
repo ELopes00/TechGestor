@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { BackgroundImage, Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
+import { RADIUS, SHADOW } from '../theme/themes';
 
 export default function LoginScreen({ theme }) {
   const [login, setLogin] = useState('');
@@ -51,8 +52,11 @@ export default function LoginScreen({ theme }) {
       <BackgroundImage /> 
 
       <Card theme={theme} style={styles.card}>
-        <Text style={[styles.logo, { color: theme.primary }]}>TG</Text>
+        <View style={[styles.logoBadge, { backgroundColor: theme.primarySoft }]}>
+          <Text style={[styles.logo, { color: theme.primary }]}>TG</Text>
+        </View>
         <Text style={[styles.title, { color: theme.text }]}>TechGestor</Text>
+        <Text style={[styles.subtitle, { color: theme.subtext }]}>Entre com suas credenciais para continuar</Text>
 
         <TextInput
           style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, borderColor: theme.border }]}
@@ -96,14 +100,16 @@ export default function LoginScreen({ theme }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
-  card: { width: '100%', maxWidth: 400, alignItems: 'center', padding: 40, elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 5 },
-  logo: { fontSize: 50, fontWeight: 'bold', marginBottom: -5 },
-  title: { fontSize: 22, marginBottom: 30, fontWeight: 'bold', letterSpacing: 2 },
-  input: { width: '100%', padding: 15, borderRadius: 12, marginVertical: 10, borderWidth: 1 },
-  
+  card: { width: '100%', maxWidth: 400, alignItems: 'center', padding: 36, borderRadius: RADIUS.xl, ...SHADOW.lg },
+  logoBadge: { width: 68, height: 68, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
+  logo: { fontSize: 26, fontWeight: '800', letterSpacing: 0.5 },
+  title: { fontSize: 22, marginBottom: 4, fontWeight: '800', letterSpacing: 0.3 },
+  subtitle: { fontSize: 13, marginBottom: 26, textAlign: 'center' },
+  input: { width: '100%', padding: 15, borderRadius: RADIUS.md, marginVertical: 8, borderWidth: 1, fontSize: 14 },
+
   // ESTILOS DA CAIXINHA DE SELEÇÃO
-  checkboxContainer: { flexDirection: 'row', alignItems: 'center', width: '100%', marginTop: 5, marginBottom: 15 },
-  checkbox: { width: 22, height: 22, borderWidth: 2, borderRadius: 6, justifyContent: 'center', alignItems: 'center', marginRight: 10 },
-  checkmark: { color: '#000', fontSize: 14, fontWeight: 'bold' },
-  checkboxLabel: { fontSize: 14 }
+  checkboxContainer: { flexDirection: 'row', alignItems: 'center', width: '100%', marginTop: 8, marginBottom: 6 },
+  checkbox: { width: 20, height: 20, borderWidth: 2, borderRadius: 6, justifyContent: 'center', alignItems: 'center', marginRight: 10 },
+  checkmark: { color: '#000', fontSize: 13, fontWeight: 'bold' },
+  checkboxLabel: { fontSize: 13 }
 });
