@@ -36,7 +36,7 @@ export default function LoginScreen({ theme }) {
       try {
         const { status } = await Notifications.requestPermissionsAsync();
         if (status === 'granted') {
-          const tokenData = await Notifications.getExpoPushTokenAsync({ projectId: 'b0198725-e695-4696-8706-ec75061f83cf' });
+          const tokenData = await Notifications.getExpoPushTokenAsync({ projectId: '3872bcd8-9f39-4a12-a3c7-41ed34b81626' });
           await DataService.salvarPushToken(user.uid, tokenData.data);
         }
       } catch (e) {

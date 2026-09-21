@@ -146,7 +146,7 @@ export default function App() {
         }
 
         // CORRECAO: ID Oficial do Projeto
-        const tokenData = await Notifications.getExpoPushTokenAsync({ projectId: 'b0198725-e695-4696-8706-ec75061f83cf' });
+        const tokenData = await Notifications.getExpoPushTokenAsync({ projectId: '3872bcd8-9f39-4a12-a3c7-41ed34b81626' });
         if (tokenData && tokenData.data && DataService.salvarPushToken) {
           await DataService.salvarPushToken(user.uid, tokenData.data);
         }
@@ -302,7 +302,7 @@ export default function App() {
     }
   };
 
-  if (Platform.OS === 'web' && false) return <WebDownloadScreen theme={theme} />; // TEMP: desativado para você revisar no navegador
+  if (Platform.OS === 'web') return <WebDownloadScreen theme={theme} />;
 
   if (isInitializing) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.background }}><ActivityIndicator size="large" color={theme.primary} /></View>;
   if (!user) return <LoginScreen theme={theme} />;

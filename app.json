@@ -26,7 +26,11 @@
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ]
     },
     "web": {
@@ -61,8 +65,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "b0198725-e695-4696-8706-ec75061f83cf"
+        "projectId": "3872bcd8-9f39-4a12-a3c7-41ed34b81626"
       }
-    }
+    },
+    "owner": "elopes_11"
   }
 }
