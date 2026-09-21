@@ -28,7 +28,7 @@ export default function WebDownloadScreen({ theme }) {
             </View>
             <Text style={[styles.title, { color: theme.text }]}>Baixar o TechGestor?</Text>
             <Text style={[styles.subtitle, { color: theme.subtext }]}>
-              O TechGestor é feito para uso pelo aplicativo no celular. Deseja baixar agora?
+              Deseja baixar o aplicativo agora?
             </Text>
 
             <TouchableOpacity style={[styles.btnBaixar, { backgroundColor: theme.primary }, SHADOW.sm]} onPress={baixar} activeOpacity={0.85}>
@@ -50,7 +50,7 @@ export default function WebDownloadScreen({ theme }) {
         </View>
         <Text style={[styles.title, { color: theme.text }]}>TechGestor</Text>
         <Text style={[styles.subtitle, { color: theme.subtext }]}>
-          O TechGestor é feito para uso pelo aplicativo. Baixe o app no seu celular para acessar o sistema.
+          Baixe o app para acessar o sistema.
         </Text>
 
         <TouchableOpacity
