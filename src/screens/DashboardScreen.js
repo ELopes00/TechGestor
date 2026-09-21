@@ -69,7 +69,17 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
     );
     if (emEventoExterno) return 'EVENTO';
 
-    if (u.status === 'OFFLINE' || !u.status || u.status === 'EVENTO') return 'ONLINE';
+    // Almoço automático pela escala: começa 4h após o início do expediente e
+    // dura 1h (quem entra às 8h almoça 12h-13h; quem entra às 9h, 13h-14h).
+    // Fica visível sozinho, sem depender do técnico lembrar de apertar Pausa.
+    const horaAlmocoInicio = (horaInicio + 4) % 24;
+    const horaAlmocoFim = (horaInicio + 5) % 24;
+    const emHorarioDeAlmoco = horaAlmocoInicio < horaAlmocoFim
+      ? horaAtual >= horaAlmocoInicio && horaAtual < horaAlmocoFim
+      : horaAtual >= horaAlmocoInicio || horaAtual < horaAlmocoFim;
+    if (emHorarioDeAlmoco) return 'ALMOCO';
+
+    if (u.status === 'OFFLINE' || !u.status || u.status === 'EVENTO' || u.status === 'ALMOCO') return 'ONLINE';
     return u.status;
   };
 

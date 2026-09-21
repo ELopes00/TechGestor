@@ -189,7 +189,7 @@ export const DataService = {
     const userCred = await createUserWithEmailAndPassword(authTemporario, emailFormatado, senha);
     
     await setDoc(doc(db, "usuarios", userCred.user.uid), {
-      login: loginUsuario, senha: senha, nomeCompleto, emailContato: emailOpcional,
+      login: loginUsuario, nomeCompleto, emailContato: emailOpcional,
       perfil, predio, inicio, saida, nivel: nivel || null, status: 'ONLINE', uid: userCred.user.uid
     });
 
@@ -218,7 +218,6 @@ export const DataService = {
       const cred = EmailAuthProvider.credential(user.email, senhaAtual);
       await reauthenticateWithCredential(user, cred);
       await updatePassword(user, novaSenha);
-      await updateDoc(doc(db, "usuarios", user.uid), { senha: novaSenha });
 
       const userDoc = await getDoc(doc(db, "usuarios", user.uid));
       const nome = userDoc.data()?.login || user.email;
@@ -268,11 +267,10 @@ export const DataService = {
       channelId: 'default',
     };
     
-    const proxyUrl = 'https://corsproxy.io/?';
     const expoUrl = 'https://exp.host/--/api/v2/push/send';
 
     try {
-      await fetch(proxyUrl + encodeURIComponent(expoUrl), {
+      await fetch(expoUrl, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

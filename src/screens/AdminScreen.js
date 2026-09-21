@@ -18,6 +18,7 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
   const [nome, setNome] = useState('');
   const [loginUsuario, setLoginUsuario] = useState('');
   const [senha, setSenha] = useState('');
+  const [emailNovo, setEmailNovo] = useState('');
   const [predio, setPredio] = useState('Administrativo');
   const [inicio, setInicio] = useState(8);
   const [saida, setSaida] = useState(17);
@@ -61,7 +62,16 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
     );
     if (emEventoExterno) return 'EVENTO';
 
-    if (u.status === 'OFFLINE' || !u.status || u.status === 'EVENTO') return 'ONLINE';
+    // Almoço automático pela escala: começa 4h após o início do expediente e
+    // dura 1h (quem entra às 8h almoça 12h-13h; quem entra às 9h, 13h-14h).
+    const horaAlmocoInicio = (horaInicio + 4) % 24;
+    const horaAlmocoFim = (horaInicio + 5) % 24;
+    const emHorarioDeAlmoco = horaAlmocoInicio < horaAlmocoFim
+      ? horaAtual >= horaAlmocoInicio && horaAtual < horaAlmocoFim
+      : horaAtual >= horaAlmocoInicio || horaAtual < horaAlmocoFim;
+    if (emHorarioDeAlmoco) return 'ALMOCO';
+
+    if (u.status === 'OFFLINE' || !u.status || u.status === 'EVENTO' || u.status === 'ALMOCO') return 'ONLINE';
 
     return u.status;
   };
@@ -117,10 +127,10 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
   const criarUsuario = async () => {
     if (!loginUsuario || !senha) return Alert.alert('Erro', 'Preencha os campos!');
     try {
-      await DataService.registrar(loginUsuario, senha, nome, perfilNovo, predio, '', inicio, saida, perfilNovo === 'TECNICO' ? nivelNovo : null);
+      await DataService.registrar(loginUsuario, senha, nome, perfilNovo, predio, emailNovo, inicio, saida, perfilNovo === 'TECNICO' ? nivelNovo : null);
       if(addLog) addLog(`CRIOU USUÁRIO: ${loginUsuario} (${perfilNovo})`);
       Alert.alert('Sucesso', `${perfilNovo} cadastrado!`);
-      setNome(''); setLoginUsuario(''); setSenha(''); setNivelNovo('N1');
+      setNome(''); setLoginUsuario(''); setSenha(''); setEmailNovo(''); setNivelNovo('N1');
     } catch (e) { Alert.alert('Erro', e.message); }
   };
 
@@ -129,6 +139,7 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
     try {
       const payload = {
         nomeCompleto: editUser.nomeCompleto,
+        emailContato: editUser.emailContato || '',
         predio: editUser.predio,
         inicio: editUser.inicio,
         saida: editUser.saida,
@@ -271,6 +282,7 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
               <TextInput style={[styles.input, { flex: 1, marginRight: 5, backgroundColor: theme.inputBg, color: theme.text }]} placeholder="Login" autoCapitalize="none" placeholderTextColor={theme.subtext} value={loginUsuario} onChangeText={setLoginUsuario} />
               <TextInput style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, color: theme.text }]} placeholder="Senha" secureTextEntry placeholderTextColor={theme.subtext} value={senha} onChangeText={setSenha} />
             </View>
+            <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text }]} placeholder="E-mail de contato (opcional)" autoCapitalize="none" keyboardType="email-address" placeholderTextColor={theme.subtext} value={emailNovo} onChangeText={setEmailNovo} />
             <View style={styles.row}>
               {SETORES.map(s => (
                 <TouchableOpacity key={s} onPress={() => setPredio(s)} style={[styles.chip, { backgroundColor: predio === s ? theme.primary : theme.inputBg }]}>
@@ -440,6 +452,7 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
                 </View>
 
                 <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%' }]} value={editUser.nomeCompleto} onChangeText={(t) => setEditUser({...editUser, nomeCompleto: t})} placeholder="Nome Completo" placeholderTextColor={theme.subtext} />
+                <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%' }]} value={editUser.emailContato || ''} onChangeText={(t) => setEditUser({...editUser, emailContato: t})} placeholder="E-mail de contato (opcional)" autoCapitalize="none" keyboardType="email-address" placeholderTextColor={theme.subtext} />
                 
                 <View style={{ flexDirection: 'row', width: '100%', marginTop: 10, justifyContent: 'space-between' }}>
                   <View style={{ width: '48%' }}>
