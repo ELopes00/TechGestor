@@ -44,4 +44,5 @@ app-example
 
 .env.local
 .env.production
-google-services.jsonexpo_web.log
+google-services.json
+expo_web.log

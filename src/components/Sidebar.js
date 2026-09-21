@@ -1,5 +1,5 @@
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { DataService } from '../services/DataService';
 import { RADIUS } from '../theme/themes';
 
@@ -68,8 +68,8 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
       isMobile && { position: 'absolute', zIndex: 50, display: isMenuOpen ? 'flex' : 'none', height: '100%' }
     ]}>
       <View style={styles.logoContainer}>
-        <View style={[styles.logoBadge, { backgroundColor: theme.primarySoft, borderColor: theme.tert }]}>
-          <MaterialCommunityIcons name="chip" size={20} color={theme.tert} />
+        <View style={styles.logoBadge}>
+          <Image source={require('../../assets/images/logo-tjrr.png')} style={styles.logoImg} resizeMode="contain" />
         </View>
         <View style={{ marginLeft: 10, flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -131,7 +131,8 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
 const styles = StyleSheet.create({
   sidebar: { width: 216, height: '100%', borderRightWidth: 1, paddingVertical: 20, justifyContent: 'flex-start' },
   logoContainer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, marginBottom: 18 },
-  logoBadge: { width: 38, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
+  logoBadge: { width: 48, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0B1220', padding: 4 },
+  logoImg: { width: '100%', height: '100%' },
   menuItems: { flex: 1, width: '100%' },
   btnMenu: { flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 12, width: '100%', marginVertical: 2, borderRadius: RADIUS.md },
   txtMenu: { fontSize: 12.5, marginLeft: 10, fontWeight: '700' },

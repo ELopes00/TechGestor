@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Alert, Image, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { Card } from '../components';
 import { DataService } from '../services/DataService';
@@ -54,8 +54,8 @@ export default function LoginScreen({ theme }) {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card theme={theme} style={[styles.card, { borderColor: theme.border }]}>
         <View style={styles.logoRow}>
-          <View style={[styles.logoBadge, { backgroundColor: theme.primarySoft, borderColor: theme.tert }]}>
-            <MaterialCommunityIcons name="chip" size={28} color={theme.tert} />
+          <View style={styles.logoBadge}>
+            <Image source={require('../../assets/images/logo-tjrr.png')} style={styles.logoImg} resizeMode="contain" />
           </View>
         </View>
         <Text style={[styles.title, { color: theme.text }]}>TechGestor</Text>
@@ -135,7 +135,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
   card: { width: '100%', maxWidth: 380, alignItems: 'center', padding: 32, borderRadius: RADIUS.xl, borderWidth: 1, ...SHADOW.sm },
   logoRow: { marginBottom: 14, alignItems: 'center' },
-  logoBadge: { width: 56, height: 56, borderRadius: RADIUS.lg, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  logoBadge: { width: 84, height: 64, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0B1220', padding: 8 },
+  logoImg: { width: '100%', height: '100%' },
   title: { fontSize: 19, marginBottom: 6, fontWeight: '700' },
   subtitle: { fontSize: 12.5, marginBottom: 24, textAlign: 'center', lineHeight: 18 },
 
