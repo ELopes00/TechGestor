@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
 import { RADIUS } from '../theme/themes';
@@ -67,15 +68,18 @@ export default function AgendamentoScreen({ user, agendamentos, setAgendamentos,
 
   return (
     <ScrollView style={{ padding: 20 }}>
-      <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800', marginBottom: 4 }}>Agenda da Equipe</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+        <MaterialIcons name="calendar-month" size={19} color={theme.primary} style={{ marginRight: 7 }} />
+        <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800' }}>Agenda da Equipe</Text>
+      </View>
       <Text style={{ color: theme.subtext, fontSize: 13, marginBottom: 16 }}>Planeje e acompanhe os atendimentos</Text>
 
       {/* CALENDÁRIO AGENDA */}
       <Card theme={theme} style={{ marginBottom: 15, padding: 12 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <TouchableOpacity onPress={() => changeMonth(-1)} style={{ padding: 10 }} activeOpacity={0.7}><Text style={{ color: theme.primary, fontSize: 18, fontWeight: '700' }}>{'‹'}</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => changeMonth(-1)} style={{ padding: 10 }} activeOpacity={0.7}><MaterialIcons name="chevron-left" size={22} color={theme.primary} /></TouchableOpacity>
           <Text style={{ color: theme.text, fontSize: 15, fontWeight: '700' }}>{months[currentDate.getMonth()]} {currentDate.getFullYear()}</Text>
-          <TouchableOpacity onPress={() => changeMonth(1)} style={{ padding: 10 }} activeOpacity={0.7}><Text style={{ color: theme.primary, fontSize: 18, fontWeight: '700' }}>{'›'}</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => changeMonth(1)} style={{ padding: 10 }} activeOpacity={0.7}><MaterialIcons name="chevron-right" size={22} color={theme.primary} /></TouchableOpacity>
         </View>
 
         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -107,7 +111,15 @@ export default function AgendamentoScreen({ user, agendamentos, setAgendamentos,
         </View>
       </Card>
 
-      <Text style={{ color: theme.text, fontSize: 15, fontWeight: '700', marginBottom: 10 }}>Tarefas: {selectedDate.split('-').reverse().join('/')}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+        <MaterialIcons name="checklist" size={15} color={theme.primary} style={{ marginRight: 6 }} />
+        <Text style={{ color: theme.text, fontSize: 15, fontWeight: '700' }}>Tarefas: {selectedDate.split('-').reverse().join('/')}</Text>
+        {tarefasDoDia.length > 0 && (
+          <View style={{ marginLeft: 8, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: theme.primarySoft }}>
+            <Text style={{ color: theme.primary, fontSize: 11, fontWeight: '800' }}>{tarefasDoDia.length}</Text>
+          </View>
+        )}
+      </View>
 
       {tarefasDoDia.length === 0 ? (
         <Text style={{ color: theme.subtext, marginBottom: 15, fontStyle: 'italic', fontSize: 12 }}>Nenhum serviço agendado para esta data.</Text>
@@ -121,8 +133,8 @@ export default function AgendamentoScreen({ user, agendamentos, setAgendamentos,
               </View>
               {user.perfil === 'ADM' && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => handleAcaoAgendamento(t.id, 'CONCLUIR')} style={{ paddingHorizontal: 8 }}><Text style={{ fontSize: 18 }}>✅</Text></TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleAcaoAgendamento(t.id, 'CANCELAR')} style={{ paddingLeft: 8 }}><Text style={{ fontSize: 18 }}>🗑️</Text></TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleAcaoAgendamento(t.id, 'CONCLUIR')} style={{ paddingHorizontal: 8 }}><MaterialIcons name="check-circle-outline" size={20} color={theme.online} /></TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleAcaoAgendamento(t.id, 'CANCELAR')} style={{ paddingLeft: 8 }}><MaterialIcons name="delete-outline" size={20} color={theme.offline} /></TouchableOpacity>
                 </View>
               )}
             </View>
@@ -132,7 +144,10 @@ export default function AgendamentoScreen({ user, agendamentos, setAgendamentos,
 
       {user.perfil === 'ADM' && (
         <Card theme={theme} style={{ marginTop: 10, padding: 14 }}>
-          <Text style={{ color: theme.text, fontWeight: '700', marginBottom: 12, fontSize: 14 }}>Agendar Novo Serviço</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+            <MaterialIcons name="add-circle-outline" size={16} color={theme.primary} style={{ marginRight: 6 }} />
+            <Text style={{ color: theme.primary, fontWeight: '700', fontSize: 14 }}>Agendar Novo Serviço</Text>
+          </View>
           <View style={{ flexDirection: 'row', marginBottom: 10 }}>
             <TextInput style={[styles.input, { flex: 2, backgroundColor: theme.inputBg, color: theme.text, marginRight: 8, borderColor: theme.border }]} placeholder="Ex: Formatar PC" placeholderTextColor={theme.subtext} value={servico} onChangeText={setServico} />
             <TextInput style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, color: theme.text, borderColor: theme.border }]} placeholder="08:00" placeholderTextColor={theme.subtext} value={hora} onChangeText={setHora} />

@@ -10,7 +10,7 @@ import 'react-native-gesture-handler';
  * ==========================================
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 import * as Device from 'expo-device';
@@ -25,10 +25,12 @@ import InventarioScreen from './src/screens/InventarioScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import LogsScreen from './src/screens/LogsScreen';
 import PerfilScreen from './src/screens/PerfilScreen';
+import WebDownloadScreen from './src/screens/WebDownloadScreen';
 
 import Sidebar from './src/components/Sidebar';
 import { DataService } from './src/services/DataService';
 import { THEMES } from './src/theme/themes';
+import { fracaoSlaDecorrida, getDataHoraAgendamento, parseDataBR, parseDataISO } from './src/utils/helpers';
 
 // COMENTADO PARA PERMITIR VER ERROS NO TELEFONE DURANTE OS TESTES
 // LogBox.ignoreAllLogs();
@@ -54,6 +56,21 @@ export default function App() {
   const [logs, setLogs] = useState([]); 
 
   const [telaAtiva, setTelaAtiva] = useState('DASHBOARD');
+  const [filtroChamadosInicial, setFiltroChamadosInicial] = useState('TODOS');
+  const [origemDashboard, setOrigemDashboard] = useState(false);
+
+  const irParaChamados = (statusFiltro) => {
+    setFiltroChamadosInicial(statusFiltro);
+    setOrigemDashboard(true);
+    setTelaAtiva('CHAMADOS');
+  };
+
+  // Navegação normal (sidebar): sempre restaura o formulário de Novo Chamado,
+  // só fica oculto quando se chega via um card filtrado do Dashboard.
+  const mudarTela = (tela) => {
+    setOrigemDashboard(false);
+    setTelaAtiva(tela);
+  };
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   const { width } = useWindowDimensions();
@@ -138,6 +155,133 @@ export default function App() {
     if (user && user.uid) setupPush();
   }, [user?.uid]);
 
+  // NOTIFICAÇÃO LOCAL: alerta o técnico (no próprio celular, via barra de
+  // notificações do sistema) quando surge um chamado sem técnico designado
+  // no prédio em que ele está escalado hoje. Não usa servidor — dispara
+  // localmente a partir do listener em tempo real do Firestore, então só
+  // funciona enquanto o app estiver aberto ou em segundo plano (não com o
+  // app finalizado/forçado a fechar).
+  const notificadosRef = useRef(new Map()); // chamadoId -> identifier da notificação local
+  const ultimoUidRef = useRef(null);
+
+  useEffect(() => {
+    if (!user || user.perfil !== 'TECNICO' || Platform.OS === 'web') return;
+
+    const semTecnicoNoMeuPredio = chamados.filter((c) => {
+      const semTecnico = !c.tecnico || c.tecnico === '';
+      const mesmoPredio = c.predio === user.predio;
+      const naoEstaFechado = c.status !== 'FECHADO' && c.status !== 'finalizado';
+      return semTecnico && mesmoPredio && naoEstaFechado;
+    });
+    const idsAindaPendentes = new Set(semTecnicoNoMeuPredio.map((c) => c.id));
+
+    // Ao logar (ou trocar de usuário), só marca os já existentes como "vistos"
+    // sem notificar — evita disparar notificação de chamados antigos ao abrir o app.
+    if (ultimoUidRef.current !== user.uid) {
+      ultimoUidRef.current = user.uid;
+      notificadosRef.current = new Map(semTecnicoNoMeuPredio.map((c) => [c.id, null]));
+      return;
+    }
+
+    // Chamado saiu da lista de pendentes (foi assumido, fechado ou mudou de
+    // prédio) — cancela a notificação que ainda estiver na barra do sistema.
+    notificadosRef.current.forEach((identifier, chamadoId) => {
+      if (!idsAindaPendentes.has(chamadoId)) {
+        if (identifier) Notifications.dismissNotificationAsync(identifier).catch(() => {});
+        notificadosRef.current.delete(chamadoId);
+      }
+    });
+
+    semTecnicoNoMeuPredio.forEach((c) => {
+      if (!notificadosRef.current.has(c.id)) {
+        notificadosRef.current.set(c.id, null);
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: `Novo chamado em ${c.predio}`,
+            body: c.descricao || c.titulo || 'Chamado aguardando técnico designado.',
+            sound: true,
+          },
+          trigger: null,
+        }).then((identifier) => {
+          if (notificadosRef.current.has(c.id)) notificadosRef.current.set(c.id, identifier);
+        });
+      }
+    });
+  }, [chamados, user]);
+
+  // LEMBRETES DE EVENTOS E AGENDAMENTOS: alerta o técnico designado 1 dia antes
+  // e no próprio dia. Também é local (sem servidor) — para não duplicar o
+  // lembrete toda vez que o app reabre, marca `lembreteAgendado: true` no
+  // documento assim que agenda, e só processa quem ainda não tem essa marca.
+  useEffect(() => {
+    if (!user || !user.login || Platform.OS === 'web') return;
+
+    const agendarLembretes = async (alvo, titulo, corpo) => {
+      const agora = Date.now();
+      const umDiaAntes = new Date(alvo);
+      umDiaAntes.setDate(umDiaAntes.getDate() - 1);
+
+      if (umDiaAntes.getTime() > agora) {
+        await Notifications.scheduleNotificationAsync({
+          content: { title: titulo, body: `Amanhã: ${corpo}`, sound: true },
+          trigger: umDiaAntes,
+        });
+      }
+      if (alvo.getTime() > agora) {
+        await Notifications.scheduleNotificationAsync({
+          content: { title: titulo, body: `Hoje: ${corpo}`, sound: true },
+          trigger: alvo,
+        });
+      }
+    };
+
+    eventos
+      .filter((ev) => ev.tecnico === user.login && !ev.lembreteAgendado)
+      .forEach((ev) => {
+        // Eventos novos usam o seletor de calendário (YYYY-MM-DD); eventos
+        // antigos ainda podem ter o texto livre DD/MM/AAAA digitado antes.
+        const alvo = parseDataISO(ev.dataEvento) || parseDataBR(ev.dataEvento);
+        DataService.atualizarEvento(ev.id, { lembreteAgendado: true }).catch(() => {});
+        if (!alvo) return;
+        const corpo = ev.tipo === 'EXTERNO' ? (ev.endereco || ev.cliente || ev.nome) : (ev.local || ev.nome);
+        agendarLembretes(alvo, `Evento: ${ev.nome}`, corpo).catch(() => {});
+      });
+
+    agendamentos
+      .filter((a) => a.tecnico === user.login && !a.lembreteAgendado)
+      .forEach((a) => {
+        const alvo = getDataHoraAgendamento(a);
+        DataService.atualizarAgendamento(a.id, { lembreteAgendado: true }).catch(() => {});
+        if (!alvo) return;
+        agendarLembretes(alvo, `Agendamento: ${a.servico}`, `às ${a.hora}`).catch(() => {});
+      });
+  }, [eventos, agendamentos, user]);
+
+  // ALERTA DE SLA EM RISCO: avisa o Admin (no celular) quando um chamado ainda
+  // aberto já consumiu 80% do prazo de SLA da sua severidade — antes de
+  // estourar, não só depois. Marca `slaAlertaEnviado: true` para não repetir.
+  useEffect(() => {
+    if (!user || user.perfil !== 'ADM' || Platform.OS === 'web') return;
+
+    chamados
+      .filter((c) => {
+        const naoEstaFechado = c.status !== 'FECHADO' && c.status !== 'finalizado';
+        if (!naoEstaFechado || c.slaAlertaEnviado || !c.dataAbertura) return false;
+        return fracaoSlaDecorrida(c) >= 0.8;
+      })
+      .forEach((c) => {
+        DataService.atualizarChamado(c.id, { slaAlertaEnviado: true }).catch(() => {});
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: `SLA em risco: ${c.predio}`,
+            body: `${c.descricao || c.titulo || 'Chamado'} está perto do prazo (${c.prioridade || 'MEDIA'}).`,
+            sound: true,
+          },
+          trigger: null,
+        }).catch(() => {});
+      });
+  }, [chamados, user]);
+
   // FUNCAO DE LOGS
   const gerirLogs = (msg) => {
     const autorDoLog = user ? (user.login || user.nomeCompleto) : "Administrador (Auto)";
@@ -158,6 +302,8 @@ export default function App() {
     }
   };
 
+  if (Platform.OS === 'web' && false) return <WebDownloadScreen theme={theme} />; // TEMP: desativado para você revisar no navegador
+
   if (isInitializing) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.background }}><ActivityIndicator size="large" color={theme.primary} /></View>;
   if (!user) return <LoginScreen theme={theme} />;
 
@@ -172,8 +318,8 @@ export default function App() {
         />
       )}
 
-      <Sidebar 
-        theme={theme} telaAtiva={telaAtiva} setTelaAtiva={setTelaAtiva} 
+      <Sidebar
+        theme={theme} telaAtiva={telaAtiva} setTelaAtiva={mudarTela}
         isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} 
         user={user} isMobile={isMobile} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} 
       />
@@ -191,8 +337,8 @@ export default function App() {
           </View>
         )}
 
-        {telaAtiva === 'DASHBOARD' && <DashboardScreen chamados={chamados} eventos={eventos} users={users} theme={theme} setTelaAtiva={setTelaAtiva} />}
-        {telaAtiva === 'CHAMADOS' && <ChamadosScreen user={user} chamados={chamados} eventos={eventos} users={users} inventario={inventario} theme={theme} addLog={gerirLogs} showPush={(msg) => console.log(msg)} />}
+        {telaAtiva === 'DASHBOARD' && <DashboardScreen chamados={chamados} eventos={eventos} users={users} theme={theme} setTelaAtiva={setTelaAtiva} irParaChamados={irParaChamados} />}
+        {telaAtiva === 'CHAMADOS' && <ChamadosScreen user={user} chamados={chamados} eventos={eventos} users={users} inventario={inventario} theme={theme} addLog={gerirLogs} showPush={(msg) => console.log(msg)} filtroStatusInicial={filtroChamadosInicial} mostrarNovoChamado={!origemDashboard} />}
         {telaAtiva === 'EVENTOS' && <EventosScreen user={user} eventos={eventos} users={users} theme={theme} addLog={gerirLogs} />}
         {telaAtiva === 'INVENTARIO' && <InventarioScreen inventario={inventario} setInventario={setInventario} chamados={chamados} users={users} theme={theme} addLog={gerirLogs} />}
         {telaAtiva === 'AGENDAMENTO' && <AgendamentoScreen user={user} agendamentos={agendamentos} setAgendamentos={setAgendamentos} users={users} theme={theme} addLog={gerirLogs} />}

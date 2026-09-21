@@ -1,11 +1,13 @@
 import * as Location from 'expo-location';
 import { useState } from 'react';
 import { Alert, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
 import { RADIUS, SHADOW } from '../theme/themes';
 import { SETORES } from '../utils/constants';
+import { formatDataISOParaBR } from '../utils/helpers';
 
 const STATUS_OPCOES = [
   'Aguardando atendimento', 'Em andamento', 'Em separação de equipamentos', 'Instalado', 'finalizado', 'PENDENTE', 'CONCLUIDO'
@@ -27,6 +29,8 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
   const [material, setMaterial] = useState('');
   const [dataInstalacao, setDataInstalacao] = useState('');
   const [dataEvento, setDataEvento] = useState('');
+  const [showCalendarEvento, setShowCalendarEvento] = useState(false);
+  const [mesCalendarEvento, setMesCalendarEvento] = useState(new Date());
 
   const [modalConclusaoVisible, setModalConclusaoVisible] = useState(false);
   const [eventoAtual, setEventoAtual] = useState(null);
@@ -49,7 +53,22 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
     else console.log("LOG: ", mensagem);
   };
 
-  const tecnicos = users.filter(u => u.perfil === 'TECNICO' || u.perfil === 'ADM');
+  const MESES_NOME = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+  const gerarDiasCalendarioEvento = () => {
+    const year = mesCalendarEvento.getFullYear();
+    const month = mesCalendarEvento.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const days = [];
+    for (let i = 0; i < firstDay; i++) days.push(null);
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push({ day: i, dateStr: `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}` });
+    }
+    return days;
+  };
+
+  const tecnicos = users.filter(u => u.perfil === 'TECNICO');
   const getContagem = (login) => eventos.filter(e => e.tecnico === login).length;
   const minEventos = tecnicos.length > 0 ? Math.min(...tecnicos.map(t => getContagem(t.login))) : 0;
 
@@ -188,14 +207,27 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
 
   return (
     <ScrollView style={{ padding: 20 }}>
-      <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800', marginBottom: 4 }}>Gestão de Eventos</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+        <MaterialIcons name="event" size={19} color={theme.primary} style={{ marginRight: 7 }} />
+        <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800' }}>Gestão de Eventos</Text>
+      </View>
       <Text style={{ color: theme.subtext, fontSize: 13, marginBottom: 18 }}>Eventos internos e externos da equipe</Text>
-      
+
       {user.perfil === 'ADM' && (
         <Card theme={theme}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+            <MaterialIcons name="add-circle-outline" size={16} color={theme.primary} style={{ marginRight: 6 }} />
+            <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Novo Evento</Text>
+          </View>
           <View style={{flexDirection: 'row', marginBottom: 15}}>
-            <TouchableOpacity onPress={()=>setTipo('INTERNO')} style={[styles.tab, {backgroundColor: tipo==='INTERNO'?theme.sec:theme.inputBg}]}><Text style={{color:'#fff', fontWeight: 'bold'}}>🏢 INTERNO</Text></TouchableOpacity>
-            <TouchableOpacity onPress={()=>setTipo('EXTERNO')} style={[styles.tab, {backgroundColor: tipo==='EXTERNO'?theme.tert:theme.inputBg}]}><Text style={{color:'#fff', fontWeight: 'bold'}}>🛣️ EXTERNO</Text></TouchableOpacity>
+            <TouchableOpacity onPress={()=>setTipo('INTERNO')} style={[styles.tab, {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: tipo==='INTERNO'?theme.sec:theme.inputBg}]}>
+              <MaterialIcons name="apartment" size={14} color="#fff" style={{ marginRight: 5 }} />
+              <Text style={{color:'#fff', fontWeight: 'bold'}}>INTERNO</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=>setTipo('EXTERNO')} style={[styles.tab, {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: tipo==='EXTERNO'?theme.tert:theme.inputBg}]}>
+              <MaterialIcons name="directions-car" size={14} color="#fff" style={{ marginRight: 5 }} />
+              <Text style={{color:'#fff', fontWeight: 'bold'}}>EXTERNO</Text>
+            </TouchableOpacity>
           </View>
 
           <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text }]} placeholder="Nome do Evento" value={nome} onChangeText={setNome} placeholderTextColor={theme.subtext} />
@@ -218,8 +250,39 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
           
           <View style={{ flexDirection: 'row' }}>
             <TextInput style={[styles.input, { flex: 1, marginRight: 5, backgroundColor: theme.inputBg, color: theme.text }]} placeholder="Data de Instalação" value={dataInstalacao} onChangeText={setDataInstalacao} placeholderTextColor={theme.subtext} />
-            <TextInput style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, color: theme.text }]} placeholder="Data do Evento" value={dataEvento} onChangeText={setDataEvento} placeholderTextColor={theme.subtext} />
+            <TouchableOpacity style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]} onPress={() => setShowCalendarEvento(!showCalendarEvento)}>
+              <Text style={{ color: dataEvento ? theme.text : theme.subtext }}>{dataEvento ? formatDataISOParaBR(dataEvento) : 'Data do Evento ↓'}</Text>
+              <MaterialIcons name="calendar-today" size={14} color={theme.primary} />
+            </TouchableOpacity>
           </View>
+
+          {showCalendarEvento && (
+            <View style={{ backgroundColor: theme.card, borderRadius: 12, marginTop: 5, marginBottom: 10, borderWidth: 1, borderColor: theme.border, padding: 12 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <TouchableOpacity onPress={() => setMesCalendarEvento(new Date(mesCalendarEvento.getFullYear(), mesCalendarEvento.getMonth() - 1, 1))}>
+                  <MaterialIcons name="chevron-left" size={22} color={theme.primary} />
+                </TouchableOpacity>
+                <Text style={{ color: theme.text, fontWeight: 'bold' }}>{MESES_NOME[mesCalendarEvento.getMonth()]} {mesCalendarEvento.getFullYear()}</Text>
+                <TouchableOpacity onPress={() => setMesCalendarEvento(new Date(mesCalendarEvento.getFullYear(), mesCalendarEvento.getMonth() + 1, 1))}>
+                  <MaterialIcons name="chevron-right" size={22} color={theme.primary} />
+                </TouchableOpacity>
+              </View>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                {gerarDiasCalendarioEvento().map((d, i) => (
+                  <TouchableOpacity
+                    key={i}
+                    disabled={!d}
+                    onPress={() => { setDataEvento(d.dateStr); setShowCalendarEvento(false); }}
+                    style={{
+                      width: `${100 / 7}%`, aspectRatio: 1, alignItems: 'center', justifyContent: 'center',
+                      borderRadius: RADIUS.sm, backgroundColor: d && dataEvento === d.dateStr ? theme.primary : 'transparent',
+                    }}>
+                    {d && <Text style={{ color: dataEvento === d.dateStr ? '#fff' : theme.text, fontSize: 12, fontWeight: dataEvento === d.dateStr ? '800' : '400' }}>{d.day}</Text>}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
 
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
             <TouchableOpacity style={[styles.input, { flex: 1, justifyContent: 'center' }]} onPress={() => setShowTecs(!showTecs)}>
@@ -242,7 +305,13 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
       )}
 
       <View style={{ flexDirection: 'row', marginTop: user.perfil === 'ADM' ? 30 : 0, marginBottom: 15, justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ color: theme.text, fontSize: 18, fontWeight: 'bold' }}>Agenda de Eventos</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialIcons name="calendar-today" size={16} color={theme.primary} style={{ marginRight: 6 }} />
+          <Text style={{ color: theme.text, fontSize: 18, fontWeight: 'bold' }}>Agenda de Eventos</Text>
+          <View style={[styles.countBadge, { backgroundColor: theme.primarySoft }]}>
+            <Text style={{ color: theme.primary, fontSize: 11, fontWeight: '800' }}>{eventos.length}</Text>
+          </View>
+        </View>
         <View style={{ flexDirection: 'row', backgroundColor: theme.card, borderRadius: 8, borderWidth: 1, borderColor: theme.border, overflow: 'hidden' }}>
           {['TODOS', 'INTERNO', 'EXTERNO'].map(f => (
              <TouchableOpacity key={f} onPress={() => setFiltroAba(f)} style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: filtroAba === f ? theme.primary : 'transparent' }}>
@@ -258,20 +327,35 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
-                  <Text style={{ backgroundColor: ev.tipo === 'EXTERNO' ? theme.tert : theme.sec, color: '#fff', fontSize: 9, fontWeight: 'bold', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginRight: 8 }}>
-                    {ev.tipo === 'EXTERNO' ? '🛣️ EXTERNO' : '🏢 INTERNO'}
-                  </Text>
-                  <Text style={{ color: isEventoFechado(ev.status) ? theme.primary : theme.warning, fontWeight: 'bold', fontSize: 10 }}>{ev.status}</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: ev.tipo === 'EXTERNO' ? theme.tert : theme.sec, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginRight: 8 }}>
+                    <MaterialIcons name={ev.tipo === 'EXTERNO' ? 'directions-car' : 'apartment'} size={10} color="#fff" style={{ marginRight: 3 }} />
+                    <Text style={{ color: '#fff', fontSize: 9, fontWeight: 'bold' }}>{ev.tipo === 'EXTERNO' ? 'EXTERNO' : 'INTERNO'}</Text>
+                  </View>
+                  {(() => {
+                    const stColor = isEventoFechado(ev.status) ? theme.online : theme.warning;
+                    return (
+                      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: theme.cardAlt, paddingHorizontal: 8, paddingVertical: 3, borderRadius: RADIUS.pill }}>
+                        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: stColor, marginRight: 6 }} />
+                        <Text style={{ color: stColor, fontSize: 10, fontWeight: '700', textTransform: 'uppercase' }}>{ev.status}</Text>
+                      </View>
+                    );
+                  })()}
                 </View>
                 <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 16 }}>{ev.nome}</Text>
-                <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 4 }}>📍 {ev.tipo === 'INTERNO' ? ev.local : ev.endereco}</Text>
-                <Text style={{ color: theme.primary, fontSize: 12, marginTop: 4, fontWeight: 'bold' }}>👨‍🔧 Escala: {ev.tecnico}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                  <MaterialIcons name="place" size={12} color={theme.subtext} style={{ marginRight: 4 }} />
+                  <Text style={{ color: theme.subtext, fontSize: 12 }}>{ev.tipo === 'INTERNO' ? ev.local : ev.endereco}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                  <MaterialIcons name="engineering" size={12} color={theme.primary} style={{ marginRight: 4 }} />
+                  <Text style={{ color: theme.primary, fontSize: 12, fontWeight: 'bold' }}>Escala: {ev.tecnico}</Text>
+                </View>
               </View>
-              
+
               {user.perfil === 'ADM' && (
                 <View style={{ alignItems: 'flex-end', justifyContent: 'space-between' }}>
                   <TouchableOpacity onPress={() => handleExcluir(ev.id, ev.nome)}>
-                    <Text style={{ fontSize: 20 }}>🗑️</Text>
+                    <MaterialIcons name="delete-outline" size={20} color={theme.offline} />
                   </TouchableOpacity>
                 </View>
               )}
@@ -295,7 +379,10 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
               <ScrollView style={{ flex: 1, marginBottom: 10 }} keyboardShouldPersistTaps="handled">
                 <Card theme={theme}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-                    <Text style={{ color: theme.sec, fontWeight: 'bold', fontSize: 16 }}>Status: {eventoAtual.status}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: theme.cardAlt, paddingHorizontal: 10, paddingVertical: 5, borderRadius: RADIUS.pill }}>
+                      <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: isEventoFechado(eventoAtual.status) ? theme.online : theme.warning, marginRight: 7 }} />
+                      <Text style={{ color: isEventoFechado(eventoAtual.status) ? theme.online : theme.warning, fontWeight: '700', fontSize: 13, textTransform: 'uppercase' }}>{eventoAtual.status}</Text>
+                    </View>
                     {!isEventoFechado(eventoAtual.status) && (
                       <TouchableOpacity onPress={() => setShowStatusModal(!showStatusModal)} style={{ backgroundColor: theme.primary, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 }}>
                         <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>MUDAR STATUS</Text>
@@ -340,7 +427,7 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
                     <Text style={{ color: theme.text, fontSize: 14, marginBottom: 8 }}>{eventoAtual.material || 'Nenhum'}</Text>
                     
                     <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Datas:</Text>
-                    <Text style={{ color: theme.text, fontSize: 14 }}>Instalação: {eventoAtual.dataInstalacao || '---'} | Evento: {eventoAtual.dataEvento || '---'}</Text>
+                    <Text style={{ color: theme.text, fontSize: 14 }}>Instalação: {eventoAtual.dataInstalacao || '---'} | Evento: {eventoAtual.dataEvento ? formatDataISOParaBR(eventoAtual.dataEvento) : '---'}</Text>
                   </View>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 15 }}>
@@ -442,6 +529,7 @@ const styles = StyleSheet.create({
   input: { padding: 12, borderRadius: RADIUS.md, marginVertical: 5, borderWidth: 1, borderColor: 'rgba(140,150,160,0.28)' },
   btnAuto: { padding: 12, borderRadius: RADIUS.md, marginLeft: 5 },
   tab: { flex: 1, padding: 12, borderRadius: RADIUS.md, alignItems: 'center', marginRight: 6 },
+  countBadge: { marginLeft: 8, paddingHorizontal: 8, paddingVertical: 2, borderRadius: RADIUS.pill },
   tecItem: { padding: 15, borderBottomWidth: 1, borderBottomColor: 'rgba(140,150,160,0.2)' },
   modalContainer: { flex: 1, backgroundColor: 'rgba(4,6,8,0.72)', justifyContent: 'center', alignItems: 'center', padding: 20 },
   modalContent: { width: '100%', maxWidth: 350, borderRadius: RADIUS.xl, padding: 22, alignItems: 'center', ...SHADOW.lg }

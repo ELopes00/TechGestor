@@ -1,21 +1,25 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { BackgroundImage, Btn, Card } from '../components';
+import { Card } from '../components';
 import { DataService } from '../services/DataService';
 import { RADIUS, SHADOW } from '../theme/themes';
 
 export default function LoginScreen({ theme }) {
   const [login, setLogin] = useState('');
   const [senha, setSenha] = useState('');
+  const [verSenha, setVerSenha] = useState(false);
   const [loading, setLoading] = useState(false);
   const [manterConectado, setManterConectado] = useState(false);
+  const senhaRef = useRef(null);
 
   const handleLogin = async () => {
+    if (loading) return;
     if (!login || !senha) return Alert.alert('Atenção', 'Preencha o login e a senha!');
-    
+
     setLoading(true);
     try {
       // 1. Grava a preferência do usuario na memoria ANTES do login
@@ -27,7 +31,7 @@ export default function LoginScreen({ theme }) {
 
       // 2. Faz o login no Firebase
       const user = await DataService.login(login, senha);
-      
+
       // 3. Lógica de Notificações
       try {
         const { status } = await Notifications.requestPermissionsAsync();
@@ -48,50 +52,79 @@ export default function LoginScreen({ theme }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      
-      <BackgroundImage /> 
-
-      <Card theme={theme} style={styles.card}>
-        <View style={[styles.logoBadge, { backgroundColor: theme.primarySoft }]}>
-          <Text style={[styles.logo, { color: theme.primary }]}>TG</Text>
+      <Card theme={theme} style={[styles.card, { borderColor: theme.border }]}>
+        <View style={styles.logoRow}>
+          <View style={[styles.logoBadge, { backgroundColor: theme.primarySoft, borderColor: theme.tert }]}>
+            <MaterialCommunityIcons name="chip" size={28} color={theme.tert} />
+          </View>
         </View>
         <Text style={[styles.title, { color: theme.text }]}>TechGestor</Text>
-        <Text style={[styles.subtitle, { color: theme.subtext }]}>Entre com suas credenciais para continuar</Text>
+        <Text style={[styles.subtitle, { color: theme.subtext }]}>Informe suas credenciais para acessar o sistema</Text>
 
-        <TextInput
-          style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, borderColor: theme.border }]}
-          placeholder="Seu Login (ex: admin)"
-          placeholderTextColor={theme.subtext}
-          value={login}
-          onChangeText={setLogin}
-          autoCapitalize="none"
-        />
+        <View style={styles.field}>
+          <View style={styles.labelRow}>
+            <MaterialIcons name="person-outline" size={13} color={theme.subtext} style={{ marginRight: 4 }} />
+            <Text style={[styles.label, { color: theme.subtext }]}>Usuário</Text>
+          </View>
+          <TextInput
+            style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, borderColor: theme.border }]}
+            placeholder="seu.usuario"
+            placeholderTextColor={theme.subtext}
+            value={login}
+            onChangeText={setLogin}
+            autoCapitalize="none"
+            returnKeyType="next"
+            blurOnSubmit={false}
+            onSubmitEditing={() => senhaRef.current?.focus()}
+          />
+        </View>
 
-        <TextInput
-          style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, borderColor: theme.border }]}
-          placeholder="Sua Senha"
-          placeholderTextColor={theme.subtext}
-          value={senha}
-          onChangeText={setSenha}
-          secureTextEntry
-        />
+        <View style={styles.field}>
+          <View style={styles.labelRow}>
+            <MaterialIcons name="lock-outline" size={13} color={theme.subtext} style={{ marginRight: 4 }} />
+            <Text style={[styles.label, { color: theme.subtext }]}>Senha</Text>
+          </View>
+          <View style={{ position: 'relative', justifyContent: 'center' }}>
+            <TextInput
+              ref={senhaRef}
+              style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, borderColor: theme.border, paddingRight: 44 }]}
+              placeholder="••••••••"
+              placeholderTextColor={theme.subtext}
+              value={senha}
+              onChangeText={setSenha}
+              secureTextEntry={!verSenha}
+              returnKeyType="go"
+              onSubmitEditing={handleLogin}
+            />
+            <TouchableOpacity style={styles.eyeBtn} onPress={() => setVerSenha(!verSenha)} activeOpacity={0.7}>
+              <MaterialIcons name={verSenha ? 'visibility-off' : 'visibility'} size={19} color={theme.subtext} />
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {/* OPÇÃO MANTENHA-ME CONECTADO */}
-        <TouchableOpacity 
-          style={styles.checkboxContainer} 
+        <TouchableOpacity
+          style={styles.checkboxContainer}
           onPress={() => setManterConectado(!manterConectado)}
           activeOpacity={0.7}
         >
-          <View style={[styles.checkbox, { borderColor: theme.primary, backgroundColor: manterConectado ? theme.primary : 'transparent' }]}>
-            {manterConectado && <Text style={styles.checkmark}>✓</Text>}
+          <View style={[styles.checkbox, { borderColor: theme.border, backgroundColor: manterConectado ? theme.primary : 'transparent' }]}>
+            {manterConectado && <MaterialIcons name="check" size={13} color="#fff" />}
           </View>
-          <Text style={[styles.checkboxLabel, { color: theme.text }]}>Mantenha-me conectado</Text>
+          <Text style={[styles.checkboxLabel, { color: theme.text }]}>Manter conectado neste dispositivo</Text>
         </TouchableOpacity>
 
         {loading ? (
           <ActivityIndicator size="large" color={theme.primary} style={{ marginTop: 20 }} />
         ) : (
-          <Btn title="ENTRAR NO SISTEMA" onPress={handleLogin} theme={theme} style={{ marginTop: 20, width: '100%' }} />
+          <TouchableOpacity
+            style={[styles.btnEntrar, { backgroundColor: theme.primary }, SHADOW.sm]}
+            onPress={handleLogin}
+            activeOpacity={0.85}
+          >
+            <MaterialIcons name="lock" size={16} color="#fff" style={{ marginRight: 8 }} />
+            <Text style={styles.btnEntrarText}>Entrar</Text>
+          </TouchableOpacity>
         )}
       </Card>
     </View>
@@ -100,16 +133,22 @@ export default function LoginScreen({ theme }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
-  card: { width: '100%', maxWidth: 400, alignItems: 'center', padding: 36, borderRadius: RADIUS.xl, ...SHADOW.lg },
-  logoBadge: { width: 68, height: 68, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
-  logo: { fontSize: 26, fontWeight: '800', letterSpacing: 0.5 },
-  title: { fontSize: 22, marginBottom: 4, fontWeight: '800', letterSpacing: 0.3 },
-  subtitle: { fontSize: 13, marginBottom: 26, textAlign: 'center' },
-  input: { width: '100%', padding: 15, borderRadius: RADIUS.md, marginVertical: 8, borderWidth: 1, fontSize: 14 },
+  card: { width: '100%', maxWidth: 380, alignItems: 'center', padding: 32, borderRadius: RADIUS.xl, borderWidth: 1, ...SHADOW.sm },
+  logoRow: { marginBottom: 14, alignItems: 'center' },
+  logoBadge: { width: 56, height: 56, borderRadius: RADIUS.lg, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  title: { fontSize: 19, marginBottom: 6, fontWeight: '700' },
+  subtitle: { fontSize: 12.5, marginBottom: 24, textAlign: 'center', lineHeight: 18 },
 
-  // ESTILOS DA CAIXINHA DE SELEÇÃO
-  checkboxContainer: { flexDirection: 'row', alignItems: 'center', width: '100%', marginTop: 8, marginBottom: 6 },
-  checkbox: { width: 20, height: 20, borderWidth: 2, borderRadius: 6, justifyContent: 'center', alignItems: 'center', marginRight: 10 },
-  checkmark: { color: '#000', fontSize: 13, fontWeight: 'bold' },
-  checkboxLabel: { fontSize: 13 }
+  field: { width: '100%', marginBottom: 14 },
+  labelRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  label: { fontSize: 12.5, fontWeight: '600' },
+  input: { width: '100%', padding: 12, borderRadius: RADIUS.md, borderWidth: 1, fontSize: 14 },
+  eyeBtn: { position: 'absolute', right: 12 },
+
+  checkboxContainer: { flexDirection: 'row', alignItems: 'center', width: '100%', marginTop: 2, marginBottom: 18 },
+  checkbox: { width: 18, height: 18, borderWidth: 1.5, borderRadius: 4, justifyContent: 'center', alignItems: 'center', marginRight: 9 },
+  checkboxLabel: { fontSize: 13 },
+
+  btnEntrar: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 13, borderRadius: RADIUS.md },
+  btnEntrarText: { color: '#fff', fontWeight: '700', fontSize: 14.5 },
 });

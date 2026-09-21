@@ -1,5 +1,5 @@
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { DataService } from '../services/DataService';
 import { RADIUS } from '../theme/themes';
 
@@ -21,12 +21,12 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
     return (
       <TouchableOpacity
         activeOpacity={0.75}
-        style={[styles.btnMenu, active && { backgroundColor: theme.sidebarActive }]}
+        style={[styles.btnMenu, active && { backgroundColor: theme.primarySoft }]}
         onPress={() => {
           setTelaAtiva(id);
           if (isMobile) setIsMenuOpen(false);
         }}>
-        <MaterialIcons name={NAV_ICONS[id]} size={22} color={active ? theme.primary : theme.subtext} />
+        <MaterialIcons name={NAV_ICONS[id]} size={20} color={active ? theme.primary : theme.subtext} />
         <Text style={[styles.txtMenu, { color: active ? theme.primary : theme.subtext }]}>{label}</Text>
       </TouchableOpacity>
     );
@@ -68,17 +68,27 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
       isMobile && { position: 'absolute', zIndex: 50, display: isMenuOpen ? 'flex' : 'none', height: '100%' }
     ]}>
       <View style={styles.logoContainer}>
-        <View style={[styles.logoBadge, { backgroundColor: theme.primarySoft }]}>
-          <Text style={[styles.logo, { color: theme.primary }]}>TG</Text>
+        <View style={[styles.logoBadge, { backgroundColor: theme.primarySoft, borderColor: theme.tert }]}>
+          <MaterialCommunityIcons name="chip" size={20} color={theme.tert} />
+        </View>
+        <View style={{ marginLeft: 10, flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: theme.primary, marginRight: 6 }} />
+            <Text style={{ color: theme.text, fontWeight: '800', fontSize: 13, letterSpacing: 1, textTransform: 'uppercase' }}>TechGestor</Text>
+          </View>
         </View>
       </View>
 
+      <View style={{ paddingHorizontal: 18, marginBottom: 4 }}>
+        <Text style={{ color: theme.textCode, fontSize: 9.5, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2 }}>Operações</Text>
+      </View>
+
       <View style={styles.menuItems}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 12 }}>
           <NavItem id="DASHBOARD" label="Início" />
           <NavItem id="CHAMADOS" label="Chamados" />
           <NavItem id="EVENTOS" label="Eventos" />
-          <NavItem id="INVENTARIO" label="Estoque" />
+          <NavItem id="INVENTARIO" label="Inventário" />
           <NavItem id="AGENDAMENTO" label="Agenda" />
           <NavItem id="PERFIL" label="Perfil" />
 
@@ -92,24 +102,26 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
         </ScrollView>
       </View>
 
-      <View style={{ alignItems: 'center', paddingBottom: 18, paddingTop: 10 }}>
+      <View style={{ paddingHorizontal: 12, paddingBottom: 18, paddingTop: 10, borderTopWidth: 1, borderTopColor: theme.border }}>
 
         <TouchableOpacity
           activeOpacity={0.75}
-          style={[styles.btnMenu, { marginBottom: 12, backgroundColor: isAlmoco ? theme.tert : 'transparent' }]}
+          style={[styles.btnMenu, { marginBottom: 8, backgroundColor: isAlmoco ? theme.tert : 'transparent' }]}
           onPress={toggleAlmoco}
         >
-          <MaterialIcons name={isAlmoco ? 'play-arrow' : 'pause'} size={22} color={isAlmoco ? '#fff' : theme.subtext} />
-          <Text style={[styles.txtMenu, { color: isAlmoco ? '#fff' : theme.subtext, fontSize: 8 }]}>{isAlmoco ? 'RETORNAR' : 'PAUSA'}</Text>
+          <MaterialIcons name={isAlmoco ? 'play-arrow' : 'pause'} size={20} color={isAlmoco ? '#fff' : theme.subtext} />
+          <Text style={[styles.txtMenu, { color: isAlmoco ? '#fff' : theme.subtext }]}>{isAlmoco ? 'Retornar' : 'Pausa'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.iconOnlyBtn} onPress={() => setIsDarkMode(!isDarkMode)} activeOpacity={0.7}>
-          <MaterialIcons name={isDarkMode ? 'light-mode' : 'dark-mode'} size={20} color={theme.subtext} />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 6 }}>
+          <TouchableOpacity style={styles.iconOnlyBtn} onPress={() => setIsDarkMode(!isDarkMode)} activeOpacity={0.7}>
+            <MaterialIcons name={isDarkMode ? 'light-mode' : 'dark-mode'} size={18} color={theme.subtext} />
+          </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.iconOnlyBtn, { marginTop: 4 }]} onPress={() => DataService.logout()} activeOpacity={0.7}>
-          <MaterialIcons name="logout" size={20} color={theme.offline} />
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.iconOnlyBtn} onPress={() => DataService.logout()} activeOpacity={0.7}>
+            <MaterialIcons name="logout" size={18} color={theme.offline} />
+          </TouchableOpacity>
+        </View>
 
       </View>
     </View>
@@ -117,13 +129,12 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
 }
 
 const styles = StyleSheet.create({
-  sidebar: { width: 92, height: '100%', borderRightWidth: 1, paddingVertical: 24, justifyContent: 'space-between' },
-  logoContainer: { alignItems: 'center', marginBottom: 24 },
-  logoBadge: { width: 44, height: 44, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
-  logo: { fontSize: 18, fontWeight: '800', letterSpacing: 0.5 },
+  sidebar: { width: 216, height: '100%', borderRightWidth: 1, paddingVertical: 20, justifyContent: 'flex-start' },
+  logoContainer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, marginBottom: 18 },
+  logoBadge: { width: 38, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
   menuItems: { flex: 1, width: '100%' },
-  btnMenu: { alignItems: 'center', paddingVertical: 12, width: '78%', marginVertical: 4, borderRadius: RADIUS.md },
-  txtMenu: { fontSize: 9.5, marginTop: 5, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.2 },
-  divider: { width: '60%', height: 1, marginVertical: 10 },
-  iconOnlyBtn: { width: 36, height: 36, borderRadius: RADIUS.sm, alignItems: 'center', justifyContent: 'center', marginBottom: 6 },
+  btnMenu: { flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 12, width: '100%', marginVertical: 2, borderRadius: RADIUS.md },
+  txtMenu: { fontSize: 12.5, marginLeft: 10, fontWeight: '700' },
+  divider: { height: 1, marginVertical: 10 },
+  iconOnlyBtn: { width: 32, height: 32, borderRadius: RADIUS.sm, alignItems: 'center', justifyContent: 'center' },
 });

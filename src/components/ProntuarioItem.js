@@ -43,10 +43,10 @@ export default function ProntuarioItem({ itemId, isAdmin, nomeUsuario, theme }) 
     }
   };
 
-  if (carregando) return <ActivityIndicator size="small" color={theme?.primary || '#22C55E'} style={{ marginTop: 10 }} />;
+  if (carregando) return <ActivityIndicator size="small" color={theme?.primary || '#0284C7'} style={{ marginTop: 10 }} />;
   if (historico.length === 0) return null;
 
-  const t = theme || { primary: '#22C55E', text: '#F1F4F7', subtext: '#8B96A3', cardAlt: '#1B222B', border: '#232B34', sec: '#F5A524', offline: '#F04438' };
+  const t = theme || { primary: '#0284C7', text: '#F8FAFC', subtext: '#94A3B8', cardAlt: '#243248', border: '#2A3B52', sec: '#F5A524', offline: '#F04438' };
 
   return (
     <View style={[styles.container, { borderTopColor: t.border }]}>

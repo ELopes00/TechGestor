@@ -3,8 +3,10 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import QRCode from 'react-native-qrcode-svg';
 import * as XLSX from 'xlsx';
 
 import { Btn, Card } from '../components';
@@ -46,6 +48,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
   const [historyModalVisible, setHistoryModalVisible] = useState(false);
   const [selectedItemHistory, setSelectedItemHistory] = useState(null);
   const [selectedEqProntuario, setSelectedEqProntuario] = useState(null);
+  const qrRef = useRef();
 
   const [selectedInventoryItems, setSelectedInventoryItems] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -360,7 +363,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
   };
 
   const exportarPDF = async () => {
-    const html = `<html><head><style>body{font-family:sans-serif; padding:20px;} table{width:100%; border-collapse:collapse; margin-top:20px;} th,td{border:1px solid #ddd; padding:10px; text-align:left;} th{background-color:#1DB954; color:white;}</style></head><body><h2>TechGestor - Relatório de Inventário</h2><table><tr><th>Responsável Pelo Bem</th><th>Setor</th><th>Tombo Principal</th></tr>${inventarioFiltrado.map(i => `<tr><td>${i.responsavel || i.nome}</td><td>${i.setor || 'N/A'}</td><td>${i.pat || 'N/A'}</td></tr>`).join('')}</table></body></html>`;
+    const html = `<html><head><style>body{font-family:sans-serif; padding:20px;} table{width:100%; border-collapse:collapse; margin-top:20px;} th,td{border:1px solid #ddd; padding:10px; text-align:left;} th{background-color:#0284C7; color:white;}</style></head><body><h2>TechGestor - Relatório de Inventário</h2><table><tr><th>Responsável Pelo Bem</th><th>Setor</th><th>Tombo Principal</th></tr>${inventarioFiltrado.map(i => `<tr><td>${i.responsavel || i.nome}</td><td>${i.setor || 'N/A'}</td><td>${i.pat || 'N/A'}</td></tr>`).join('')}</table></body></html>`;
     try { const { uri } = await Print.printToFileAsync({ html }); await Sharing.shareAsync(uri); } catch (e) { mostraAlerta('Erro', 'Falha ao gerar PDF.'); }
   };
 
@@ -440,6 +443,30 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
     setIsEditingEq(true);
   };
 
+  const gerarEtiquetaPDF = () => {
+    if (!qrRef.current || !selectedEqProntuario?.tombo) return mostraAlerta('Aviso', 'Este item não tem um código de patrimônio definido.');
+    qrRef.current.toDataURL(async (dataURL) => {
+      try {
+        const html = `<html><head><style>
+          body{font-family:sans-serif; padding:20px; text-align:center;}
+          .etiqueta{border:2px solid #0284C7; border-radius:8px; padding:24px; display:inline-block;}
+          h2{margin:0 0 6px; color:#0284C7;} p{margin:2px 0; font-size:14px;} img{margin-top:14px;}
+        </style></head><body>
+          <div class="etiqueta">
+            <h2>TechGestor</h2>
+            <p><b>${selectedEqProntuario.tipo || 'Equipamento'}</b>${selectedEqProntuario.marca ? ` — ${selectedEqProntuario.marca}` : ''}</p>
+            <p>Patrimônio: <b>${selectedEqProntuario.tombo}</b></p>
+            <p>Responsável: ${selectedItemHistory?.responsavel || selectedItemHistory?.nome || 'Não informado'}</p>
+            <img src="data:image/png;base64,${dataURL}" width="150" height="150" />
+          </div>
+        </body></html>`;
+        const { uri } = await Print.printToFileAsync({ html });
+        await Sharing.shareAsync(uri);
+        if (addLog) addLog(`GEROU ETIQUETA DO ATIVO: ${selectedEqProntuario.tombo}`);
+      } catch (e) { mostraAlerta('Erro', 'Falha ao gerar a etiqueta.'); }
+    });
+  };
+
   const salvarEdicaoProntuario = async () => {
     if (isSaving) return;
     if (!editEqData.tombo) return mostraAlerta('Aviso', 'O campo de identificação é obrigatório.');
@@ -497,9 +524,9 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
   };
 
   const getHealthStatus = (qtd) => {
-    if (qtd === 0) return { label: 'Excelente', color: theme?.online || '#1DB954' };
-    if (qtd < 3) return { label: 'Atenção', color: theme?.busy || '#FFAE00' };
-    return { label: 'Crítico', color: '#ff4444' };
+    if (qtd === 0) return { label: 'Excelente', color: theme.online };
+    if (qtd < 3) return { label: 'Atenção', color: theme.busy };
+    return { label: 'Crítico', color: theme.offline };
   };
 
   const handleBarCodeScanned = ({ type, data }) => {
@@ -527,24 +554,24 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
     else setSelectedInventoryItems(inventarioFiltrado.map(item => item.id));
   };
 
-  const renderAutocomplete = (fieldValue, setField, dropdownKey, placeholder, dataSource, mapFunc, onSelect, keyboardType = "default") => {
+  const renderAutocomplete = (fieldValue, setField, dropdownKey, placeholder, dataSource, mapFunc, onSelect, keyboardType = "default", themeArg = theme) => {
     const safeData = dataSource || [];
     return (
       <View style={{ flex: 1 }}>
-        <TextInput 
-          style={styles.inputModal} placeholder={placeholder} placeholderTextColor="#666" value={fieldValue} keyboardType={keyboardType}
+        <TextInput
+          style={[styles.inputModal, { backgroundColor: themeArg.inputBg, borderColor: themeArg.border, color: themeArg.text }]} placeholder={placeholder} placeholderTextColor={themeArg.subtext} value={fieldValue} keyboardType={keyboardType}
           onChangeText={(text) => { setField(text); setActiveDropdown(dropdownKey); }} onFocus={() => setActiveDropdown(dropdownKey)}
         />
         {activeDropdown === dropdownKey && fieldValue.length > 0 && (
-          <View style={styles.dropdownContainer}>
+          <View style={[styles.dropdownContainer, { backgroundColor: themeArg.inputBg, borderColor: themeArg.border }]}>
             <ScrollView keyboardShouldPersistTaps="handled" nestedScrollEnabled={true} style={{ maxHeight: 180 }}>
               {safeData.filter(item => {
                 const str = mapFunc(item) || '';
                 return str.toLowerCase().includes(fieldValue.toLowerCase());
               }).slice(0, 10).map((item, index) => (
-                  <TouchableOpacity key={index} style={styles.dropdownItem} onPress={() => { onSelect(item); setActiveDropdown(null); Keyboard.dismiss(); }}>
-                    <Text style={styles.dropdownText}>{mapFunc(item)}</Text>
-                    {item.matricula && <Text style={styles.dropdownSubText}>Matrícula: {item.matricula}</Text>}
+                  <TouchableOpacity key={index} style={[styles.dropdownItem, { borderBottomColor: themeArg.border }]} onPress={() => { onSelect(item); setActiveDropdown(null); Keyboard.dismiss(); }}>
+                    <Text style={[styles.dropdownText, { color: themeArg.text }]}>{mapFunc(item)}</Text>
+                    {item.matricula && <Text style={[styles.dropdownSubText, { color: themeArg.subtext }]}>Matrícula: {item.matricula}</Text>}
                   </TouchableOpacity>
                 ))}
             </ScrollView>
@@ -559,8 +586,14 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
       <ScrollView style={{ padding: 16 }} keyboardShouldPersistTaps="handled">
         
         <View style={{ marginBottom: 4 }}>
-          <Text style={{ fontWeight: '800', fontSize: 22, color: theme.text }}>Estoque</Text>
-          <Text style={{ color: theme.subtext, fontSize: 13, marginTop: 2 }}>Inventário de equipamentos</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MaterialIcons name="inventory-2" size={19} color={theme.primary} style={{ marginRight: 7 }} />
+            <Text style={{ fontWeight: '800', fontSize: 22, color: theme.text }}>Inventário</Text>
+            <View style={{ marginLeft: 8, paddingHorizontal: 8, paddingVertical: 2, borderRadius: RADIUS.pill, backgroundColor: theme.primarySoft }}>
+              <Text style={{ color: theme.primary, fontSize: 11, fontWeight: '800' }}>{inventario.length}</Text>
+            </View>
+          </View>
+          <Text style={{ color: theme.subtext, fontSize: 13, marginTop: 2 }}>Gestão de equipamentos</Text>
         </View>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15, marginTop: 12 }}>
           <TouchableOpacity onPress={exportarPDF} style={[styles.toolBtn, { backgroundColor: theme.cardAlt, borderColor: theme.border }]} activeOpacity={0.75}>
@@ -595,10 +628,10 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
         {inventarioFiltrado.length > 0 && (
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15, marginLeft: 5 }}>
             <TouchableOpacity onPress={toggleSelectAll} style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: isAllSelected ? '#1DB954' : '#555', backgroundColor: isAllSelected ? '#1DB954' : 'transparent', alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
+              <View style={{ width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: isAllSelected ? theme.primary : theme.border, backgroundColor: isAllSelected ? theme.primary : 'transparent', alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
                 {isAllSelected && <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>✓</Text>}
               </View>
-              <Text style={{ color: '#aaa', fontWeight: 'bold', fontSize: 14 }}>
+              <Text style={{ color: theme.subtext, fontWeight: 'bold', fontSize: 14 }}>
                 {isAllSelected ? 'Desmarcar Todos' : `Selecionar Todos (${inventarioFiltrado.length})`}
               </Text>
             </TouchableOpacity>
@@ -606,26 +639,26 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
         )}
 
         {itemEmprestimo && (
-          <Card theme={theme} style={{ borderColor: '#FFAE00', borderWidth: 2, marginBottom: 20 }}>
+          <Card theme={theme} style={{ borderColor: theme.sec, borderWidth: 2, marginBottom: 20 }}>
             <Text style={{ color: theme.text, fontWeight: 'bold', marginBottom: 5 }}>Processo de Empréstimo: {itemEmprestimo.nome}</Text>
             <Text style={{ color: theme.subtext, marginBottom: 5 }}>Defina o destinatário:</Text>
             {users.map((u) => (
               <TouchableOpacity key={u.login} style={{ padding: 10, borderBottomWidth: 1, borderColor: theme.border }} onPress={() => setQuemVaiPegar(u.login)}>
-                <Text style={{ color: quemVaiPegar === u.login ? '#FFAE00' : theme.text }}>{u.login}</Text>
+                <Text style={{ color: quemVaiPegar === u.login ? theme.sec : theme.text }}>{u.login}</Text>
               </TouchableOpacity>
             ))}
             <View style={{ flexDirection: 'row', marginTop: 10 }}>
-              <Btn title="CONFIRMAR" onPress={emprestar} theme={theme} style={{ flex: 1, marginRight: 5, backgroundColor: '#FFAE00' }} />
+              <Btn title="CONFIRMAR" onPress={emprestar} theme={theme} style={{ flex: 1, marginRight: 5, backgroundColor: theme.sec }} />
               <Btn title="CANCELAR" onPress={() => setItemEmprestimo(null)} theme={theme} danger style={{ flex: 1 }} />
             </View>
           </Card>
         )}
 
         {inventarioFiltrado.map((item) => (
-          <Card key={item.id} theme={theme} style={{ flexDirection: 'row', alignItems: 'flex-start', borderColor: item.emprestadoPara ? '#FFAE00' : (selectedInventoryItems.includes(item.id) ? '#ff4444' : theme.border), borderWidth: selectedInventoryItems.includes(item.id) ? 2 : 1, marginBottom: 10 }}>
-            
+          <Card key={item.id} theme={theme} style={{ flexDirection: 'row', alignItems: 'flex-start', borderColor: item.emprestadoPara ? theme.sec : (selectedInventoryItems.includes(item.id) ? theme.offline : theme.border), borderWidth: selectedInventoryItems.includes(item.id) ? 2 : 1, marginBottom: 10 }}>
+
             <TouchableOpacity onPress={() => toggleSelectInventoryItem(item.id)} style={{ marginRight: 15, marginTop: 5 }}>
-              <View style={{ width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: selectedInventoryItems.includes(item.id) ? '#ff4444' : '#555', backgroundColor: selectedInventoryItems.includes(item.id) ? '#ff4444' : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: selectedInventoryItems.includes(item.id) ? theme.offline : theme.border, backgroundColor: selectedInventoryItems.includes(item.id) ? theme.offline : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
                 {selectedInventoryItems.includes(item.id) && <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>✓</Text>}
               </View>
             </TouchableOpacity>
@@ -633,13 +666,13 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 16 }}>{item.responsavel || item.nome || 'Não Atribuído'}</Text>
-                {item.emprestadoPara && <Text style={{ color: '#FFAE00', fontSize: 10, fontWeight: 'bold', marginLeft: 5 }}>(EMPRESTADO)</Text>}
+                {item.emprestadoPara && <Text style={{ color: theme.sec, fontSize: 10, fontWeight: 'bold', marginLeft: 5 }}>(EMPRESTADO)</Text>}
               </View>
               <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>Localização: {item.predio || ''} - {item.setor || 'N/A'}</Text>
-              
+
               <View style={{ marginTop: 8 }}>
                 {item.equipamentosUnificados && item.equipamentosUnificados.map((eq, i) => (
-                  <Text key={i} style={{ color: eq.status === 'Indisponível' ? '#ff4444' : theme.subtext, fontSize: 11, marginTop: 3 }}>
+                  <Text key={i} style={{ color: eq.status === 'Indisponível' ? theme.offline : theme.subtext, fontSize: 11, marginTop: 3 }}>
                     • {eq.tipo}: {eq.marca || 'S/D'} (Ref: {eq.tombo}) {eq.status === 'Indisponível' ? ' - FALHA TÉCNICA' : ''}
                   </Text>
                 ))}
@@ -650,38 +683,38 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
               <View style={{ flexDirection: 'column', marginBottom: 8 }}>
                 <TouchableOpacity onPress={() => abrirProntuario(item)} style={{ backgroundColor: theme.inputBg, padding: 8, borderRadius: 5, marginBottom: 5, borderWidth: 1, borderColor: theme.border, alignItems: 'center' }}><Text style={{ fontSize: 12, color: theme.primary, fontWeight: 'bold' }}>Analisar Registo</Text></TouchableOpacity>
                 {item.emprestadoPara ? (
-                  <TouchableOpacity onPress={() => devolver(item)} style={{ backgroundColor: '#FFAE00', padding: 8, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 10, color: '#000', fontWeight: 'bold' }}>PROCESSAR DEVOLUÇÃO</Text></TouchableOpacity>
+                  <TouchableOpacity onPress={() => devolver(item)} style={{ backgroundColor: theme.sec, padding: 8, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 10, color: '#000', fontWeight: 'bold' }}>PROCESSAR DEVOLUÇÃO</Text></TouchableOpacity>
                 ) : (
-                  <TouchableOpacity onPress={() => setItemEmprestimo(item)} style={{ backgroundColor: '#1DB954', padding: 8, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 10, color: '#fff', fontWeight: 'bold' }}>AUTORIZAR EMPRÉSTIMO</Text></TouchableOpacity>
+                  <TouchableOpacity onPress={() => setItemEmprestimo(item)} style={{ backgroundColor: theme.primary, padding: 8, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 10, color: '#fff', fontWeight: 'bold' }}>AUTORIZAR EMPRÉSTIMO</Text></TouchableOpacity>
                 )}
               </View>
-              <TouchableOpacity onPress={() => handleExcluir(item)} style={{ padding: 4 }}><Text style={{ fontSize: 12, color: '#ff4444', fontWeight: 'bold' }}>Remover</Text></TouchableOpacity>
+              <TouchableOpacity onPress={() => handleExcluir(item)} style={{ padding: 4 }}><Text style={{ fontSize: 12, color: theme.offline, fontWeight: 'bold' }}>Remover</Text></TouchableOpacity>
             </View>
           </Card>
         ))}
       </ScrollView>
 
       <Modal visible={isAddModalOpen} transparent animationType="slide">
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center', padding: 15 }}>
-          <View style={{ width: '100%', maxWidth: 500, backgroundColor: '#121212', borderRadius: 12, overflow: 'hidden', maxHeight: '95%' }}>
-            <View style={{ backgroundColor: '#1DB954', padding: 15, alignItems: 'center' }}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>SISTEMA DE LEVANTAMENTO</Text></View>
+        <View style={{ flex: 1, backgroundColor: theme.overlay, justifyContent: 'center', alignItems: 'center', padding: 15 }}>
+          <View style={{ width: '100%', maxWidth: 500, backgroundColor: theme.surface, borderRadius: 12, overflow: 'hidden', maxHeight: '95%' }}>
+            <View style={{ backgroundColor: theme.primary, padding: 15, alignItems: 'center' }}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>SISTEMA DE LEVANTAMENTO</Text></View>
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" style={{ padding: 20 }}>
-              
+
               {currentStep === 1 && (
                 <View style={{ zIndex: 10 }}>
-                  <Text style={styles.tituloPasso}>Dados de Localização</Text>
-                  
-                  <Text style={styles.label}>Prédio</Text>
+                  <Text style={[styles.tituloPasso, { color: theme.primary }]}>Dados de Localização</Text>
+
+                  <Text style={[styles.label, { color: theme.subtext }]}>Prédio</Text>
                   <View style={{ zIndex: activeDropdown === 'predio' ? 100 : 1 }}>
                     {renderAutocomplete(predio, setPredio, 'predio', 'Definir edifício...', PREDIOS, p => p, p => setPredio(p))}
                   </View>
 
-                  <Text style={styles.label}>Departamento</Text>
+                  <Text style={[styles.label, { color: theme.subtext }]}>Departamento</Text>
                   <View style={{ zIndex: activeDropdown === 'setor' ? 100 : 1 }}>
                     {renderAutocomplete(setor, setSetor, 'setor', 'Definir secção...', SETORES_UNIDADES, s => s, s => setSetor(s))}
                   </View>
 
-                  <Text style={styles.label}>Posicionamento Físico</Text>
+                  <Text style={[styles.label, { color: theme.subtext }]}>Posicionamento Físico</Text>
                   <View style={{ zIndex: activeDropdown === 'local' ? 100 : 1 }}>
                     {renderAutocomplete(local, setLocal, 'local', 'Especificar localização...', LOCAIS_FISICOS, l => l, l => setLocal(l))}
                   </View>
@@ -690,42 +723,42 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
               {currentStep === 2 && (
                 <View style={{ zIndex: 10 }}>
-                  <Text style={styles.tituloPasso}>Especificações Técnicas</Text>
-                  <Text style={styles.label}>Categoria do Hardware</Text>
+                  <Text style={[styles.tituloPasso, { color: theme.primary }]}>Especificações Técnicas</Text>
+                  <Text style={[styles.label, { color: theme.subtext }]}>Categoria do Hardware</Text>
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 }}>
                     {PILLS_EQUIPAMENTOS.map(tipo => (
-                      <TouchableOpacity key={tipo} onPress={() => { setSelectedPill(tipo); setMarcaAtual(''); setTomboAtual(''); }} style={[styles.pill, selectedPill === tipo ? styles.pillActive : styles.pillInactive, { marginBottom: 10 }]}>
-                        <Text style={{ color: selectedPill === tipo ? '#fff' : '#aaa', fontSize: 12, fontWeight: 'bold' }}>{tipo}</Text>
+                      <TouchableOpacity key={tipo} onPress={() => { setSelectedPill(tipo); setMarcaAtual(''); setTomboAtual(''); }} style={[styles.pill, { marginBottom: 10, backgroundColor: selectedPill === tipo ? theme.primary : 'transparent', borderColor: selectedPill === tipo ? theme.primary : theme.border }]}>
+                        <Text style={{ color: selectedPill === tipo ? '#fff' : theme.subtext, fontSize: 12, fontWeight: 'bold' }}>{tipo}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
 
-                  <Text style={[styles.label, { textTransform: 'uppercase' }]}>REGISTO: {selectedPill}</Text>
+                  <Text style={[styles.label, { color: theme.subtext, textTransform: 'uppercase' }]}>REGISTO: {selectedPill}</Text>
                   <View style={{ zIndex: activeDropdown === 'marcaAtual' ? 100 : 1 }}>
-                    <Text style={styles.label}>Fabricante / Modelo</Text>
+                    <Text style={[styles.label, { color: theme.subtext }]}>Fabricante / Modelo</Text>
                     {renderAutocomplete(marcaAtual, setMarcaAtual, 'marcaAtual', 'Especificar fabricante...', getMarcas(selectedPill), m => m, m => setMarcaAtual(m))}
-                    
-                    <Text style={styles.label}>Código de Patrimônio</Text>
+
+                    <Text style={[styles.label, { color: theme.subtext }]}>Código de Patrimônio</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <TextInput style={[styles.inputModal, { flex: 1, marginVertical: 0 }]} value={tomboAtual} onChangeText={setTomboAtual} keyboardType="numeric" placeholder="Número de série interno" placeholderTextColor="#666"/>
-                      <TouchableOpacity onPress={() => openScanner('equipamento_atual')} style={styles.btnScan}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>LEITURA DIGITAL</Text></TouchableOpacity>
+                      <TextInput style={[styles.inputModal, { flex: 1, marginVertical: 0, backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]} value={tomboAtual} onChangeText={setTomboAtual} keyboardType="numeric" placeholder="Número de série interno" placeholderTextColor={theme.subtext}/>
+                      <TouchableOpacity onPress={() => openScanner('equipamento_atual')} style={[styles.btnScan, { backgroundColor: theme.inputBg, borderColor: theme.primary }]}><Text style={{ color: theme.primary, fontWeight: 'bold', fontSize: 12 }}>LEITURA DIGITAL</Text></TouchableOpacity>
                     </View>
                   </View>
 
-                  <TouchableOpacity onPress={handleAdicionarEquipamento} style={{ alignSelf: 'center', marginTop: 20, padding: 10 }}><Text style={{ color: '#1DB954', fontWeight: 'bold', fontSize: 14 }}>Vincular novo componente</Text></TouchableOpacity>
+                  <TouchableOpacity onPress={handleAdicionarEquipamento} style={{ alignSelf: 'center', marginTop: 20, padding: 10 }}><Text style={{ color: theme.primary, fontWeight: 'bold', fontSize: 14 }}>Vincular novo componente</Text></TouchableOpacity>
 
                   {listaEquipamentos.length > 0 && (
-                    <View style={{ marginTop: 20, borderTopWidth: 1, borderTopColor: '#333', paddingTop: 15 }}>
-                      <Text style={{ color: '#aaa', fontSize: 12, marginBottom: 10 }}>Componentes vinculados no processo atual:</Text>
+                    <View style={{ marginTop: 20, borderTopWidth: 1, borderTopColor: theme.border, paddingTop: 15 }}>
+                      <Text style={{ color: theme.subtext, fontSize: 12, marginBottom: 10 }}>Componentes vinculados no processo atual:</Text>
                       {listaEquipamentos.map((eq) => (
-                        <View key={eq.id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#2a2a2a', padding: 12, borderRadius: 6, marginBottom: 8 }}>
+                        <View key={eq.id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: theme.cardAlt, padding: 12, borderRadius: 6, marginBottom: 8 }}>
                           <View style={{ flex: 1 }}>
-                            <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>{eq.tipo}</Text>
-                            <Text style={{ color: '#aaa', fontSize: 12 }}>Ref: {eq.tombo} | {eq.marca || 'S/D'}</Text>
+                            <Text style={{ color: theme.text, fontSize: 14, fontWeight: 'bold' }}>{eq.tipo}</Text>
+                            <Text style={{ color: theme.subtext, fontSize: 12 }}>Ref: {eq.tombo} | {eq.marca || 'S/D'}</Text>
                           </View>
                           <View style={{ flexDirection: 'row' }}>
-                            <TouchableOpacity onPress={() => editarEquipamento(eq)} style={{ padding: 10 }}><Text style={{ color: '#FFAE00', fontWeight: 'bold', fontSize: 12 }}>ALTERAR</Text></TouchableOpacity>
-                            <TouchableOpacity onPress={() => removerEquipamento(eq.id)} style={{ padding: 10 }}><Text style={{ color: '#ff4444', fontWeight: 'bold', fontSize: 12 }}>REMOVER</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => editarEquipamento(eq)} style={{ padding: 10 }}><Text style={{ color: theme.sec, fontWeight: 'bold', fontSize: 12 }}>ALTERAR</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => removerEquipamento(eq.id)} style={{ padding: 10 }}><Text style={{ color: theme.offline, fontWeight: 'bold', fontSize: 12 }}>REMOVER</Text></TouchableOpacity>
                           </View>
                         </View>
                       ))}
@@ -736,14 +769,14 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
               {currentStep === 3 && (
                 <View style={{ zIndex: 10 }}>
-                  <Text style={styles.tituloPasso}>Atribuição de Responsabilidade</Text>
-                  
-                  <Text style={styles.label}>Responsável Pelo Bem</Text>
+                  <Text style={[styles.tituloPasso, { color: theme.primary }]}>Atribuição de Responsabilidade</Text>
+
+                  <Text style={[styles.label, { color: theme.subtext }]}>Responsável Pelo Bem</Text>
                   <View style={{ zIndex: activeDropdown === 'responsavel' ? 100 : 1 }}>
                     {renderAutocomplete(responsavel, setResponsavel, 'responsavel', 'Pesquisar colaborador...', SERVIDORES, s => s.nome, s => { setResponsavel(s.nome); setMatricula(s.matricula); })}
                   </View>
 
-                  <Text style={styles.label}>Técnico Inventariante</Text>
+                  <Text style={[styles.label, { color: theme.subtext }]}>Técnico Inventariante</Text>
                   <View style={{ zIndex: activeDropdown === 'responsavelPeca' ? 100 : 1 }}>
                     {renderAutocomplete(responsavelPeca, setResponsavelPeca, 'responsavelPeca', 'Pesquisar equipa técnica...', RESPONSAVEIS_TECNICOS, s => s.nome, s => setResponsavelPeca(s.nome))}
                   </View>
@@ -752,32 +785,32 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
               {currentStep === 4 && (
                 <View>
-                  <Text style={[styles.tituloPasso, { textTransform: 'uppercase' }]}>PEÇA DE INVENTÁRIO</Text>
-                  <View style={{ backgroundColor: '#1e1e1e', padding: 15, borderRadius: 8, borderWidth: 1, borderColor: '#333' }}>
-                    <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Prédio:</Text> {predio}</Text>
-                    <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Departamento:</Text> {setor}</Text>
-                    <Text style={[styles.resumoTexto, { marginBottom: 15 }]}><Text style={{fontWeight: 'bold'}}>Localização Específica:</Text> {local}</Text>
-                    <Text style={[styles.resumoTexto, { fontWeight: 'bold', color: '#1DB954' }]}>Relação de Hardware:</Text>
-                    {listaEquipamentos.map((eq, index) => (<Text key={index} style={styles.resumoTexto}>- {eq.tipo} | Cód: {eq.tombo} | Fab: {eq.marca || 'S/D'}</Text>))}
-                    <View style={{ marginVertical: 10, height: 1, backgroundColor: '#333' }} />
-                    
+                  <Text style={[styles.tituloPasso, { color: theme.primary, textTransform: 'uppercase' }]}>PEÇA DE INVENTÁRIO</Text>
+                  <View style={{ backgroundColor: theme.inputBg, padding: 15, borderRadius: 8, borderWidth: 1, borderColor: theme.border }}>
+                    <Text style={[styles.resumoTexto, { color: theme.text }]}><Text style={{fontWeight: 'bold'}}>Prédio:</Text> {predio}</Text>
+                    <Text style={[styles.resumoTexto, { color: theme.text }]}><Text style={{fontWeight: 'bold'}}>Departamento:</Text> {setor}</Text>
+                    <Text style={[styles.resumoTexto, { color: theme.text, marginBottom: 15 }]}><Text style={{fontWeight: 'bold'}}>Localização Específica:</Text> {local}</Text>
+                    <Text style={[styles.resumoTexto, { fontWeight: 'bold', color: theme.primary }]}>Relação de Hardware:</Text>
+                    {listaEquipamentos.map((eq, index) => (<Text key={index} style={[styles.resumoTexto, { color: theme.text }]}>- {eq.tipo} | Cód: {eq.tombo} | Fab: {eq.marca || 'S/D'}</Text>))}
+                    <View style={{ marginVertical: 10, height: 1, backgroundColor: theme.border }} />
+
                     {/* MODIFICADO AQUI: Utilizador Atribuído para Responsável Pelo Bem */}
-                    <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Responsável Pelo Bem:</Text> {responsavel}</Text>
-                    
-                    <Text style={styles.resumoTexto}><Text style={{fontWeight: 'bold'}}>Técnico Inventariante:</Text> {responsavelPeca || responsavel}</Text>
+                    <Text style={[styles.resumoTexto, { color: theme.text }]}><Text style={{fontWeight: 'bold'}}>Responsável Pelo Bem:</Text> {responsavel}</Text>
+
+                    <Text style={[styles.resumoTexto, { color: theme.text }]}><Text style={{fontWeight: 'bold'}}>Técnico Inventariante:</Text> {responsavelPeca || responsavel}</Text>
                   </View>
                 </View>
               )}
 
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30, marginBottom: 10 }}>
-                {currentStep === 1 ? (<TouchableOpacity onPress={fecharModal} style={[styles.btnNav, { backgroundColor: 'transparent', borderColor: '#ff4444', borderWidth: 1 }]}><Text style={{ color: '#ff4444', fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>) : (<TouchableOpacity onPress={etapaAnterior} style={[styles.btnNav, { backgroundColor: 'transparent', borderColor: '#1DB954', borderWidth: 1 }]}><Text style={{ color: '#1DB954', fontWeight: 'bold' }}>RETROCEDER</Text></TouchableOpacity>)}
-                
+                {currentStep === 1 ? (<TouchableOpacity onPress={fecharModal} style={[styles.btnNav, { backgroundColor: 'transparent', borderColor: theme.offline, borderWidth: 1 }]}><Text style={{ color: theme.offline, fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>) : (<TouchableOpacity onPress={etapaAnterior} style={[styles.btnNav, { backgroundColor: 'transparent', borderColor: theme.primary, borderWidth: 1 }]}><Text style={{ color: theme.primary, fontWeight: 'bold' }}>RETROCEDER</Text></TouchableOpacity>)}
+
                 {currentStep === 4 ? (
-                  <TouchableOpacity onPress={adicionarItem} disabled={isSaving} style={[styles.btnNav, { backgroundColor: isSaving ? '#555' : '#1DB954' }]}>
+                  <TouchableOpacity onPress={adicionarItem} disabled={isSaving} style={[styles.btnNav, { backgroundColor: isSaving ? theme.border : theme.primary }]}>
                     <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? 'A PROCESSAR...' : 'CONSOLIDAR DADOS'}</Text>
                   </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity onPress={proximaEtapa} style={[styles.btnNav, { backgroundColor: '#1DB954' }]}><Text style={{ color: '#fff', fontWeight: 'bold' }}>PROSSEGUIR</Text></TouchableOpacity>
+                  <TouchableOpacity onPress={proximaEtapa} style={[styles.btnNav, { backgroundColor: theme.primary }]}><Text style={{ color: '#fff', fontWeight: 'bold' }}>PROSSEGUIR</Text></TouchableOpacity>
                 )}
               </View>
 
@@ -789,38 +822,38 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
       <Modal visible={isScannerOpen} animationType="slide" transparent={false} onRequestClose={() => setIsScannerOpen(false)}>
         <View style={{ flex: 1, backgroundColor: '#000' }}>
           <CameraView style={{ flex: 1 }} facing="back" onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}>
-            <View style={{ flex: 1, backgroundColor: 'transparent', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: 40 }}><TouchableOpacity onPress={() => setIsScannerOpen(false)} style={{ backgroundColor: '#ff4444', padding: 15, borderRadius: 10 }}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>INTERROMPER LEITURA</Text></TouchableOpacity></View>
+            <View style={{ flex: 1, backgroundColor: 'transparent', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: 40 }}><TouchableOpacity onPress={() => setIsScannerOpen(false)} style={{ backgroundColor: theme.offline, padding: 15, borderRadius: 10 }}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>INTERROMPER LEITURA</Text></TouchableOpacity></View>
           </CameraView>
-          <View style={{ position: 'absolute', top: '35%', left: '15%', width: '70%', height: '30%', borderWidth: 2, borderColor: '#1DB954', borderRadius: 10, backgroundColor: 'rgba(29, 185, 84, 0.1)' }} pointerEvents="none" />
+          <View style={{ position: 'absolute', top: '35%', left: '15%', width: '70%', height: '30%', borderWidth: 2, borderColor: theme.primary, borderRadius: 10, backgroundColor: theme.primarySoft }} pointerEvents="none" />
         </View>
       </Modal>
 
       <Modal visible={historyModalVisible} animationType="slide" transparent={true} onRequestClose={() => setHistoryModalVisible(false)}>
         {selectedItemHistory && (
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', padding: 20 }}>
-              
+            <View style={{ flex: 1, backgroundColor: theme.overlay, justifyContent: 'center', padding: 20 }}>
+
               <View style={{ backgroundColor: theme.card, borderRadius: 15, padding: 20, maxHeight: '85%', borderWidth: 1, borderColor: theme.border, flexShrink: 1 }}>
-                
+
                 <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
                   <View style={{ borderBottomWidth: 1, borderBottomColor: theme.border, paddingBottom: 15, marginBottom: 15 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                      <Text style={{ color: theme.tert || '#1DB954', fontSize: 18, fontWeight: 'bold' }}>Painel Analítico</Text>
-                      <TouchableOpacity onPress={() => setIsAddingDefect(!isAddingDefect)} style={{ backgroundColor: isAddingDefect ? '#555' : '#ff4444', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6 }}>
+                      <Text style={{ color: theme.tert, fontSize: 18, fontWeight: 'bold' }}>Painel Analítico</Text>
+                      <TouchableOpacity onPress={() => setIsAddingDefect(!isAddingDefect)} style={{ backgroundColor: isAddingDefect ? theme.border : theme.offline, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6 }}>
                         <Text style={{ color: '#fff', fontSize: 11, fontWeight: 'bold' }}>{isAddingDefect ? 'CANCELAR AÇÃO' : 'APONTAR FALHA'}</Text>
                       </TouchableOpacity>
                     </View>
 
                     {isEditingResponsavel ? (
                       <View style={{ marginTop: 5 }}>
-                        <TextInput 
-                          style={[styles.inputModal, { padding: 8, minHeight: 35, marginBottom: 5 }]}
+                        <TextInput
+                          style={[styles.inputModal, { padding: 8, minHeight: 35, marginBottom: 5, backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]}
                           value={editResponsavelName} onChangeText={setEditResponsavelName}
-                          placeholder="Especificar responsabilidade..." placeholderTextColor="#666"
+                          placeholder="Especificar responsabilidade..." placeholderTextColor={theme.subtext}
                         />
                         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                          <TouchableOpacity onPress={() => setIsEditingResponsavel(false)} style={{ padding: 8, marginRight: 10 }}><Text style={{ color: '#aaa', fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>
-                          <TouchableOpacity onPress={salvarEdicaoResponsavel} disabled={isSaving} style={{ backgroundColor: isSaving ? '#555' : '#1DB954', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 }}>
+                          <TouchableOpacity onPress={() => setIsEditingResponsavel(false)} style={{ padding: 8, marginRight: 10 }}><Text style={{ color: theme.subtext, fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>
+                          <TouchableOpacity onPress={salvarEdicaoResponsavel} disabled={isSaving} style={{ backgroundColor: isSaving ? theme.border : theme.primary, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 }}>
                             <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? 'A PROCESSAR...' : 'APLICAR'}</Text>
                           </TouchableOpacity>
                         </View>
@@ -831,7 +864,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
                           {selectedItemHistory.responsavel || selectedItemHistory.nome || 'Não Atribuído'}
                         </Text>
                         <TouchableOpacity onPress={() => { setEditResponsavelName(selectedItemHistory.responsavel || selectedItemHistory.nome || ''); setIsEditingResponsavel(true); }}>
-                          <Text style={{ color: '#FFAE00', fontSize: 12, fontWeight: 'bold' }}>ALTERAR DADOS</Text>
+                          <Text style={{ color: theme.sec, fontSize: 12, fontWeight: 'bold' }}>ALTERAR DADOS</Text>
                         </TouchableOpacity>
                       </View>
                     )}
@@ -839,53 +872,53 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
                   {isAddingDefect ? (
                     <View>
-                      <Text style={{ color: '#ff4444', fontWeight: 'bold', marginBottom: 10 }}>Identificar componente comprometido:</Text>
+                      <Text style={{ color: theme.offline, fontWeight: 'bold', marginBottom: 10 }}>Identificar componente comprometido:</Text>
                       {(selectedItemHistory.equipamentosUnificados || []).map((eq, i) => (
-                        <TouchableOpacity 
+                        <TouchableOpacity
                           key={i} onPress={() => toggleDefectEq(eq.tombo)}
-                          style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#1e1e1e', padding: 12, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: selectedDefectEqs.includes(eq.tombo) ? '#ff4444' : '#333' }}
+                          style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: theme.inputBg, padding: 12, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: selectedDefectEqs.includes(eq.tombo) ? theme.offline : theme.border }}
                         >
-                          <View style={{ width: 20, height: 20, borderRadius: 4, borderWidth: 2, borderColor: selectedDefectEqs.includes(eq.tombo) ? '#ff4444' : '#888', backgroundColor: selectedDefectEqs.includes(eq.tombo) ? '#ff4444' : 'transparent', marginRight: 10, alignItems: 'center', justifyContent: 'center' }}>
+                          <View style={{ width: 20, height: 20, borderRadius: 4, borderWidth: 2, borderColor: selectedDefectEqs.includes(eq.tombo) ? theme.offline : theme.subtext, backgroundColor: selectedDefectEqs.includes(eq.tombo) ? theme.offline : 'transparent', marginRight: 10, alignItems: 'center', justifyContent: 'center' }}>
                             {selectedDefectEqs.includes(eq.tombo) && <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>✓</Text>}
                           </View>
-                          <Text style={{ color: '#fff', fontSize: 12 }}>{eq.tipo} - {eq.marca || 'S/D'} ({eq.tombo})</Text>
+                          <Text style={{ color: theme.text, fontSize: 12 }}>{eq.tipo} - {eq.marca || 'S/D'} ({eq.tombo})</Text>
                         </TouchableOpacity>
                       ))}
 
-                      <Text style={{ color: '#888', fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>Diagnóstico Técnico Preliminar:</Text>
-                      <TextInput 
-                        style={[styles.inputModal, { minHeight: 80, textAlignVertical: 'top' }]} placeholder="Relatar sintomas do problema..." placeholderTextColor="#666" 
-                        value={defectText} onChangeText={setDefectText} multiline 
+                      <Text style={{ color: theme.subtext, fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>Diagnóstico Técnico Preliminar:</Text>
+                      <TextInput
+                        style={[styles.inputModal, { minHeight: 80, textAlignVertical: 'top', backgroundColor: theme.inputBg, borderColor: theme.border, color: theme.text }]} placeholder="Relatar sintomas do problema..." placeholderTextColor={theme.subtext}
+                        value={defectText} onChangeText={setDefectText} multiline
                       />
 
-                      <TouchableOpacity onPress={salvarDefeito} disabled={isSaving} style={{ backgroundColor: isSaving ? '#555' : '#ff4444', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 20 }}>
+                      <TouchableOpacity onPress={salvarDefeito} disabled={isSaving} style={{ backgroundColor: isSaving ? theme.border : theme.offline, padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 20 }}>
                         <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? 'A PROCESSAR...' : 'CONSOLIDAR RELATÓRIO TÉCNICO'}</Text>
                       </TouchableOpacity>
                     </View>
                   ) : (
                     <View>
-                      <Text style={{ color: '#aaa', fontSize: 12, marginBottom: 8 }}>Selecione o ativo correspondente:</Text>
+                      <Text style={{ color: theme.subtext, fontSize: 12, marginBottom: 8 }}>Selecione o ativo correspondente:</Text>
                       <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 }}>
                         {(selectedItemHistory.equipamentosUnificados || [{ tipo: 'Equipamento Principal', tombo: selectedItemHistory.pat }]).map((eq, i) => (
-                          <TouchableOpacity 
+                          <TouchableOpacity
                             key={i} onPress={() => { setSelectedEqProntuario(eq); setIsEditingEq(false); }}
-                            style={[styles.pill, selectedEqProntuario?.tombo === eq.tombo ? styles.pillActive : styles.pillInactive, { marginBottom: 8, paddingVertical: 6, paddingHorizontal: 12 }]}
+                            style={[styles.pill, { marginBottom: 8, paddingVertical: 6, paddingHorizontal: 12, backgroundColor: selectedEqProntuario?.tombo === eq.tombo ? theme.primary : 'transparent', borderColor: selectedEqProntuario?.tombo === eq.tombo ? theme.primary : theme.border }]}
                           >
-                            <Text style={{ color: selectedEqProntuario?.tombo === eq.tombo ? '#fff' : '#aaa', fontSize: 11, fontWeight: 'bold' }}>{eq.tipo} ({eq.tombo})</Text>
+                            <Text style={{ color: selectedEqProntuario?.tombo === eq.tombo ? '#fff' : theme.subtext, fontSize: 11, fontWeight: 'bold' }}>{eq.tipo} ({eq.tombo})</Text>
                           </TouchableOpacity>
                         ))}
                       </View>
 
-                      <View style={{ backgroundColor: '#1a1a1a', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#333', marginBottom: 15 }}>
+                      <View style={{ backgroundColor: theme.inputBg, padding: 12, borderRadius: 8, borderWidth: 1, borderColor: theme.border, marginBottom: 15 }}>
                         {isEditingEq ? (
                           <View>
-                            <Text style={{ color: '#1DB954', fontWeight: 'bold', marginBottom: 10 }}>Modificação de Ativo</Text>
-                            <TextInput style={[styles.inputModal, { marginBottom: 5, padding: 8, minHeight: 35 }]} placeholder="Especificação (Ex: Monitor)" placeholderTextColor="#666" value={editEqData.tipo} onChangeText={(t) => setEditEqData({...editEqData, tipo: t})} />
-                            <TextInput style={[styles.inputModal, { marginBottom: 5, padding: 8, minHeight: 35 }]} placeholder="Fabricante" placeholderTextColor="#666" value={editEqData.marca} onChangeText={(t) => setEditEqData({...editEqData, marca: t})} />
-                            <TextInput style={[styles.inputModal, { marginBottom: 10, padding: 8, minHeight: 35 }]} placeholder="Código Identificador" placeholderTextColor="#666" value={editEqData.tombo} onChangeText={(t) => setEditEqData({...editEqData, tombo: t})} />
+                            <Text style={{ color: theme.primary, fontWeight: 'bold', marginBottom: 10 }}>Modificação de Ativo</Text>
+                            <TextInput style={[styles.inputModal, { marginBottom: 5, padding: 8, minHeight: 35, backgroundColor: theme.card, borderColor: theme.border, color: theme.text }]} placeholder="Especificação (Ex: Monitor)" placeholderTextColor={theme.subtext} value={editEqData.tipo} onChangeText={(t) => setEditEqData({...editEqData, tipo: t})} />
+                            <TextInput style={[styles.inputModal, { marginBottom: 5, padding: 8, minHeight: 35, backgroundColor: theme.card, borderColor: theme.border, color: theme.text }]} placeholder="Fabricante" placeholderTextColor={theme.subtext} value={editEqData.marca} onChangeText={(t) => setEditEqData({...editEqData, marca: t})} />
+                            <TextInput style={[styles.inputModal, { marginBottom: 10, padding: 8, minHeight: 35, backgroundColor: theme.card, borderColor: theme.border, color: theme.text }]} placeholder="Código Identificador" placeholderTextColor={theme.subtext} value={editEqData.tombo} onChangeText={(t) => setEditEqData({...editEqData, tombo: t})} />
                             <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                              <TouchableOpacity onPress={() => setIsEditingEq(false)} style={{ padding: 8, marginRight: 10 }}><Text style={{ color: '#aaa', fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>
-                              <TouchableOpacity onPress={salvarEdicaoProntuario} disabled={isSaving} style={{ backgroundColor: isSaving ? '#555' : '#1DB954', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 }}>
+                              <TouchableOpacity onPress={() => setIsEditingEq(false)} style={{ padding: 8, marginRight: 10 }}><Text style={{ color: theme.subtext, fontWeight: 'bold' }}>CANCELAR</Text></TouchableOpacity>
+                              <TouchableOpacity onPress={salvarEdicaoProntuario} disabled={isSaving} style={{ backgroundColor: isSaving ? theme.border : theme.primary, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 6 }}>
                                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSaving ? 'A PROCESSAR...' : 'APLICAR DADOS'}</Text>
                               </TouchableOpacity>
                             </View>
@@ -893,13 +926,28 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
                         ) : (
                           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                             <View>
-                              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 14 }}>{selectedEqProntuario?.tipo}</Text>
-                              <Text style={{ color: '#aaa', fontSize: 12 }}>Fabricante: {selectedEqProntuario?.marca || 'S/D'}</Text>
-                              <Text style={{ color: '#aaa', fontSize: 12 }}>Identificador: {selectedEqProntuario?.tombo}</Text>
-                              <Text style={{ color: selectedEqProntuario?.status === 'Indisponível' ? '#ff4444' : '#1DB954', fontSize: 12, fontWeight: 'bold', marginTop: 4 }}>Estado Operacional: {selectedEqProntuario?.status || 'Ativo'}</Text>
+                              <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 14 }}>{selectedEqProntuario?.tipo}</Text>
+                              <Text style={{ color: theme.subtext, fontSize: 12 }}>Fabricante: {selectedEqProntuario?.marca || 'S/D'}</Text>
+                              <Text style={{ color: theme.subtext, fontSize: 12 }}>Identificador: {selectedEqProntuario?.tombo}</Text>
+                              <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', backgroundColor: theme.cardAlt, paddingHorizontal: 8, paddingVertical: 3, borderRadius: RADIUS.pill, marginTop: 6 }}>
+                                <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: selectedEqProntuario?.status === 'Indisponível' ? theme.offline : theme.online, marginRight: 6 }} />
+                                <Text style={{ color: selectedEqProntuario?.status === 'Indisponível' ? theme.offline : theme.online, fontSize: 10, fontWeight: '700', textTransform: 'uppercase' }}>{selectedEqProntuario?.status || 'Ativo'}</Text>
+                              </View>
                             </View>
-                            <TouchableOpacity onPress={iniciarEdicaoProntuario} style={{ backgroundColor: '#333', padding: 8, borderRadius: 6 }}>
-                              <Text style={{ color: '#FFAE00', fontSize: 12, fontWeight: 'bold' }}>GERIR ATIVO</Text>
+                            <TouchableOpacity onPress={iniciarEdicaoProntuario} style={{ backgroundColor: theme.cardAlt, padding: 8, borderRadius: 6 }}>
+                              <Text style={{ color: theme.sec, fontSize: 12, fontWeight: 'bold' }}>GERIR ATIVO</Text>
+                            </TouchableOpacity>
+                          </View>
+                        )}
+
+                        {!isEditingEq && selectedEqProntuario?.tombo && (
+                          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: theme.border }}>
+                            <View style={{ backgroundColor: '#fff', padding: 6, borderRadius: 6 }}>
+                              <QRCode value={selectedEqProntuario.tombo} size={64} getRef={(c) => (qrRef.current = c)} />
+                            </View>
+                            <TouchableOpacity onPress={gerarEtiquetaPDF} style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: theme.primary, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 6 }}>
+                              <MaterialIcons name="qr-code-2" size={16} color="#fff" style={{ marginRight: 6 }} />
+                              <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>GERAR ETIQUETA (PDF)</Text>
                             </TouchableOpacity>
                           </View>
                         )}
@@ -922,7 +970,7 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
                               </View>
                               <View style={{ alignItems: 'center' }}>
                                 {selectedEqProntuario?.status === 'Indisponível' ? (
-                                  <TouchableOpacity onPress={() => liberarEquipamento(selectedEqProntuario)} style={{ backgroundColor: '#1DB954', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 }}>
+                                  <TouchableOpacity onPress={() => liberarEquipamento(selectedEqProntuario)} style={{ backgroundColor: theme.primary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 }}>
                                     <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>REABILITAR COMPONENTE</Text>
                                   </TouchableOpacity>
                                 ) : (
@@ -936,9 +984,9 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
                               <Text style={{ color: theme.subtext, fontStyle: 'italic', textAlign: 'center', marginVertical: 10 }}>Sem registo de manutenção prévio.</Text>
                             ) : (
                               history.map((h) => (
-                                <View key={h.id} style={{ backgroundColor: theme.inputBg, padding: 12, borderRadius: 8, marginBottom: 8, borderLeftWidth: 3, borderLeftColor: h.status === 'FECHADO' ? '#1DB954' : '#ff4444' }}>
+                                <View key={h.id} style={{ backgroundColor: theme.inputBg, padding: 12, borderRadius: 8, marginBottom: 8, borderLeftWidth: 3, borderLeftColor: h.status === 'FECHADO' ? theme.online : theme.offline }}>
                                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                                    <Text style={{ color: h.status === 'FECHADO' ? '#1DB954' : '#ff4444', fontWeight: 'bold', fontSize: 10 }}>{h.status}</Text>
+                                    <Text style={{ color: h.status === 'FECHADO' ? theme.online : theme.offline, fontWeight: 'bold', fontSize: 10 }}>{h.status}</Text>
                                     <Text style={{ color: theme.subtext, fontSize: 10 }}>{new Date(h.dataAbertura).toLocaleDateString()}</Text>
                                   </View>
                                   <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 12 }}>{h.descricao || h.titulo}</Text>
@@ -968,17 +1016,15 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
 const styles = StyleSheet.create({
   toolBtn: { paddingHorizontal: 14, paddingVertical: 9, borderRadius: RADIUS.md, marginRight: 8, marginBottom: 8, borderWidth: 1 },
-  tituloPasso: { fontWeight: '800', fontSize: 19, color: '#22C55E', textAlign: 'center', marginBottom: 20 },
-  label: { color: '#8B96A3', fontSize: 12, fontWeight: '700', marginBottom: 5, marginTop: 10 },
-  inputModal: { backgroundColor: '#1B222B', borderColor: '#232B34', borderWidth: 1, color: '#F1F4F7', padding: 12, borderRadius: RADIUS.md, fontSize: 14, minHeight: 45 },
-  btnScan: { backgroundColor: '#1B222B', padding: 10, borderRadius: RADIUS.md, marginLeft: 8, borderWidth: 1, borderColor: '#22C55E' },
+  tituloPasso: { fontWeight: '800', fontSize: 19, textAlign: 'center', marginBottom: 20 },
+  label: { fontSize: 12, fontWeight: '700', marginBottom: 5, marginTop: 10 },
+  inputModal: { borderWidth: 1, padding: 12, borderRadius: RADIUS.md, fontSize: 14, minHeight: 45 },
+  btnScan: { padding: 10, borderRadius: RADIUS.md, marginLeft: 8, borderWidth: 1 },
   btnNav: { paddingVertical: 12, paddingHorizontal: 20, borderRadius: RADIUS.pill, minWidth: 100, alignItems: 'center' },
   pill: { paddingVertical: 8, paddingHorizontal: 15, borderRadius: RADIUS.pill, borderWidth: 1, marginRight: 10 },
-  pillActive: { backgroundColor: '#22C55E', borderColor: '#22C55E' },
-  pillInactive: { backgroundColor: 'transparent', borderColor: '#3A4552' },
-  resumoTexto: { color: '#D5DAE0', fontSize: 13, marginBottom: 5, lineHeight: 22 },
-  dropdownContainer: { backgroundColor: '#1B222B', borderRadius: RADIUS.md, borderWidth: 1, borderColor: '#22C55E', marginBottom: 10, marginTop: -4, maxHeight: 180, overflow: 'hidden' },
-  dropdownItem: { padding: 12, borderBottomWidth: 1, borderBottomColor: '#232B34' },
-  dropdownText: { color: '#F1F4F7', fontSize: 13, fontWeight: '700' },
-  dropdownSubText: { color: '#8B96A3', fontSize: 10, marginTop: 2 }
+  resumoTexto: { fontSize: 13, marginBottom: 5, lineHeight: 22 },
+  dropdownContainer: { borderRadius: RADIUS.md, borderWidth: 1, marginBottom: 10, marginTop: -4, maxHeight: 180, overflow: 'hidden' },
+  dropdownItem: { padding: 12, borderBottomWidth: 1 },
+  dropdownText: { fontSize: 13, fontWeight: '700' },
+  dropdownSubText: { fontSize: 10, marginTop: 2 }
 });

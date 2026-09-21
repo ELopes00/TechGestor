@@ -131,6 +131,7 @@ export const DataService = {
   },
   async salvarAgendamento(agendamento) { await addDoc(collection(db, "agendamentos"), { ...agendamento, criadoEm: Date.now() }); },
   async deletarAgendamento(id) { await deleteDoc(doc(db, "agendamentos", id)); },
+  async atualizarAgendamento(id, dadosNovos) { await updateDoc(doc(db, "agendamentos", id), dadosNovos); },
 
   // --- AUTH E USUÁRIOS COM AUDITORIA TOTAL ---
   observarAuth(callback) { return onAuthStateChanged(auth, callback); },
@@ -165,7 +166,7 @@ export const DataService = {
     return cred.user;
   },
   
-  async registrar(loginUsuario, senha, nomeCompleto, perfil, predio, emailOpcional, inicio, saida) {
+  async registrar(loginUsuario, senha, nomeCompleto, perfil, predio, emailOpcional, inicio, saida, nivel = null) {
     const emailFormatado = gerarEmailFake(loginUsuario);
     
     const firebaseConfig = {
@@ -189,7 +190,7 @@ export const DataService = {
     
     await setDoc(doc(db, "usuarios", userCred.user.uid), {
       login: loginUsuario, senha: senha, nomeCompleto, emailContato: emailOpcional,
-      perfil, predio, inicio, saida, status: 'ONLINE', uid: userCred.user.uid
+      perfil, predio, inicio, saida, nivel: nivel || null, status: 'ONLINE', uid: userCred.user.uid
     });
 
     await this.salvarLog(`CRIOU NOVO USUÁRIO: ${loginUsuario} (${perfil})`, "ADMINISTRADOR");

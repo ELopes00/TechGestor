@@ -1,5 +1,12 @@
 export const SETORES = ['Administrativo', 'Criminal', 'Civel', 'Palacio', 'Latife', 'Chamado Externo', 'SUBCS'];
 
+export const PRIORIDADES = ['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'];
+
+export const NIVEIS_TECNICO = ['N1', 'N2', 'N3'];
+
+// TODO: substituir pelo link direto do APK (EAS build, Firebase Hosting, Google Drive, etc)
+export const APK_DOWNLOAD_URL = 'https://example.com/techgestor.apk';
+
 export const FRASES_RAPIDAS = [
   '✅ Serviço finalizado.', '📍 Estou a caminho.', '⏳ Aguardando peça.', '👤 Usuário ausente.', '🔧 Testes em andamento.'
 ];

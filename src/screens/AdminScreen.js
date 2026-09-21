@@ -3,9 +3,12 @@ import * as Sharing from 'expo-sharing';
 import { useState, useEffect } from 'react';
 import { Alert, Dimensions, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
 import { RADIUS, SHADOW } from '../theme/themes';
+import { NIVEIS_TECNICO } from '../utils/constants';
+import { calcularMTTR, calcularSLA, formatarMinutos, getStatusCategoria } from '../utils/helpers';
 
 const SETORES = ['Administrativo', 'Criminal', 'Civel', 'Palacio', 'Latife', 'Chamado Externo', 'SUBCS'];
 
@@ -19,6 +22,7 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
   const [inicio, setInicio] = useState(8);
   const [saida, setSaida] = useState(17);
   const [perfilNovo, setPerfilNovo] = useState('TECNICO');
+  const [nivelNovo, setNivelNovo] = useState('N1');
 
   const [modalEditVisible, setModalEditVisible] = useState(false);
   const [editUser, setEditUser] = useState(null);
@@ -48,19 +52,28 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
     }
 
     if (!noHorario) return 'OFFLINE';
-    if (u.status === 'OFFLINE' || !u.status) return 'ONLINE';
+
+    // "Em Evento Externo" é derivado de um Evento real (não um rótulo manual) —
+    // evita mostrar o técnico como escalado num evento externo que não existe.
+    const emEventoExterno = eventos.some((ev) =>
+      ev.tecnico === u.login && ev.tipo === 'EXTERNO' &&
+      ev.status !== 'finalizado' && ev.status !== 'FECHADO' && ev.status !== 'CONCLUIDO'
+    );
+    if (emEventoExterno) return 'EVENTO';
+
+    if (u.status === 'OFFLINE' || !u.status || u.status === 'EVENTO') return 'ONLINE';
 
     return u.status;
   };
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 'ONLINE': return theme.online || '#00cc66';
-      case 'EVENTO': return '#FFAE00';
-      case 'ALMOCO': return theme.tert || '#4488FF'; 
-      case 'INDISPONIVEL': return '#ff4444';
-      case 'OFFLINE': return theme.subtext || '#aaaaaa'; 
-      default: return theme.online || '#00cc66';
+      case 'ONLINE': return theme.online;
+      case 'EVENTO': return theme.sec;
+      case 'ALMOCO': return theme.tert;
+      case 'INDISPONIVEL': return theme.offline;
+      case 'OFFLINE': return theme.subtext;
+      default: return theme.online;
     }
   };
 
@@ -79,11 +92,15 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
     if (statusReal === 'OFFLINE') {
       return Alert.alert('Aviso', 'Este técnico está fora do horário de expediente. O sistema mantém-no Offline.');
     }
+    if (statusReal === 'EVENTO') {
+      return Alert.alert('Aviso', 'Este status vem de um Evento Externo em andamento (tela Eventos) e não pode ser trocado manualmente. Encerre ou reatribua o evento para liberar o técnico.');
+    }
 
+    // "EVENTO" saiu do ciclo manual: agora é sempre derivado de um Evento
+    // Externo real em andamento (ver getStatusReal), nunca um rótulo solto.
     let novoStatus;
     switch(statusReal) {
-      case 'ONLINE': novoStatus = 'EVENTO'; break;
-      case 'EVENTO': novoStatus = 'ALMOCO'; break;
+      case 'ONLINE': novoStatus = 'ALMOCO'; break;
       case 'ALMOCO': novoStatus = 'INDISPONIVEL'; break;
       case 'INDISPONIVEL': novoStatus = 'ONLINE'; break;
       default: novoStatus = 'ONLINE';
@@ -100,22 +117,23 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
   const criarUsuario = async () => {
     if (!loginUsuario || !senha) return Alert.alert('Erro', 'Preencha os campos!');
     try {
-      await DataService.registrar(loginUsuario, senha, nome, perfilNovo, predio, '', inicio, saida);
+      await DataService.registrar(loginUsuario, senha, nome, perfilNovo, predio, '', inicio, saida, perfilNovo === 'TECNICO' ? nivelNovo : null);
       if(addLog) addLog(`CRIOU USUÁRIO: ${loginUsuario} (${perfilNovo})`);
       Alert.alert('Sucesso', `${perfilNovo} cadastrado!`);
-      setNome(''); setLoginUsuario(''); setSenha('');
+      setNome(''); setLoginUsuario(''); setSenha(''); setNivelNovo('N1');
     } catch (e) { Alert.alert('Erro', e.message); }
   };
 
   const salvarEdicao = async () => {
     if (!editUser) return;
     try {
-      const payload = { 
-        nomeCompleto: editUser.nomeCompleto, 
-        predio: editUser.predio, 
-        inicio: editUser.inicio, 
+      const payload = {
+        nomeCompleto: editUser.nomeCompleto,
+        predio: editUser.predio,
+        inicio: editUser.inicio,
         saida: editUser.saida,
-        perfil: editUser.perfil 
+        perfil: editUser.perfil,
+        nivel: editUser.perfil === 'TECNICO' ? (editUser.nivel || 'N1') : null
       };
 
       await DataService.atualizarUsuario(editUser.uid || editUser.id, payload);
@@ -159,7 +177,7 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
 
     const ranking = tecnicos.map(tec => {
       const chamadosDoMes = chamados.filter(c => {
-        if (c.status !== 'FECHADO' || c.tecnico !== tec.login) return false;
+        if (getStatusCategoria(c.status) !== 'CONCLUIDO' || c.tecnico !== tec.login) return false;
         const dataChamado = new Date(c.dataAbertura);
         return dataChamado.getMonth() === mesSelecionado && dataChamado.getFullYear() === anoSelecionado;
       });
@@ -172,7 +190,8 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
 
       return {
         login: tec.login, nome: tec.nomeCompleto || tec.login, inicio: tec.inicio || 8, saida: tec.saida || 17,
-        chamadosFechados: chamadosDoMes.length, eventosConcluidos: eventosDoMes.length, totalProdutividade: chamadosDoMes.length + eventosDoMes.length
+        chamadosFechados: chamadosDoMes.length, eventosConcluidos: eventosDoMes.length, totalProdutividade: chamadosDoMes.length + eventosDoMes.length,
+        slaPercent: calcularSLA(chamadosDoMes), mttrMinutos: calcularMTTR(chamadosDoMes),
       };
     });
 
@@ -190,7 +209,7 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
     const mesNome = mesesNomes[relatorioDate.getMonth()];
     const ano = relatorioDate.getFullYear();
     const html = `
-      <html><head><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" /><style>body { font-family: sans-serif; padding: 40px; color: #333; } .header { text-align: center; border-bottom: 2px solid #1DB954; padding-bottom: 20px; } h1 { color: #1DB954; } table { width: 100%; border-collapse: collapse; margin-top: 20px; } th, td { border-bottom: 1px solid #eee; padding: 15px; text-align: left; } th { background-color: #1DB954; color: #fff; }</style></head><body><div class="header"><h1>TechGestor</h1><div>Relatório Executivo • ${mesNome} ${ano}</div></div><table><tr><th>Técnico</th><th style="text-align: center;">Chamados</th><th style="text-align: center;">Eventos</th><th style="text-align: right;">Total Produtivo</th></tr>${dadosRelatorio.map(t => `<tr><td><strong>${t.nome}</strong></td><td style="text-align: center;">${t.chamadosFechados}</td><td style="text-align: center;">${t.eventosConcluidos}</td><td style="text-align: right; font-weight: bold; color: #1DB954;">${t.totalProdutividade}</td></tr>`).join('')}</table></body></html>
+      <html><head><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" /><style>body { font-family: sans-serif; padding: 40px; color: #333; } .header { text-align: center; border-bottom: 2px solid #0284C7; padding-bottom: 20px; } h1 { color: #0284C7; } table { width: 100%; border-collapse: collapse; margin-top: 20px; } th, td { border-bottom: 1px solid #eee; padding: 15px; text-align: left; } th { background-color: #0284C7; color: #fff; }</style></head><body><div class="header"><h1>TechGestor</h1><div>Relatório Executivo • ${mesNome} ${ano}</div></div><table><tr><th>Técnico</th><th style="text-align: center;">Chamados</th><th style="text-align: center;">Eventos</th><th style="text-align: center;">SLA Cumprido</th><th style="text-align: center;">MTTR</th><th style="text-align: right;">Total Produtivo</th></tr>${dadosRelatorio.map(t => `<tr><td><strong>${t.nome}</strong></td><td style="text-align: center;">${t.chamadosFechados}</td><td style="text-align: center;">${t.eventosConcluidos}</td><td style="text-align: center;">${t.slaPercent == null ? '—' : t.slaPercent + '%'}</td><td style="text-align: center;">${formatarMinutos(t.mttrMinutos)}</td><td style="text-align: right; font-weight: bold; color: #0284C7;">${t.totalProdutividade}</td></tr>`).join('')}</table></body></html>
     `;
     try {
       const { uri } = await Print.printToFileAsync({ html, base64: false });
@@ -203,21 +222,27 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
     <ScrollView style={{ padding: 20 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <View>
-          <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800' }}>Painel Administrativo</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MaterialIcons name="admin-panel-settings" size={19} color={theme.primary} style={{ marginRight: 7 }} />
+            <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800' }}>Painel Administrativo</Text>
+          </View>
           <Text style={{ color: theme.subtext, fontSize: 13, marginTop: 2 }}>Equipe, acessos e relatórios</Text>
         </View>
         {abaAtiva === 'RELATORIOS' && (
-          <TouchableOpacity onPress={exportarPDF} style={[{ backgroundColor: theme.primary, paddingHorizontal: 16, paddingVertical: 10, borderRadius: RADIUS.md }, SHADOW.sm]} activeOpacity={0.85}>
+          <TouchableOpacity onPress={exportarPDF} style={[{ flexDirection: 'row', alignItems: 'center', backgroundColor: theme.primary, paddingHorizontal: 16, paddingVertical: 10, borderRadius: RADIUS.md }, SHADOW.sm]} activeOpacity={0.85}>
+            <MaterialIcons name="picture-as-pdf" size={14} color="#fff" style={{ marginRight: 6 }} />
             <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>EXPORTAR PDF</Text>
           </TouchableOpacity>
         )}
       </View>
 
       <View style={{ flexDirection: 'row', marginBottom: 20, backgroundColor: theme.card, borderRadius: RADIUS.md, padding: 5, borderWidth: 1, borderColor: theme.border }}>
-        <TouchableOpacity onPress={() => setAbaAtiva('USUARIOS')} style={{ flex: 1, paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'USUARIOS' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
+        <TouchableOpacity onPress={() => setAbaAtiva('USUARIOS')} style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'USUARIOS' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
+          <MaterialIcons name="groups" size={14} color={abaAtiva === 'USUARIOS' ? theme.primary : theme.subtext} style={{ marginRight: 5 }} />
           <Text style={{ color: abaAtiva === 'USUARIOS' ? theme.primary : theme.subtext, fontWeight: '700', fontSize: 12 }}>EQUIPE</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setAbaAtiva('RELATORIOS')} style={{ flex: 1, paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'RELATORIOS' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
+        <TouchableOpacity onPress={() => setAbaAtiva('RELATORIOS')} style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'RELATORIOS' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
+          <MaterialIcons name="bar-chart" size={14} color={abaAtiva === 'RELATORIOS' ? theme.primary : theme.subtext} style={{ marginRight: 5 }} />
           <Text style={{ color: abaAtiva === 'RELATORIOS' ? theme.primary : theme.subtext, fontWeight: '700', fontSize: 12 }}>RELATÓRIOS</Text>
         </TouchableOpacity>
       </View>
@@ -225,14 +250,19 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
       {abaAtiva === 'USUARIOS' && (
         <>
           <Card theme={theme}>
-            <Text style={{ color: theme.primary, fontWeight: 'bold', marginBottom: 10 }}>Cadastrar Novo Usuário</Text>
-            
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+              <MaterialIcons name="person-add-alt" size={16} color={theme.primary} style={{ marginRight: 6 }} />
+              <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Cadastrar Novo Usuário</Text>
+            </View>
+
             <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-              <TouchableOpacity onPress={() => setPerfilNovo('TECNICO')} style={{ flex: 1, padding: 10, borderRadius: 8, backgroundColor: perfilNovo === 'TECNICO' ? theme.primary : theme.inputBg, marginRight: 5, alignItems: 'center' }}>
-                <Text style={{ color: perfilNovo === 'TECNICO' ? '#fff' : theme.subtext, fontWeight: 'bold', fontSize: 12 }}>👨‍🔧 TÉCNICO</Text>
+              <TouchableOpacity onPress={() => setPerfilNovo('TECNICO')} style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', padding: 10, borderRadius: 8, backgroundColor: perfilNovo === 'TECNICO' ? theme.primary : theme.inputBg, marginRight: 5, alignItems: 'center' }}>
+                <MaterialIcons name="engineering" size={14} color={perfilNovo === 'TECNICO' ? '#fff' : theme.subtext} style={{ marginRight: 5 }} />
+                <Text style={{ color: perfilNovo === 'TECNICO' ? '#fff' : theme.subtext, fontWeight: 'bold', fontSize: 12 }}>TÉCNICO</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setPerfilNovo('ADM')} style={{ flex: 1, padding: 10, borderRadius: 8, backgroundColor: perfilNovo === 'ADM' ? theme.tert : theme.inputBg, marginLeft: 5, alignItems: 'center' }}>
-                <Text style={{ color: perfilNovo === 'ADM' ? '#fff' : theme.subtext, fontWeight: 'bold', fontSize: 12 }}>🛡️ ADMIN</Text>
+              <TouchableOpacity onPress={() => setPerfilNovo('ADM')} style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', padding: 10, borderRadius: 8, backgroundColor: perfilNovo === 'ADM' ? theme.tert : theme.inputBg, marginLeft: 5, alignItems: 'center' }}>
+                <MaterialIcons name="shield" size={14} color={perfilNovo === 'ADM' ? '#fff' : theme.subtext} style={{ marginRight: 5 }} />
+                <Text style={{ color: perfilNovo === 'ADM' ? '#fff' : theme.subtext, fontWeight: 'bold', fontSize: 12 }}>ADMIN</Text>
               </TouchableOpacity>
             </View>
 
@@ -248,31 +278,58 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
                 </TouchableOpacity>
               ))}
             </View>
+
+            {perfilNovo === 'TECNICO' && (
+              <View style={{ marginTop: 6 }}>
+                <Text style={{ color: theme.subtext, fontSize: 11, fontWeight: '700', marginBottom: 6 }}>NÍVEL DE EXPERIÊNCIA</Text>
+                <View style={styles.row}>
+                  {NIVEIS_TECNICO.map(n => (
+                    <TouchableOpacity key={n} onPress={() => setNivelNovo(n)} style={[styles.chip, { backgroundColor: nivelNovo === n ? theme.tert : theme.inputBg }]}>
+                      <Text style={{ color: nivelNovo === n ? '#fff' : theme.subtext, fontSize: 12, fontFamily: 'monospace', fontWeight: '700' }}>{n}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            )}
+
             <Btn title={`SALVAR ${perfilNovo}`} onPress={criarUsuario} theme={theme} style={{ marginTop: 10 }} />
           </Card>
 
-          <Text style={{ color: theme.text, fontSize: 18, fontWeight: 'bold', marginTop: 20, marginBottom: 10 }}>Equipe Cadastrada</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 10 }}>
+            <MaterialIcons name="groups" size={16} color={theme.primary} style={{ marginRight: 6 }} />
+            <Text style={{ color: theme.text, fontSize: 18, fontWeight: 'bold' }}>Equipe Cadastrada</Text>
+            <View style={{ marginLeft: 8, paddingHorizontal: 8, paddingVertical: 2, borderRadius: RADIUS.pill, backgroundColor: theme.primarySoft }}>
+              <Text style={{ color: theme.primary, fontSize: 11, fontWeight: '800' }}>{users.length}</Text>
+            </View>
+          </View>
           {users.map(u => {
             const statusReal = getStatusReal(u); 
             return (
               <Card key={u.id} theme={theme} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, borderLeftWidth: 4, borderLeftColor: getStatusColor(statusReal) }}>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 16 }}>{u.nomeCompleto || u.login} ({u.login})</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 16 }}>{u.nomeCompleto || u.login} ({u.login})</Text>
+                    {u.perfil === 'TECNICO' && u.nivel && (
+                      <View style={{ marginLeft: 6, paddingHorizontal: 5, paddingVertical: 1, borderRadius: 4, backgroundColor: theme.primarySoft }}>
+                        <Text style={{ color: theme.primary, fontSize: 9, fontWeight: '800', fontFamily: 'monospace' }}>{u.nivel}</Text>
+                      </View>
+                    )}
+                  </View>
                   <Text style={{ color: theme.subtext, fontSize: 12, marginBottom: 4 }}>
                     {u.perfil === 'ADM' ? '🛡️ Admin' : '👨‍🔧 Técnico'} | 🏢 {u.predio} | ⏰ {String(u.inicio).padStart(2, '0')}:00h - {String(u.saida).padStart(2, '0')}:00h
                   </Text>
-                  <TouchableOpacity onPress={() => alternarStatus(u, statusReal)} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 4 }}>
-                      <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: getStatusColor(statusReal), marginRight: 6 }} />
-                      <Text style={{ color: getStatusColor(statusReal), fontSize: 12, fontWeight: 'bold' }}>{getStatusText(statusReal)}</Text>
+                  <TouchableOpacity onPress={() => alternarStatus(u, statusReal)} style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', backgroundColor: theme.cardAlt, paddingHorizontal: 8, paddingVertical: 3, borderRadius: RADIUS.pill, marginTop: 2 }}>
+                      <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: getStatusColor(statusReal), marginRight: 6 }} />
+                      <Text style={{ color: getStatusColor(statusReal), fontSize: 10, fontWeight: '700', textTransform: 'uppercase' }}>{getStatusText(statusReal)}</Text>
                   </TouchableOpacity>
                 </View>
                 
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => abrirModalEdicao(u)} style={{ paddingHorizontal: 10 }}>
-                    <Text style={{ fontSize: 20 }}>✏️</Text>
+                  <TouchableOpacity onPress={() => abrirModalEdicao(u)} style={{ padding: 8, borderRadius: RADIUS.sm, backgroundColor: theme.cardAlt, marginRight: 8 }}>
+                    <MaterialIcons name="edit" size={17} color={theme.primary} />
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => excluirUsuarioDireto(u)} style={{ paddingLeft: 10 }}>
-                    <Text style={{ fontSize: 20 }}>🗑️</Text>
+                  <TouchableOpacity onPress={() => excluirUsuarioDireto(u)} style={{ padding: 8, borderRadius: RADIUS.sm, backgroundColor: theme.cardAlt }}>
+                    <MaterialIcons name="delete-outline" size={17} color={theme.offline} />
                   </TouchableOpacity>
                 </View>
               </Card>
@@ -325,7 +382,7 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
                   backgroundGradientFrom: theme.card,
                   backgroundGradientTo: theme.card,
                   decimalPlaces: 0,
-                  color: (opacity = 1) => `rgba(29, 185, 84, ${opacity})`, 
+                  color: (opacity = 1) => `rgba(2, 132, 199, ${opacity})`,
                   labelColor: (opacity = 1) => theme.subtext,
                   style: { borderRadius: 16 },
                   barPercentage: 0.7,
@@ -341,6 +398,7 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
               <Text style={{ flex: 3, color: theme.subtext, fontWeight: 'bold', fontSize: 12, textTransform: 'uppercase' }}>Técnico</Text>
               <Text style={{ flex: 1.5, color: theme.subtext, fontWeight: 'bold', fontSize: 12, textAlign: 'center', textTransform: 'uppercase' }}>CH</Text>
               <Text style={{ flex: 1.5, color: theme.subtext, fontWeight: 'bold', fontSize: 12, textAlign: 'center', textTransform: 'uppercase' }}>EV</Text>
+              <Text style={{ flex: 1.5, color: theme.subtext, fontWeight: 'bold', fontSize: 12, textAlign: 'center', textTransform: 'uppercase' }}>SLA</Text>
               <Text style={{ flex: 1.5, color: theme.primary, fontWeight: 'bold', fontSize: 12, textAlign: 'right', textTransform: 'uppercase' }}>Total</Text>
             </View>
 
@@ -355,6 +413,7 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
                   </View>
                   <Text style={{ flex: 1.5, color: theme.text, fontSize: 14, textAlign: 'center' }}>{tec.chamadosFechados}</Text>
                   <Text style={{ flex: 1.5, color: theme.text, fontSize: 14, textAlign: 'center' }}>{tec.eventosConcluidos}</Text>
+                  <Text style={{ flex: 1.5, color: tec.slaPercent == null ? theme.subtext : theme.online, fontSize: 13, fontWeight: '700', textAlign: 'center' }}>{tec.slaPercent == null ? '—' : `${tec.slaPercent}%`}</Text>
                   <View style={{ flex: 1.5, alignItems: 'flex-end' }}>
                     <View style={{ backgroundColor: theme.primary, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 12 }}><Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>{tec.totalProdutividade}</Text></View>
                   </View>
@@ -416,6 +475,19 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
                     </TouchableOpacity>
                   ))}
                 </View>
+
+                {editUser.perfil === 'TECNICO' && (
+                  <View style={{ width: '100%' }}>
+                    <Text style={{ color: theme.subtext, fontSize: 11, fontWeight: '700', marginBottom: 6 }}>NÍVEL DE EXPERIÊNCIA</Text>
+                    <View style={[styles.row, { width: '100%', marginBottom: 5 }]}>
+                      {NIVEIS_TECNICO.map(n => (
+                        <TouchableOpacity key={n} onPress={() => setEditUser({...editUser, nivel: n})} style={[styles.chip, { backgroundColor: (editUser.nivel || 'N1') === n ? theme.tert : theme.inputBg }]}>
+                          <Text style={{ color: (editUser.nivel || 'N1') === n ? '#fff' : theme.subtext, fontSize: 11, fontFamily: 'monospace', fontWeight: '700' }}>{n}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
+                )}
               </>
             )}
             

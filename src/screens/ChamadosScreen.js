@@ -2,19 +2,20 @@ import { Camera, CameraView } from 'expo-camera';
 import * as DocumentPicker from 'expo-document-picker';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Image, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { Btn, Card } from '../components';
 import { DataService } from '../services/DataService';
 import { RADIUS } from '../theme/themes';
-import { CHECKLIST_PADRAO, FRASES_RAPIDAS, SETORES } from '../utils/constants';
-import { getCorPrioridade, getTempoDecorrido, isSlaVencido } from '../utils/helpers';
+import { CHECKLIST_PADRAO, FRASES_RAPIDAS, PRIORIDADES, SETORES } from '../utils/constants';
+import { getCorPrioridade, getStatusCategoria, getTempoDecorrido, isSlaVencido } from '../utils/helpers';
 
 // STATUS ATUALIZADOS CONFORME O PEDIDO
 const STATUS_OPCOES = [
   'Aguardando atendimento', 'Em andamento', 'Em separação de equipamentos', 'Instalado', 'finalizado'
 ];
 
-export default function ChamadosScreen({ user, chamados, users, inventario, addLog, theme, showPush }) {
+export default function ChamadosScreen({ user, chamados, users, inventario, addLog, theme, showPush, filtroStatusInicial, mostrarNovoChamado = true }) {
   
   // NOVOS CAMPOS DO FORMULÁRIO
   const [tituloChamado, setTituloChamado] = useState('');
@@ -26,7 +27,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   const [setor, setSetor] = useState(SETORES[0]);
   const [tecSel, setTecSel] = useState('');
   const [equipSel, setEquipSel] = useState(null);
-  const [prioridade, setPrioridade] = useState('NORMAL');
+  const [prioridade, setPrioridade] = useState('BAIXA');
   const [formAnexos, setFormAnexos] = useState([]);
   
   const [showTecs, setShowTecs] = useState(false);
@@ -34,10 +35,12 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   const [showEquips, setShowEquips] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filtroPrioridade, setFiltroPrioridade] = useState('TODOS');
+  const [filtroStatus, setFiltroStatus] = useState(filtroStatusInicial || 'TODOS');
   
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedChamado, setSelectedChamado] = useState(null);
   const [chatMsg, setChatMsg] = useState('');
+  const [notaInternaMsg, setNotaInternaMsg] = useState('');
   const [transferId, setTransferId] = useState(null);
   const [abaAtiva, setAbaAtiva] = useState('MEUS');
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -69,15 +72,16 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
 
   const registrarLog = (msg) => { if (addLog) addLog(msg); };
 
-  const todosTecnicos = users.filter((u) => u.perfil === 'TECNICO' || u.perfil === 'ADM');
+  const todosTecnicos = users.filter((u) => u.perfil === 'TECNICO');
   const tecnicosDoSetorAtual = todosTecnicos.filter(u => u.predio === setor); 
 
   const chamadosVisiveis = chamados.filter((c) => {
     const termo = searchText.toLowerCase();
     const matchesSearch = c.descricao?.toLowerCase().includes(termo) || c.titulo?.toLowerCase().includes(termo) || c.solicitante?.toLowerCase().includes(termo) || c.tecnico?.toLowerCase().includes(termo);
     const matchesPriority = filtroPrioridade === 'TODOS' ? true : c.prioridade === filtroPrioridade;
+    const matchesStatus = filtroStatus === 'TODOS' ? true : getStatusCategoria(c.status) === filtroStatus;
     let matchesTab = false;
-    
+
     if (abaAtiva === 'MEUS') {
       if (user.perfil === 'ADM') matchesTab = true;
       else matchesTab = c.tecnico === user.login;
@@ -87,7 +91,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
       const naoEstaFechado = c.status !== 'FECHADO' && c.status !== 'finalizado';
       matchesTab = semTecnico && mesmoPredio && naoEstaFechado;
     }
-    return matchesTab && matchesSearch && matchesPriority;
+    return matchesTab && matchesSearch && matchesPriority && matchesStatus;
   });
 
   const toggleSelection = (id) => {
@@ -229,7 +233,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
       
       // Limpar formulário
       setTituloChamado(''); setSolicitante(''); setSala(''); setObservacao(''); setDesc(''); 
-      setSetor(SETORES[0]); setTecSel(''); setPrioridade('NORMAL'); setEquipSel(null); setFormAnexos([]);
+      setSetor(SETORES[0]); setTecSel(''); setPrioridade('BAIXA'); setEquipSel(null); setFormAnexos([]);
     } catch (e) { Alert.alert('Erro', 'Falha ao salvar chamado.'); } finally { setIsSavingChamado(false); }
   };
 
@@ -257,6 +261,17 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     setSelectedChamado({ ...selectedChamado, historico: novoHistorico });
     registrarLog(`📝 COMENTOU CHAMADO #${selectedChamado.id.substring(0,4)}`);
     setChatMsg('');
+  };
+
+  const enviarNotaInterna = async () => {
+    if (!notaInternaMsg.trim()) return;
+    const novaNota = { user: user.login, texto: notaInternaMsg, time: Date.now() };
+    const novasNotas = [novaNota, ...(selectedChamado.notasInternas || [])];
+
+    await DataService.atualizarChamado(selectedChamado.id, { notasInternas: novasNotas });
+    setSelectedChamado({ ...selectedChamado, notasInternas: novasNotas });
+    registrarLog(`🗒️ ADICIONOU NOTA INTERNA NO CHAMADO #${selectedChamado.id.substring(0,4)}`);
+    setNotaInternaMsg('');
   };
 
   const transferirChamado = async (chamadoId, tecnicoAtual, novoTecnico, novoPredio) => {
@@ -305,7 +320,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
       if (showPush) showPush("🏁 Chamado Finalizado!");
 
       await DataService.atualizarChamado(selectedChamado.id, {
-        status: 'finalizado', tecnico: tecnicoFinal, historico: [msgFechamento, ...(selectedChamado.historico || [])], checklist: selectedChamado.checklist || []
+        status: 'finalizado', tecnico: tecnicoFinal, dataFechamento: Date.now(), historico: [msgFechamento, ...(selectedChamado.historico || [])], checklist: selectedChamado.checklist || []
       });
       
       registrarLog(`✅ FECHOU CHAMADO #${selectedChamado.id.substring(0,4)}`);
@@ -350,14 +365,18 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   return (
     <View style={{ flex: 1 }}>
       <ScrollView style={{ padding: 16 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>Chamados</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MaterialIcons name="assignment" size={18} color={theme.primary} style={{ marginRight: 6 }} />
+            <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>Chamados</Text>
+          </View>
           {user.perfil === 'ADM' && !isSelectMode ? (
             <TouchableOpacity onPress={() => setIsSelectMode(true)} style={{ backgroundColor: theme.cardAlt, paddingHorizontal: 12, paddingVertical: 8, borderRadius: RADIUS.md, borderWidth: 1, borderColor: theme.border }} activeOpacity={0.75}>
               <Text style={{ color: theme.text, fontSize: 12, fontWeight: '600' }}>Selecionar Vários</Text>
             </TouchableOpacity>
           ) : null}
         </View>
+        <Text style={{ color: theme.subtext, fontSize: 13, marginBottom: 15 }}>Abertura e acompanhamento de chamados técnicos</Text>
 
         <View style={{ flexDirection: 'row', marginBottom: 15, backgroundColor: theme.card, borderRadius: RADIUS.md, padding: 5, borderWidth: 1, borderColor: theme.border }}>
           <TouchableOpacity onPress={() => { setAbaAtiva('MEUS'); setIsSelectMode(false); setSelectedIds([]); }} style={{ flex: 1, paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'MEUS' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
@@ -378,7 +397,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                 </TouchableOpacity>
               )}
               {user.perfil === 'ADM' && selectedIds.length > 0 && (
-                <TouchableOpacity onPress={bulkExcluir} style={{ backgroundColor: '#ff4444', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 5, marginRight: 8 }}>
+                <TouchableOpacity onPress={bulkExcluir} style={{ backgroundColor: theme.offline, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 5, marginRight: 8 }}>
                   <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>🗑️ EXCLUIR</Text>
                 </TouchableOpacity>
               )}
@@ -389,12 +408,36 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
           </View>
         )}
 
-        <Card theme={theme} style={{ padding: 10, marginBottom: 10 }}>
-          <TextInput style={{ backgroundColor: theme.inputBg, color: theme.text, padding: 8, borderRadius: 8, borderWidth: 1, borderColor: theme.border }} placeholder="🔍 Buscar por erro, assunto ou técnico..." placeholderTextColor={theme.subtext} value={searchText} onChangeText={setSearchText} />
+        <Card theme={theme} style={{ padding: 10, marginBottom: 10, flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialIcons name="search" size={18} color={theme.subtext} style={{ marginLeft: 4, marginRight: 8 }} />
+          <TextInput style={{ flex: 1, backgroundColor: theme.inputBg, color: theme.text, padding: 8, borderRadius: 8, borderWidth: 1, borderColor: theme.border }} placeholder="Buscar por erro, assunto ou técnico..." placeholderTextColor={theme.subtext} value={searchText} onChangeText={setSearchText} />
         </Card>
 
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+          {[
+            { id: 'TODOS', label: 'Todos', cor: theme.primary },
+            { id: 'ABERTO', label: 'Abertos', cor: theme.offline },
+            { id: 'ANDAMENTO', label: 'Andamento', cor: theme.sec },
+            { id: 'CONCLUIDO', label: 'Concluídos', cor: theme.online },
+          ].map((f) => (
+            <TouchableOpacity
+              key={f.id}
+              onPress={() => setFiltroStatus(f.id)}
+              style={{
+                flexDirection: 'row', alignItems: 'center', backgroundColor: filtroStatus === f.id ? f.cor : theme.cardAlt,
+                paddingHorizontal: 12, paddingVertical: 7, borderRadius: RADIUS.pill, marginRight: 8,
+              }}>
+              <Text style={{ color: filtroStatus === f.id ? '#fff' : theme.subtext, fontSize: 11.5, fontWeight: '700' }}>{f.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {mostrarNovoChamado && (
         <Card theme={theme}>
-          <Text style={{ color: theme.primary, fontWeight: 'bold', marginBottom: 10 }}>Novo Chamado</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+            <MaterialIcons name="add-circle-outline" size={16} color={theme.primary} style={{ marginRight: 6 }} />
+            <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Novo Chamado</Text>
+          </View>
           
           <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%', borderWidth: 1, borderColor: theme.border }]} placeholder="Chamado (Assunto principal)" value={tituloChamado} onChangeText={setTituloChamado} placeholderTextColor={theme.subtext} />
           
@@ -457,8 +500,8 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
           )}
 
           <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-            {['NORMAL', 'MEDIA', 'ALTA'].map((p) => (
-              <TouchableOpacity key={p} style={{ flex: 1, padding: 8, alignItems: 'center', backgroundColor: prioridade === p ? getCorPrioridade(p) : theme.inputBg, marginHorizontal: 2, borderRadius: 5 }} onPress={() => setPrioridade(p)}>
+            {PRIORIDADES.map((p) => (
+              <TouchableOpacity key={p} style={{ flex: 1, padding: 8, alignItems: 'center', backgroundColor: prioridade === p ? getCorPrioridade(p, theme) : theme.inputBg, marginHorizontal: 2, borderRadius: 5 }} onPress={() => setPrioridade(p)}>
                 <Text style={{ color: prioridade === p ? '#fff' : theme.subtext, fontSize: 10, fontWeight: 'bold' }}>{p}</Text>
               </TouchableOpacity>
             ))}
@@ -487,7 +530,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                       <Text style={{ fontSize: 24 }}>📄</Text>
                     </View>
                   )}
-                  <TouchableOpacity onPress={() => setFormAnexos(formAnexos.filter((_, i) => i !== index))} style={{ position: 'absolute', top: -5, right: -5, backgroundColor: '#ff4444', borderRadius: 10, width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
+                  <TouchableOpacity onPress={() => setFormAnexos(formAnexos.filter((_, i) => i !== index))} style={{ position: 'absolute', top: -5, right: -5, backgroundColor: theme.offline, borderRadius: 10, width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>X</Text>
                   </TouchableOpacity>
                 </View>
@@ -499,19 +542,20 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
             <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSavingChamado ? 'A ABRIR CHAMADO...' : 'ABRIR CHAMADO'}</Text>
           </TouchableOpacity>
         </Card>
+        )}
 
         {chamadosVisiveis.length === 0 && (
           <View style={{ alignItems: 'center', marginTop: 30 }}><Text style={{ color: theme.subtext }}>Nenhum chamado encontrado.</Text></View>
         )}
 
         {chamadosVisiveis.map((c) => {
-          const vencido = !isChamadoFechado(c.status) && isSlaVencido(c.dataAbertura);
+          const vencido = !isChamadoFechado(c.status) && isSlaVencido(c);
           const isSelected = selectedIds.includes(c.id);
 
           return (
             <View key={c.id}>
               <TouchableOpacity activeOpacity={0.8} onPress={() => { if (isSelectMode) toggleSelection(c.id); else abrirModalDetalhes(c); }}>
-                <Card theme={theme} style={{ borderLeftWidth: 6, borderLeftColor: isChamadoFechado(c.status) ? theme.subtext : vencido ? theme.warning : getCorPrioridade(c.prioridade), borderColor: isSelected ? theme.primary : vencido ? theme.warning : theme.border, borderWidth: isSelected ? 2 : vencido ? 1 : 0, backgroundColor: isSelected ? theme.inputBg : theme.card }}>
+                <Card theme={theme} style={{ borderLeftWidth: 6, borderLeftColor: isChamadoFechado(c.status) ? theme.subtext : vencido ? theme.warning : getCorPrioridade(c.prioridade, theme), borderColor: isSelected ? theme.primary : vencido ? theme.warning : theme.border, borderWidth: isSelected ? 2 : vencido ? 1 : 0, backgroundColor: isSelected ? theme.inputBg : theme.card }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ flex: 1 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
@@ -520,15 +564,24 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                             {isSelected && <Text style={{ color: '#fff', fontSize: 10 }}>✓</Text>}
                           </View>
                         )}
-                        <View style={{ backgroundColor: isChamadoFechado(c.status) ? theme.subtext : vencido ? theme.warning : getCorPrioridade(c.prioridade), paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginRight: 8 }}>
+                        <View style={{ backgroundColor: isChamadoFechado(c.status) ? theme.subtext : vencido ? theme.warning : getCorPrioridade(c.prioridade, theme), paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginRight: 8 }}>
                           <Text style={{ color: '#fff', fontSize: 9, fontWeight: 'bold' }}>{isChamadoFechado(c.status) ? 'FINALIZADO' : vencido ? 'ATRASADO' : c.prioridade}</Text>
                         </View>
-                        <Text style={{ color: vencido ? theme.warning : theme.subtext, fontSize: 10, fontWeight: vencido ? 'bold' : 'normal' }}>⏱ {getTempoDecorrido(c.dataAbertura)}</Text>
+                        <Text style={{ color: vencido ? theme.warning : theme.subtext, fontSize: 10, fontWeight: vencido ? 'bold' : 'normal', fontFamily: 'monospace' }}>⏱ {getTempoDecorrido(c.dataAbertura)}</Text>
                       </View>
                       <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 16 }}>{c.titulo || c.descricao}</Text>
                       <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>Solicitante: {c.solicitante || 'N/A'} | Sala: {c.sala || 'N/A'}</Text>
-                      <Text style={{ color: theme.sec, fontSize: 11, fontWeight: 'bold', marginTop: 4 }}>Status: {c.status}</Text>
-                      {c.equipamento && <Text style={{ color: theme.primary, fontSize: 11, marginTop: 2 }}>🖥 {c.equipamento.nome} ({c.equipamento.pat})</Text>}
+                      {(() => {
+                        const cat = getStatusCategoria(c.status);
+                        const statusColor = cat === 'CONCLUIDO' ? theme.online : cat === 'ANDAMENTO' ? theme.primary : theme.subtext;
+                        return (
+                          <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', backgroundColor: theme.cardAlt, paddingHorizontal: 8, paddingVertical: 3, borderRadius: RADIUS.pill, marginTop: 6 }}>
+                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: statusColor, marginRight: 6 }} />
+                            <Text style={{ color: statusColor, fontSize: 10, fontWeight: '700', textTransform: 'uppercase' }}>{c.status}</Text>
+                          </View>
+                        );
+                      })()}
+                      {c.equipamento && <Text style={{ color: theme.primary, fontSize: 11, marginTop: 4 }}>🖥 {c.equipamento.nome} ({c.equipamento.pat})</Text>}
                     </View>
 
                     {!isSelectMode && user.perfil === 'ADM' && (
@@ -588,7 +641,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
               <TouchableOpacity onPress={() => setIsCameraOpen(false)} style={{ backgroundColor: '#333', padding: 15, borderRadius: 50, width: 80, alignItems: 'center' }}>
                 <Text style={{ color: '#fff', fontSize: 12 }}>Voltar</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={tirarFoto} style={{ backgroundColor: '#fff', width: 70, height: 70, borderRadius: 35, borderWidth: 5, borderColor: '#1DB954' }} />
+              <TouchableOpacity onPress={tirarFoto} style={{ backgroundColor: '#fff', width: 70, height: 70, borderRadius: 35, borderWidth: 5, borderColor: theme.primary }} />
               <View style={{ width: 80 }} />
             </View>
           </CameraView>
@@ -597,10 +650,10 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
 
       <Modal visible={modalVisible} animationType="slide" transparent={true} onRequestClose={() => setModalVisible(false)}>
         {selectedChamado && (
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'flex-end' }}>
-            <View style={{ height: '90%', backgroundColor: theme.background, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20 }}>
+          <View style={{ flex: 1, backgroundColor: theme.overlay, justifyContent: 'flex-end' }}>
+            <View style={{ height: '90%', backgroundColor: theme.background, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, padding: 20 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-                <Text style={{ color: theme.text, fontSize: 20, fontWeight: 'bold' }}>Chamado #{selectedChamado.id?.substring(0,4) || '---'}</Text>
+                <Text style={{ color: theme.text, fontSize: 20, fontWeight: 'bold' }}>Chamado #<Text style={{ fontFamily: 'monospace' }}>{(selectedChamado.id?.substring(0,4) || '---').toUpperCase()}</Text></Text>
                 <TouchableOpacity onPress={() => setModalVisible(false)}><Text style={{ color: theme.primary, fontSize: 18 }}>Fechar</Text></TouchableOpacity>
               </View>
               
@@ -639,7 +692,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                   )}
 
                   {isChamadoFechado(selectedChamado.status) && (
-                    <View style={{ backgroundColor: 'rgba(29, 185, 84, 0.1)', padding: 10, borderRadius: 8, marginBottom: 15, borderWidth: 1, borderColor: theme.primary }}>
+                    <View style={{ backgroundColor: theme.primarySoft, padding: 10, borderRadius: 8, marginBottom: 15, borderWidth: 1, borderColor: theme.primary }}>
                       <Text style={{ color: theme.primary, fontWeight: 'bold', fontSize: 12 }}>⏱ Tempo de solução: {getTempoResolucao(selectedChamado)}</Text>
                     </View>
                   )}
@@ -668,7 +721,10 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                   <Text style={{ color: theme.subtext, fontSize: 12 }}>Equipamento Vinculado:</Text>
                   <Text style={{ color: theme.text, marginBottom: 10 }}>{selectedChamado.equipamento ? `${selectedChamado.equipamento.nome} - Pat: ${selectedChamado.equipamento.pat}` : 'Não informado'}</Text>
                   
-                  <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 5 }}>Documentos Anexados:</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+                    <MaterialIcons name="attach-file" size={13} color={theme.subtext} style={{ marginRight: 4 }} />
+                    <Text style={{ color: theme.subtext, fontSize: 12 }}>Documentos Anexados:</Text>
+                  </View>
                   <View style={{ marginTop: 5, marginBottom: 10 }}>
                     {(!selectedChamado.anexos || selectedChamado.anexos.length === 0) && (
                       <Text style={{ color: theme.text, fontSize: 12, fontStyle: 'italic' }}>Sem anexos.</Text>
@@ -682,7 +738,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                                <Image source={{ uri: doc.uri }} style={{ width: 80, height: 80, borderRadius: 8, borderWidth: 1, borderColor: theme.border }} />
                             ) : (
                                <View style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: theme.inputBg, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: theme.border }}>
-                                 <Text style={{ fontSize: 24, textAlign: 'center' }}>📄</Text>
+                                 <MaterialIcons name="description" size={24} color={theme.subtext} />
                                  <Text style={{ fontSize: 8, color: theme.subtext, marginTop: 5, textAlign: 'center' }} numberOfLines={1}>{doc.nome}</Text>
                                </View>
                             )}
@@ -693,17 +749,22 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                     
                     {!isChamadoFechado(selectedChamado.status) && (
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, marginBottom: 15 }}>
-                        <TouchableOpacity onPress={anexarNoDetalhe} style={{ padding: 10, backgroundColor: theme.inputBg, borderRadius: 8, flex: 1, marginRight: 5, alignItems: 'center', borderWidth: 1, borderColor: theme.border }}>
-                          <Text style={{ color: theme.text, fontSize: 12, fontWeight: 'bold' }}>📎 Arquivo</Text>
+                        <TouchableOpacity onPress={anexarNoDetalhe} style={{ flexDirection: 'row', padding: 10, backgroundColor: theme.inputBg, borderRadius: 8, flex: 1, marginRight: 5, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: theme.border }}>
+                          <MaterialIcons name="attach-file" size={14} color={theme.text} style={{ marginRight: 5 }} />
+                          <Text style={{ color: theme.text, fontSize: 12, fontWeight: 'bold' }}>Arquivo</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => abrirCamera('detalhe')} style={{ padding: 10, backgroundColor: theme.primary, borderRadius: 8, flex: 1, marginLeft: 5, alignItems: 'center' }}>
-                          <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>📸 Foto</Text>
+                        <TouchableOpacity onPress={() => abrirCamera('detalhe')} style={{ flexDirection: 'row', padding: 10, backgroundColor: theme.primary, borderRadius: 8, flex: 1, marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}>
+                          <MaterialIcons name="photo-camera" size={14} color="#fff" style={{ marginRight: 5 }} />
+                          <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Foto</Text>
                         </TouchableOpacity>
                       </View>
                     )}
                   </View>
 
-                  <Text style={{ color: theme.primary, fontWeight: 'bold', marginTop: 10, marginBottom: 5 }}>📝 Protocolo de Atendimento</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, marginBottom: 5 }}>
+                    <MaterialIcons name="checklist" size={15} color={theme.primary} style={{ marginRight: 6 }} />
+                    <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Protocolo de Atendimento</Text>
+                  </View>
                   <View style={{ backgroundColor: theme.inputBg, padding: 10, borderRadius: 10, marginBottom: 10 }}>
                     {selectedChamado.checklist && selectedChamado.checklist.map((item) => (
                       <TouchableOpacity key={item.id} onPress={() => !isChamadoFechado(selectedChamado.status) && toggleCheck(item.id)} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
@@ -721,11 +782,14 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                       <TextInput style={{ backgroundColor: theme.inputBg, color: theme.text, padding: 10, borderRadius: 8, height: 80, textAlignVertical: 'top', borderWidth: 1, borderColor: theme.border }} multiline placeholder="Descreva o que foi feito..." placeholderTextColor={theme.subtext} value={solucao} onChangeText={setSolucao} />
                     </View>
                   )}
-                  {msgErro ? <Text style={{ color: '#ff4444', fontWeight: 'bold', textAlign: 'center', marginBottom: 5 }}>{msgErro}</Text> : null}
+                  {msgErro ? <Text style={{ color: theme.offline, fontWeight: 'bold', textAlign: 'center', marginBottom: 5 }}>{msgErro}</Text> : null}
                   {!isChamadoFechado(selectedChamado.status) && (<Btn title="FECHAR CHAMADO DEFINITIVAMENTE" theme={theme} onPress={fecharChamado} />)}
                 </Card>
 
-                <Text style={{ color: theme.primary, marginTop: 10, marginBottom: 5, fontWeight: 'bold' }}>Histórico / Chat</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, marginBottom: 5 }}>
+                  <MaterialIcons name="chat-bubble-outline" size={15} color={theme.primary} style={{ marginRight: 6 }} />
+                  <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Histórico / Chat</Text>
+                </View>
                 
                 {!isChamadoFechado(selectedChamado.status) && (
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', marginBottom: 10, maxHeight: 40 }}>
@@ -741,20 +805,61 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
                   <Text style={{ color: theme.subtext }}>Nenhuma mensagem ainda.</Text>
                 ) : (
                   selectedChamado.historico.map((msg, i) => (
-                    <View key={i} style={{ alignSelf: msg.user === user.login ? 'flex-end' : msg.user === 'SISTEMA' ? 'center' : 'flex-start', backgroundColor: msg.user === user.login ? theme.messageUser || theme.primary : msg.user === 'SISTEMA' ? theme.border : theme.messageTec || theme.inputBg, padding: 10, borderRadius: 10, marginBottom: 5, maxWidth: '85%' }}>
-                      <Text style={{ color: msg.user === user.login ? '#fff' : theme.text, fontSize: 10, fontWeight: 'bold', marginBottom: 2 }}>{msg.user}</Text>
-                      <Text style={{ color: msg.user === user.login ? '#fff' : theme.text }}>{msg.texto}</Text>
-                      <Text style={{ color: msg.user === user.login ? '#eee' : theme.subtext, fontSize: 8, textAlign: 'right', marginTop: 2 }}>{new Date(msg.time).toLocaleTimeString().slice(0, 5)}</Text>
+                    <View
+                      key={i}
+                      style={{
+                        alignSelf: msg.user === user.login ? 'flex-end' : msg.user === 'SISTEMA' ? 'center' : 'flex-start',
+                        backgroundColor: msg.user === user.login ? theme.messageUser || theme.primary : msg.user === 'SISTEMA' ? theme.border : theme.messageTec || theme.inputBg,
+                        padding: 10,
+                        borderRadius: RADIUS.lg,
+                        marginBottom: 6,
+                        maxWidth: '85%',
+                        borderWidth: 1,
+                        borderColor: msg.user === user.login ? theme.primary + '55' : theme.border,
+                      }}>
+                      <Text style={{ color: msg.user === user.login ? theme.tert : theme.primary, fontSize: 10, fontWeight: 'bold', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.3 }}>{msg.user}</Text>
+                      <Text style={{ color: theme.text }}>{msg.texto}</Text>
+                      <Text style={{ color: theme.textCode, fontSize: 8, textAlign: 'right', marginTop: 2, fontFamily: 'monospace' }}>{new Date(msg.time).toLocaleTimeString().slice(0, 5)}</Text>
                     </View>
                   ))
                 )}
+
+                {user.perfil === 'ADM' && (
+                  <>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 4 }}>
+                      <MaterialIcons name="lock-outline" size={15} color={theme.violet} style={{ marginRight: 6 }} />
+                      <Text style={{ color: theme.violet, fontWeight: 'bold' }}>Notas Internas</Text>
+                    </View>
+                    <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 8 }}>Visível apenas para Administradores — não aparece para o técnico atribuído.</Text>
+                    {(!selectedChamado.notasInternas || selectedChamado.notasInternas.length === 0) ? (
+                      <Text style={{ color: theme.subtext }}>Nenhuma nota interna ainda.</Text>
+                    ) : (
+                      selectedChamado.notasInternas.map((msg, i) => (
+                        <View key={i} style={{ alignSelf: msg.user === user.login ? 'flex-end' : 'flex-start', backgroundColor: theme.violetWash, borderWidth: 1, borderColor: theme.violet, padding: 10, borderRadius: RADIUS.lg, marginBottom: 6, maxWidth: '85%' }}>
+                          <Text style={{ color: theme.violet, fontSize: 10, fontWeight: 'bold', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.3 }}>{msg.user}</Text>
+                          <Text style={{ color: theme.text }}>{msg.texto}</Text>
+                          <Text style={{ color: theme.textCode, fontSize: 8, textAlign: 'right', marginTop: 2, fontFamily: 'monospace' }}>{new Date(msg.time).toLocaleTimeString().slice(0, 5)}</Text>
+                        </View>
+                      ))
+                    )}
+                  </>
+                )}
               </ScrollView>
+
+              {user.perfil === 'ADM' && !isChamadoFechado(selectedChamado.status) && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                  <TextInput style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, color: theme.text, marginVertical: 0, marginRight: 10, borderWidth: 1, borderColor: theme.violet }]} placeholder="Nota interna (visível só para admins)..." placeholderTextColor={theme.subtext} value={notaInternaMsg} onChangeText={setNotaInternaMsg} />
+                  <TouchableOpacity onPress={enviarNotaInterna} style={{ backgroundColor: theme.violet, padding: 12, borderRadius: 12 }}>
+                    <MaterialIcons name="lock" size={16} color="#fff" />
+                  </TouchableOpacity>
+                </View>
+              )}
 
               {!isChamadoFechado(selectedChamado.status) && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TextInput style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, color: theme.text, marginVertical: 0, marginRight: 10 }]} placeholder="Digite uma mensagem..." value={chatMsg} onChangeText={setChatMsg} />
+                  <TextInput style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, color: theme.text, marginVertical: 0, marginRight: 10 }]} placeholder="Digite uma mensagem..." placeholderTextColor={theme.subtext} value={chatMsg} onChangeText={setChatMsg} />
                   <TouchableOpacity onPress={() => enviarMensagem(null)} style={{ backgroundColor: theme.primary, padding: 12, borderRadius: 12 }}>
-                    <Text style={{ color: '#fff' }}>Env</Text>
+                    <MaterialIcons name="send" size={16} color="#fff" />
                   </TouchableOpacity>
                 </View>
               )}
