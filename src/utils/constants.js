@@ -4,7 +4,12 @@ export const PRIORIDADES = ['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'];
 
 export const NIVEIS_TECNICO = ['N1', 'N2', 'N3'];
 
-export const APK_DOWNLOAD_URL = 'https://expo.dev/artifacts/eas/odOgzosyA6JNmxccnsIFdo9bY4LUUG2dem0ggujFDEA.apk';
+// Hospedado no próprio Firebase Hosting (public/techgestor-app.dat) — link
+// permanente, ao contrário do artefato do EAS Build que expira em 30 dias.
+// Sem extensão .apk na URL porque o plano gratuito do Firebase Hosting bloqueia
+// arquivos executáveis por extensão; o nome/tipo de download corretos são
+// forçados via header Content-Disposition (ver firebase.json).
+export const APK_DOWNLOAD_URL = 'https://techgestor-tjrr.web.app/techgestor-app.dat';
 
 export const FRASES_RAPIDAS = [
   '✅ Serviço finalizado.', '📍 Estou a caminho.', '⏳ Aguardando peça.', '👤 Usuário ausente.', '🔧 Testes em andamento.'

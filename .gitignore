@@ -12,6 +12,13 @@ expo-env.d.ts
 # Firebase CLI cache
 .firebase/
 
+# APK baixado do EAS Build para hospedar no Firebase Hosting (arquivo grande
+# demais para o GitHub sem Git LFS — fica só localmente para o deploy).
+# Renomeado sem extensão .apk porque o plano gratuito (Spark) do Firebase
+# Hosting bloqueia arquivos executáveis pela extensão; o nome/tipo corretos
+# são forçados de volta via "headers" no firebase.json (Content-Disposition).
+public/techgestor-app.dat
+
 # Native
 .kotlin/
 *.orig.*
