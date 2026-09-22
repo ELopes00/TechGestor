@@ -1,12 +1,13 @@
 import { getAuth } from 'firebase/auth'; // <--- Importação para identificar quem está logado
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
-import Svg, { Circle, G } from 'react-native-svg';
+import Svg, { Circle, G, Path, Polygon, Polyline } from 'react-native-svg';
+import * as XLSX from 'xlsx';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Card } from '../components';
 import { RADIUS, SHADOW } from '../theme/themes';
-import { getStatusCategoria, calcularSLA, calcularMTTR, formatarMinutos, getCorPrioridade } from '../utils/helpers';
+import { getStatusCategoria, getDataFechamento, calcularSLA, calcularMTTR, formatarMinutos, getCorPrioridade } from '../utils/helpers';
 
 const PERIODOS = [
   { id: 'HOJE', label: 'Hoje' },
@@ -123,6 +124,60 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
   const slaPercent = calcularSLA(listaChamados);
   const mttrMinutos = calcularMTTR(listaChamados);
 
+  // --- TENDÊNCIA DOS ÚLTIMOS 7 DIAS (mini-gráficos dos cards) ---
+  const diaDeTimestamp = (ts) => Math.floor(ts / (24 * 60 * 60 * 1000));
+  const hojeDia = diaDeTimestamp(Date.now());
+
+  const tendenciaAbertura = Array.from({ length: 7 }, (_, i) => {
+    const dia = hojeDia - (6 - i);
+    return listaChamados.filter(c => c.dataAbertura && diaDeTimestamp(c.dataAbertura) === dia).length;
+  });
+
+  const tendenciaFechamento = Array.from({ length: 7 }, (_, i) => {
+    const dia = hojeDia - (6 - i);
+    return listaChamados.filter(c => {
+      const fechamento = getDataFechamento(c);
+      return fechamento && diaDeTimestamp(fechamento) === dia;
+    }).length;
+  });
+
+  const tendenciaMTTR = Array.from({ length: 7 }, (_, i) => {
+    const dia = hojeDia - (6 - i);
+    const doDia = listaChamados.filter(c => {
+      const fechamento = getDataFechamento(c);
+      return fechamento && c.dataAbertura && diaDeTimestamp(fechamento) === dia;
+    });
+    if (doDia.length === 0) return 0;
+    const mediaMs = doDia.reduce((soma, c) => soma + (getDataFechamento(c) - c.dataAbertura), 0) / doDia.length;
+    return Math.round(mediaMs / 60000);
+  });
+
+  const [ultimaAtualizacao, setUltimaAtualizacao] = useState(Date.now());
+  useEffect(() => { setUltimaAtualizacao(Date.now()); }, [chamados]);
+  const [horaRelogio, setHoraRelogio] = useState(new Date());
+  useEffect(() => {
+    const interval = setInterval(() => setHoraRelogio(new Date()), 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const exportarDados = () => {
+    const linhas = listaChamados.map(c => ({
+      Titulo: c.titulo || c.descricao || '',
+      Status: c.status || '',
+      Prioridade: c.prioridade || '',
+      Predio: c.predio || '',
+      Tecnico: c.tecnico || 'Fila',
+      Abertura: c.dataAbertura ? new Date(c.dataAbertura).toLocaleString('pt-BR') : '',
+      Fechamento: getDataFechamento(c) ? new Date(getDataFechamento(c)).toLocaleString('pt-BR') : '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(linhas);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Chamados');
+    if (Platform.OS === 'web') {
+      XLSX.writeFile(wb, 'TechGestor_Chamados.xlsx');
+    }
+  };
+
   const severidadeCounts = ['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'].reduce((acc, sev) => {
     acc[sev] = listaChamados.filter(c => (c.prioridade || 'BAIXA') === sev && getStatusCategoria(c.status) !== 'CONCLUIDO').length;
     return acc;
@@ -233,14 +288,30 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
           <Text style={{ color: theme.subtext, fontSize: 13 }}>Acompanhe a operação em tempo real</Text>
         </View>
 
-        <TouchableOpacity onPress={abrirSininho} style={[styles.bellBtn, { backgroundColor: theme.cardAlt, borderColor: theme.border }]} activeOpacity={0.75}>
-          <MaterialIcons name="notifications-none" size={22} color={theme.text} />
-          {notificacoesNaoLidas > 0 && (
-            <View style={[styles.badge, { borderColor: theme.background, backgroundColor: theme.offline }]}>
-              <Text style={styles.badgeText}>{notificacoesNaoLidas > 9 ? '9+' : notificacoesNaoLidas}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={[styles.clockPill, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
+            <MaterialIcons name="schedule" size={14} color={theme.subtext} style={{ marginRight: 6 }} />
+            <Text style={{ color: theme.subtext, fontSize: 12, fontWeight: '700', fontFamily: 'monospace' }}>
+              {horaRelogio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+            </Text>
+          </View>
+
+          <View style={[styles.clockPill, { backgroundColor: theme.cardAlt, borderColor: theme.border, marginLeft: 8 }]}>
+            <MaterialIcons name="wifi" size={14} color={theme.online} style={{ marginRight: 6 }} />
+            <Text style={{ color: theme.text, fontSize: 12, fontWeight: '700' }} numberOfLines={1}>
+              {usuarioLogado?.nomeCompleto || usuarioLogado?.login || 'Admin'}
+            </Text>
+          </View>
+
+          <TouchableOpacity onPress={abrirSininho} style={[styles.bellBtn, { backgroundColor: theme.cardAlt, borderColor: theme.border, marginLeft: 8 }]} activeOpacity={0.75}>
+            <MaterialIcons name="notifications-none" size={22} color={theme.text} />
+            {notificacoesNaoLidas > 0 && (
+              <View style={[styles.badge, { borderColor: theme.background, backgroundColor: theme.offline }]}>
+                <Text style={styles.badgeText}>{notificacoesNaoLidas > 9 ? '9+' : notificacoesNaoLidas}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* NOVO: CARTÃO DE IDENTIDADE DO TÉCNICO LOGADO */}
@@ -260,9 +331,22 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
         </Card>
       )}
       
-      <View style={styles.sectionHeaderRow}>
-        <MaterialIcons name="assignment" size={16} color={theme.primary} style={{ marginRight: 6 }} />
-        <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>Resumo de Chamados</Text>
+      <View style={[styles.sectionHeaderRow, { justifyContent: 'space-between' }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialIcons name="assignment" size={16} color={theme.primary} style={{ marginRight: 6 }} />
+          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>Resumo de Chamados</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ color: theme.textCode, fontSize: 11, marginRight: 12 }}>
+            Última atualização: {formatarTempo(ultimaAtualizacao)}
+          </Text>
+          {Platform.OS === 'web' && chamadosTotal > 0 && (
+            <TouchableOpacity onPress={exportarDados} style={[styles.exportBtn, { borderColor: theme.border, backgroundColor: theme.cardAlt }]} activeOpacity={0.75}>
+              <MaterialIcons name="file-download" size={13} color={theme.text} style={{ marginRight: 5 }} />
+              <Text style={{ color: theme.text, fontSize: 11, fontWeight: '700' }}>Exportar Dados</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
       <View style={styles.cardsRow}>
         <TouchableOpacity activeOpacity={0.7} style={styles.cardMetricaWrap} onPress={() => (irParaChamados ? irParaChamados('ABERTO') : setTelaAtiva && setTelaAtiva('CHAMADOS'))}>
@@ -275,6 +359,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
               </View>
             </View>
             <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosAbertos}</Text>
+            <Sparkline data={tendenciaAbertura} color={theme.offline} />
           </Card>
         </TouchableOpacity>
 
@@ -288,6 +373,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
               </View>
             </View>
             <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosAndamento}</Text>
+            <Sparkline data={tendenciaAbertura} color={theme.sec} />
           </Card>
         </TouchableOpacity>
 
@@ -301,6 +387,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
               </View>
             </View>
             <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosConcluidos}</Text>
+            <Sparkline data={tendenciaFechamento} color={theme.primary} />
           </Card>
         </TouchableOpacity>
 
@@ -314,6 +401,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
               </View>
             </View>
             <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosTotal}</Text>
+            <Sparkline data={tendenciaAbertura} color={theme.tert} />
           </Card>
         </TouchableOpacity>
       </View>
@@ -333,16 +421,20 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
       <View style={styles.cardsRow}>
         <View style={styles.cardMetricaWrap}>
           <Card theme={theme} style={[styles.cardMetrica, { overflow: 'hidden' }]}>
-            <View style={[styles.glowBlob, { backgroundColor: theme.online }]} />
             <View style={styles.metricaTopRow}>
               <Text style={[styles.metricaLabel, { color: theme.textCode }]}>SLA Cumprido</Text>
               <View style={[styles.metricaIconBox, { backgroundColor: theme.cardAlt }]}>
                 <MaterialIcons name="verified" size={14} color={theme.online} />
               </View>
             </View>
-            <Text style={{ color: theme.online, fontSize: 26, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{slaPercent == null ? '—' : `${slaPercent}%`}</Text>
-            <View style={[styles.progressTrackSm, { backgroundColor: theme.cardAlt }]}>
-              <View style={[styles.progressFill, { width: `${slaPercent == null ? 0 : slaPercent}%`, backgroundColor: theme.online }]} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View style={{ flex: 1, marginRight: 10 }}>
+                <Text style={{ color: theme.online, fontSize: 26, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{slaPercent == null ? '—' : `${slaPercent}%`}</Text>
+                <View style={[styles.progressTrackSm, { backgroundColor: theme.cardAlt }]}>
+                  <View style={[styles.progressFill, { width: `${slaPercent == null ? 0 : slaPercent}%`, backgroundColor: theme.online }]} />
+                </View>
+              </View>
+              <Gauge percent={slaPercent} theme={theme} size={64} />
             </View>
           </Card>
         </View>
@@ -356,6 +448,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
               </View>
             </View>
             <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800', marginTop: 10, fontFamily: 'monospace' }}>{formatarMinutos(mttrMinutos)}</Text>
+            <Sparkline data={tendenciaMTTR} color={theme.tert} />
           </Card>
         </View>
       </View>
@@ -631,6 +724,55 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
   );
 }
 
+function Sparkline({ data = [], color, width = 100, height = 28 }) {
+  const max = Math.max(...data, 1);
+  const step = data.length > 1 ? width / (data.length - 1) : 0;
+  const points = data.map((v, i) => `${i * step},${height - (v / max) * (height - 4) - 2}`).join(' ');
+  const areaPoints = `0,${height} ${points} ${width},${height}`;
+
+  return (
+    <View style={styles.sparklineWrap}>
+      <Svg width={width} height={height}>
+        <Polygon points={areaPoints} fill={color} opacity={0.14} />
+        <Polyline points={points} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+      </Svg>
+    </View>
+  );
+}
+
+function Gauge({ percent, theme, size = 84 }) {
+  const strokeWidth = 9;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = Math.PI * radius;
+  const clamped = Math.max(0, Math.min(100, percent ?? 0));
+  const filled = (clamped / 100) * circumference;
+  const cor = clamped >= 80 ? theme.online : clamped >= 50 ? theme.sec : theme.offline;
+
+  return (
+    <View style={{ width: size, height: size / 2 + strokeWidth, alignItems: 'center' }}>
+      <Svg width={size} height={size / 2 + strokeWidth}>
+        <Path
+          d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
+          stroke={theme.cardAlt}
+          strokeWidth={strokeWidth}
+          fill="none"
+          strokeLinecap="round"
+        />
+        {percent != null && (
+          <Path
+            d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
+            stroke={cor}
+            strokeWidth={strokeWidth}
+            strokeDasharray={`${filled} ${circumference}`}
+            fill="none"
+            strokeLinecap="round"
+          />
+        )}
+      </Svg>
+    </View>
+  );
+}
+
 function DonutChart({ data, theme, size = 156, strokeWidth = 20 }) {
   const [selected, setSelected] = useState(null);
   const radius = (size - strokeWidth) / 2;
@@ -720,8 +862,8 @@ const styles = StyleSheet.create({
   metricaLabel: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6, flex: 1, marginRight: 6 },
   metricaIconBox: { width: 28, height: 28, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
   glowBlob: { position: 'absolute', width: 90, height: 90, borderRadius: 45, opacity: 0.12, right: -30, bottom: -30 },
-  cardsRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
-  cardMetricaWrap: { flex: 1, minWidth: 120, margin: 5 },
+  cardsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  cardMetricaWrap: { flex: 1, minWidth: 140 },
   cardMetrica: { padding: 18, marginBottom: 0 },
 
   liveBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 4, borderRadius: RADIUS.pill, marginLeft: 10, gap: 5 },
@@ -735,6 +877,9 @@ const styles = StyleSheet.create({
   periodTab: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: RADIUS.pill },
 
   bellBtn: { width: 42, height: 42, borderRadius: RADIUS.md, borderWidth: 1, alignItems: 'center', justifyContent: 'center', position: 'relative' },
+  clockPill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, height: 42, borderRadius: RADIUS.md, borderWidth: 1 },
+  exportBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: RADIUS.sm, borderWidth: 1 },
+  sparklineWrap: { marginTop: 8, marginLeft: -4 },
   badge: { position: 'absolute', top: -4, right: -4, borderRadius: 12, width: 20, height: 20, justifyContent: 'center', alignItems: 'center', borderWidth: 2 },
   badgeText: { color: '#fff', fontSize: 10, fontWeight: 'bold' },
 

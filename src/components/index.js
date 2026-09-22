@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { RADIUS } from '../theme/themes';
+import { RADIUS, SHADOW } from '../theme/themes';
 
 export const Btn = ({ title, onPress, danger, theme, style, outline, disabled }) => {
   const { width, height } = useWindowDimensions();
@@ -61,6 +61,7 @@ export const Card = ({ children, style, theme }) => {
     <View
       style={[
         styles.card,
+        SHADOW.md,
         isMobile && styles.cardMobile,
         { backgroundColor: theme.card, borderColor: theme.border, borderTopColor: theme.cardTopBorder },
         style,
