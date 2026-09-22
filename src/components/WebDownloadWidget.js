@@ -1,13 +1,28 @@
-import { useState } from 'react';
-import { Image, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Image, Linking, Modal, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { Card } from '../components';
+import { Card } from '.';
 import { RADIUS, SHADOW } from '../theme/themes';
 import { APK_DOWNLOAD_URL } from '../utils/constants';
 
-export default function WebDownloadScreen({ theme }) {
-  const [showPrompt, setShowPrompt] = useState(true);
+const FLAG_VISTO = '@download_prompt_visto';
+
+export default function WebDownloadWidget({ theme }) {
+  const [showPrompt, setShowPrompt] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    AsyncStorage.getItem(FLAG_VISTO).then((visto) => {
+      if (!visto) {
+        setShowPrompt(true);
+        AsyncStorage.setItem(FLAG_VISTO, '1');
+      }
+    });
+  }, []);
+
+  if (Platform.OS !== 'web') return null;
 
   const baixar = () => {
     Linking.openURL(APK_DOWNLOAD_URL);
@@ -15,9 +30,16 @@ export default function WebDownloadScreen({ theme }) {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Pergunta automática ao acessar o site — modal do próprio app (não o
-          confirm() nativo do navegador, que trava a página até ser fechado). */}
+    <>
+      <TouchableOpacity
+        style={[styles.corner, { backgroundColor: theme.primary }, SHADOW.sm]}
+        onPress={baixar}
+        activeOpacity={0.85}
+      >
+        <MaterialIcons name="file-download" size={15} color="#fff" style={{ marginRight: 6 }} />
+        <Text style={styles.cornerText}>Baixar app</Text>
+      </TouchableOpacity>
+
       <Modal visible={showPrompt} transparent animationType="fade" onRequestClose={() => setShowPrompt(false)}>
         <View style={[styles.overlay, { backgroundColor: theme.overlay }]}>
           <Card theme={theme} style={[styles.promptCard, { borderColor: theme.border }]}>
@@ -28,7 +50,7 @@ export default function WebDownloadScreen({ theme }) {
             </View>
             <Text style={[styles.title, { color: theme.text }]}>Baixar o TechGestor?</Text>
             <Text style={[styles.subtitle, { color: theme.subtext }]}>
-              Deseja baixar o aplicativo agora?
+              Você também pode continuar usando pelo navegador.
             </Text>
 
             <TouchableOpacity style={[styles.btnBaixar, { backgroundColor: theme.primary }, SHADOW.sm]} onPress={baixar} activeOpacity={0.85}>
@@ -36,39 +58,18 @@ export default function WebDownloadScreen({ theme }) {
               <Text style={styles.btnBaixarText}>Baixar agora</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.btnAgoraNao} onPress={() => setShowPrompt(false)} activeOpacity={0.7}>
-              <Text style={[styles.btnAgoraNaoText, { color: theme.subtext }]}>Agora não</Text>
+              <Text style={[styles.btnAgoraNaoText, { color: theme.subtext }]}>Continuar no navegador</Text>
             </TouchableOpacity>
           </Card>
         </View>
       </Modal>
-
-      <Card theme={theme} style={[styles.card, { borderColor: theme.border }]}>
-        <View style={styles.logoRow}>
-          <View style={styles.logoBadge}>
-            <Image source={require('../../assets/images/logo-tjrr.png')} style={styles.logoImg} resizeMode="contain" />
-          </View>
-        </View>
-        <Text style={[styles.title, { color: theme.text }]}>TechGestor</Text>
-        <Text style={[styles.subtitle, { color: theme.subtext }]}>
-          Baixe o app para acessar o sistema.
-        </Text>
-
-        <TouchableOpacity
-          style={[styles.btnBaixar, { backgroundColor: theme.primary }, SHADOW.sm]}
-          onPress={baixar}
-          activeOpacity={0.85}
-        >
-          <MaterialIcons name="file-download" size={17} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.btnBaixarText}>Baixar o app</Text>
-        </TouchableOpacity>
-      </Card>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
-  card: { width: '100%', maxWidth: 380, alignItems: 'center', padding: 32, borderRadius: RADIUS.xl, borderWidth: 1, ...SHADOW.sm },
+  corner: { position: 'fixed', top: 14, right: 14, zIndex: 999, flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 14, borderRadius: RADIUS.md },
+  cornerText: { color: '#fff', fontWeight: '700', fontSize: 12.5 },
   overlay: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
   promptCard: { width: '100%', maxWidth: 380, alignItems: 'center', padding: 32, borderRadius: RADIUS.xl, borderWidth: 1, ...SHADOW.lg },
   btnAgoraNao: { marginTop: 12, paddingVertical: 8 },

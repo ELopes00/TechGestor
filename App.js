@@ -25,7 +25,7 @@ import InventarioScreen from './src/screens/InventarioScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import LogsScreen from './src/screens/LogsScreen';
 import PerfilScreen from './src/screens/PerfilScreen';
-import WebDownloadScreen from './src/screens/WebDownloadScreen';
+import WebDownloadWidget from './src/components/WebDownloadWidget';
 
 import Sidebar from './src/components/Sidebar';
 import { DataService } from './src/services/DataService';
@@ -302,53 +302,63 @@ export default function App() {
     }
   };
 
-  if (Platform.OS === 'web') return <WebDownloadScreen theme={theme} />;
+  let content;
 
-  if (isInitializing) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.background }}><ActivityIndicator size="large" color={theme.primary} /></View>;
-  if (!user) return <LoginScreen theme={theme} />;
+  if (isInitializing) {
+    content = <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.background }}><ActivityIndicator size="large" color={theme.primary} /></View>;
+  } else if (!user) {
+    content = <LoginScreen theme={theme} />;
+  } else {
+    content = (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
 
-  return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      
-      {isMobile && isMenuOpen && (
-        <TouchableOpacity 
-          activeOpacity={1} 
-          style={styles.overlay} 
-          onPress={() => setIsMenuOpen(false)} 
-        />
-      )}
-
-      <Sidebar
-        theme={theme} telaAtiva={telaAtiva} setTelaAtiva={mudarTela}
-        isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} 
-        user={user} isMobile={isMobile} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} 
-      />
-
-      <View style={styles.mainContent}>
-        
-        {isMobile && (
-          <View style={[styles.headerMobile, { backgroundColor: theme.barBg, borderColor: theme.border }]}>
-            <TouchableOpacity onPress={() => setIsMenuOpen(true)} style={styles.menuBtn} activeOpacity={0.7}>
-              <Text style={{ fontSize: 22, color: theme.text }}>☰</Text>
-            </TouchableOpacity>
-            <Text style={{ marginLeft: 12, fontSize: 17, fontWeight: '700', color: theme.text, letterSpacing: 0.2 }}>
-              Tech<Text style={{ color: theme.primary }}>Gestor</Text>
-            </Text>
-          </View>
+        {isMobile && isMenuOpen && (
+          <TouchableOpacity
+            activeOpacity={1}
+            style={styles.overlay}
+            onPress={() => setIsMenuOpen(false)}
+          />
         )}
 
-        {telaAtiva === 'DASHBOARD' && <DashboardScreen chamados={chamados} eventos={eventos} users={users} theme={theme} setTelaAtiva={setTelaAtiva} irParaChamados={irParaChamados} />}
-        {telaAtiva === 'CHAMADOS' && <ChamadosScreen user={user} chamados={chamados} eventos={eventos} users={users} inventario={inventario} theme={theme} addLog={gerirLogs} showPush={(msg) => console.log(msg)} filtroStatusInicial={filtroChamadosInicial} mostrarNovoChamado={!origemDashboard} />}
-        {telaAtiva === 'EVENTOS' && <EventosScreen user={user} eventos={eventos} users={users} theme={theme} addLog={gerirLogs} />}
-        {telaAtiva === 'INVENTARIO' && <InventarioScreen inventario={inventario} setInventario={setInventario} chamados={chamados} users={users} theme={theme} addLog={gerirLogs} />}
-        {telaAtiva === 'AGENDAMENTO' && <AgendamentoScreen user={user} agendamentos={agendamentos} setAgendamentos={setAgendamentos} users={users} theme={theme} addLog={gerirLogs} />}
-        {telaAtiva === 'ADMIN' && <AdminScreen user={user} users={users} chamados={chamados} eventos={eventos} theme={theme} addLog={gerirLogs} />}
-        {telaAtiva === 'LOGS' && <LogsScreen logs={logs} theme={theme} />}
-        
-        {/* ROTA PARA A TELA DE PERFIL */}
-        {telaAtiva === 'PERFIL' && <PerfilScreen user={user} theme={theme} onLogout={handleLogout} />}
+        <Sidebar
+          theme={theme} telaAtiva={telaAtiva} setTelaAtiva={mudarTela}
+          isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode}
+          user={user} isMobile={isMobile} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen}
+        />
+
+        <View style={styles.mainContent}>
+
+          {isMobile && (
+            <View style={[styles.headerMobile, { backgroundColor: theme.barBg, borderColor: theme.border }]}>
+              <TouchableOpacity onPress={() => setIsMenuOpen(true)} style={styles.menuBtn} activeOpacity={0.7}>
+                <Text style={{ fontSize: 22, color: theme.text }}>☰</Text>
+              </TouchableOpacity>
+              <Text style={{ marginLeft: 12, fontSize: 17, fontWeight: '700', color: theme.text, letterSpacing: 0.2 }}>
+                Tech<Text style={{ color: theme.primary }}>Gestor</Text>
+              </Text>
+            </View>
+          )}
+
+          {telaAtiva === 'DASHBOARD' && <DashboardScreen chamados={chamados} eventos={eventos} users={users} theme={theme} setTelaAtiva={setTelaAtiva} irParaChamados={irParaChamados} />}
+          {telaAtiva === 'CHAMADOS' && <ChamadosScreen user={user} chamados={chamados} eventos={eventos} users={users} inventario={inventario} theme={theme} addLog={gerirLogs} showPush={(msg) => console.log(msg)} filtroStatusInicial={filtroChamadosInicial} mostrarNovoChamado={!origemDashboard} />}
+          {telaAtiva === 'EVENTOS' && <EventosScreen user={user} eventos={eventos} users={users} theme={theme} addLog={gerirLogs} />}
+          {telaAtiva === 'INVENTARIO' && <InventarioScreen inventario={inventario} setInventario={setInventario} chamados={chamados} users={users} theme={theme} addLog={gerirLogs} />}
+          {telaAtiva === 'AGENDAMENTO' && <AgendamentoScreen user={user} agendamentos={agendamentos} setAgendamentos={setAgendamentos} users={users} theme={theme} addLog={gerirLogs} />}
+          {telaAtiva === 'ADMIN' && <AdminScreen user={user} users={users} chamados={chamados} eventos={eventos} theme={theme} addLog={gerirLogs} />}
+          {telaAtiva === 'LOGS' && <LogsScreen logs={logs} theme={theme} />}
+
+          {/* ROTA PARA A TELA DE PERFIL */}
+          {telaAtiva === 'PERFIL' && <PerfilScreen user={user} theme={theme} onLogout={handleLogout} />}
+        </View>
       </View>
-    </View>
+    );
+  }
+
+  return (
+    <>
+      {content}
+      {Platform.OS === 'web' && <WebDownloadWidget theme={theme} />}
+    </>
   );
 }
 
