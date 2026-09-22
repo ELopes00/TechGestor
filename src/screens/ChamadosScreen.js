@@ -261,6 +261,18 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     setSelectedChamado({ ...selectedChamado, historico: novoHistorico });
     registrarLog(`📝 COMENTOU CHAMADO #${selectedChamado.id.substring(0,4)}`);
     setChatMsg('');
+
+    const tituloResumo = selectedChamado.titulo || `Chamado #${selectedChamado.id.substring(0,4)}`;
+    const corpoMsg = msgFinal.length > 80 ? `${msgFinal.substring(0, 80)}...` : msgFinal;
+    const destinatarios = user.perfil === 'ADM'
+      ? users.filter(u => u.login === selectedChamado.tecnico)
+      : users.filter(u => u.perfil === 'ADM');
+
+    destinatarios.forEach(dest => {
+      if (dest.expoPushToken && DataService.enviarPushNotification) {
+        DataService.enviarPushNotification(dest.expoPushToken, `💬 Nova mensagem - ${tituloResumo}`, `${user.login}: ${corpoMsg}`).catch(e => console.log(e));
+      }
+    });
   };
 
   const enviarNotaInterna = async () => {
