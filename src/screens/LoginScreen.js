@@ -55,7 +55,7 @@ export default function LoginScreen({ theme }) {
       <Card theme={theme} style={[styles.card, { borderColor: theme.border }]}>
         <View style={styles.logoRow}>
           <View style={styles.logoBadge}>
-            <Image source={require('../../assets/images/logo-tjrr.png')} style={styles.logoImg} resizeMode="contain" />
+            <Image source={require('../../assets/images/logo-techgestor.png')} style={styles.logoImg} resizeMode="contain" />
           </View>
         </View>
         <Text style={[styles.title, { color: theme.text }]}>TechGestor</Text>

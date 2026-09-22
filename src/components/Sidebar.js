@@ -69,7 +69,7 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
     ]}>
       <View style={styles.logoContainer}>
         <View style={styles.logoBadge}>
-          <Image source={require('../../assets/images/logo-tjrr.png')} style={styles.logoImg} resizeMode="contain" />
+          <Image source={require('../../assets/images/logo-techgestor.png')} style={styles.logoImg} resizeMode="contain" />
         </View>
         <View style={{ marginLeft: 10, flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
