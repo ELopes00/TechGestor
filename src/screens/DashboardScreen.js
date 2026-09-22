@@ -1,8 +1,8 @@
 import { getAuth } from 'firebase/auth'; // <--- Importação para identificar quem está logado
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Animated, Dimensions, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
-import Svg, { Circle, G, Path, Polygon, Polyline } from 'react-native-svg';
+import Svg, { Circle, Defs, G, LinearGradient, Path, Polygon, Polyline, Stop } from 'react-native-svg';
 import * as XLSX from 'xlsx';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Card } from '../components';
@@ -289,18 +289,23 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={[styles.clockPill, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
+          <View style={[styles.toolbarBar, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
             <MaterialIcons name="schedule" size={14} color={theme.subtext} style={{ marginRight: 6 }} />
             <Text style={{ color: theme.subtext, fontSize: 12, fontWeight: '700', fontFamily: 'monospace' }}>
               {horaRelogio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </Text>
-          </View>
 
-          <View style={[styles.clockPill, { backgroundColor: theme.cardAlt, borderColor: theme.border, marginLeft: 8 }]}>
-            <MaterialIcons name="wifi" size={14} color={theme.online} style={{ marginRight: 6 }} />
+            <View style={[styles.toolbarDivider, { backgroundColor: theme.border }]} />
+
+            <MaterialIcons name="wifi" size={14} color={theme.online} />
+
+            <View style={[styles.toolbarDivider, { backgroundColor: theme.border }]} />
+
+            <MaterialIcons name="person-outline" size={14} color={theme.text} style={{ marginRight: 4 }} />
             <Text style={{ color: theme.text, fontSize: 12, fontWeight: '700' }} numberOfLines={1}>
               {usuarioLogado?.nomeCompleto || usuarioLogado?.login || 'Admin'}
             </Text>
+            <MaterialIcons name="expand-more" size={16} color={theme.subtext} />
           </View>
 
           <TouchableOpacity onPress={abrirSininho} style={[styles.bellBtn, { backgroundColor: theme.cardAlt, borderColor: theme.border, marginLeft: 8 }]} activeOpacity={0.75}>
@@ -725,6 +730,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
 }
 
 function Sparkline({ data = [], color, width = 100, height = 28 }) {
+  const gradId = useId().replace(/:/g, '');
   const max = Math.max(...data, 1);
   const step = data.length > 1 ? width / (data.length - 1) : 0;
   const points = data.map((v, i) => `${i * step},${height - (v / max) * (height - 4) - 2}`).join(' ');
@@ -733,7 +739,13 @@ function Sparkline({ data = [], color, width = 100, height = 28 }) {
   return (
     <View style={styles.sparklineWrap}>
       <Svg width={width} height={height}>
-        <Polygon points={areaPoints} fill={color} opacity={0.14} />
+        <Defs>
+          <LinearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor={color} stopOpacity={0.35} />
+            <Stop offset="1" stopColor={color} stopOpacity={0} />
+          </LinearGradient>
+        </Defs>
+        <Polygon points={areaPoints} fill={`url(#${gradId})`} />
         <Polyline points={points} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
       </Svg>
     </View>
@@ -749,7 +761,7 @@ function Gauge({ percent, theme, size = 84 }) {
   const cor = clamped >= 80 ? theme.online : clamped >= 50 ? theme.sec : theme.offline;
 
   return (
-    <View style={{ width: size, height: size / 2 + strokeWidth, alignItems: 'center' }}>
+    <View style={{ width: size, alignItems: 'center' }}>
       <Svg width={size} height={size / 2 + strokeWidth}>
         <Path
           d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
@@ -769,6 +781,9 @@ function Gauge({ percent, theme, size = 84 }) {
           />
         )}
       </Svg>
+      <Text style={{ color: percent == null ? theme.subtext : cor, fontSize: 11, fontWeight: '800', fontFamily: 'monospace', marginTop: -4 }}>
+        {percent == null ? '—' : `${percent}%`}
+      </Text>
     </View>
   );
 }
@@ -877,7 +892,8 @@ const styles = StyleSheet.create({
   periodTab: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: RADIUS.pill },
 
   bellBtn: { width: 42, height: 42, borderRadius: RADIUS.md, borderWidth: 1, alignItems: 'center', justifyContent: 'center', position: 'relative' },
-  clockPill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, height: 42, borderRadius: RADIUS.md, borderWidth: 1 },
+  toolbarBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, height: 42, borderRadius: RADIUS.md, borderWidth: 1 },
+  toolbarDivider: { width: 1, height: 16, marginHorizontal: 10 },
   exportBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: RADIUS.sm, borderWidth: 1 },
   sparklineWrap: { marginTop: 8, marginLeft: -4 },
   badge: { position: 'absolute', top: -4, right: -4, borderRadius: 12, width: 20, height: 20, justifyContent: 'center', alignItems: 'center', borderWidth: 2 },
