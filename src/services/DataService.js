@@ -270,7 +270,7 @@ export const DataService = {
     const expoUrl = 'https://exp.host/--/api/v2/push/send';
 
     try {
-      await fetch(expoUrl, {
+      const resp = await fetch(expoUrl, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -279,6 +279,13 @@ export const DataService = {
         },
         body: JSON.stringify(message),
       });
+      const respJson = await resp.json();
+      const ticket = respJson?.data;
+      if (ticket?.status === 'error') {
+        console.log("Push rejeitado pelo Expo:", ticket.message, ticket.details);
+      } else {
+        console.log("Push enviado, ticket:", ticket);
+      }
     } catch (e) {
       console.log("Erro ao enviar notificação: ", e);
     }
