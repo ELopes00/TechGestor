@@ -363,7 +363,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
                 <MaterialIcons name="error-outline" size={14} color={theme.offline} />
               </View>
             </View>
-            <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosAbertos}</Text>
+            <Text style={{ color: theme.text, fontSize: 34, fontWeight: '800', marginTop: 10, fontFamily: 'monospace' }}>{chamadosAbertos}</Text>
             <Sparkline data={tendenciaAbertura} color={theme.offline} />
           </Card>
         </TouchableOpacity>
@@ -377,7 +377,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
                 <MaterialIcons name="schedule" size={14} color={theme.sec} />
               </View>
             </View>
-            <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosAndamento}</Text>
+            <Text style={{ color: theme.text, fontSize: 34, fontWeight: '800', marginTop: 10, fontFamily: 'monospace' }}>{chamadosAndamento}</Text>
             <Sparkline data={tendenciaAbertura} color={theme.sec} />
           </Card>
         </TouchableOpacity>
@@ -391,7 +391,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
                 <MaterialIcons name="check-circle-outline" size={14} color={theme.primary} />
               </View>
             </View>
-            <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosConcluidos}</Text>
+            <Text style={{ color: theme.text, fontSize: 34, fontWeight: '800', marginTop: 10, fontFamily: 'monospace' }}>{chamadosConcluidos}</Text>
             <Sparkline data={tendenciaFechamento} color={theme.primary} />
           </Card>
         </TouchableOpacity>
@@ -405,7 +405,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
                 <MaterialIcons name="format-list-bulleted" size={14} color={theme.tert} />
               </View>
             </View>
-            <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosTotal}</Text>
+            <Text style={{ color: theme.text, fontSize: 34, fontWeight: '800', marginTop: 10, fontFamily: 'monospace' }}>{chamadosTotal}</Text>
             <Sparkline data={tendenciaAbertura} color={theme.tert} />
           </Card>
         </TouchableOpacity>
@@ -434,7 +434,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <View style={{ flex: 1, marginRight: 10 }}>
-                <Text style={{ color: theme.online, fontSize: 26, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{slaPercent == null ? '—' : `${slaPercent}%`}</Text>
+                <Text style={{ color: theme.online, fontSize: 32, fontWeight: '800', marginTop: 10, fontFamily: 'monospace' }}>{slaPercent == null ? '—' : `${slaPercent}%`}</Text>
                 <View style={[styles.progressTrackSm, { backgroundColor: theme.cardAlt }]}>
                   <View style={[styles.progressFill, { width: `${slaPercent == null ? 0 : slaPercent}%`, backgroundColor: theme.online }]} />
                 </View>
@@ -452,7 +452,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
                 <MaterialIcons name="timer" size={14} color={theme.tert} />
               </View>
             </View>
-            <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800', marginTop: 10, fontFamily: 'monospace' }}>{formatarMinutos(mttrMinutos)}</Text>
+            <Text style={{ color: theme.text, fontSize: 32, fontWeight: '800', marginTop: 10, fontFamily: 'monospace' }}>{formatarMinutos(mttrMinutos)}</Text>
             <Sparkline data={tendenciaMTTR} color={theme.tert} />
           </Card>
         </View>
@@ -875,11 +875,11 @@ const styles = StyleSheet.create({
   metricaLabelRow: { flexDirection: 'row', alignItems: 'center' },
   metricaTopRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
   metricaLabel: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6, flex: 1, marginRight: 6 },
-  metricaIconBox: { width: 28, height: 28, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
+  metricaIconBox: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   glowBlob: { position: 'absolute', width: 90, height: 90, borderRadius: 45, opacity: 0.12, right: -30, bottom: -30 },
   cardsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   cardMetricaWrap: { flex: 1, minWidth: 140 },
-  cardMetrica: { padding: 18, marginBottom: 0 },
+  cardMetrica: { padding: 18, marginBottom: 0, minHeight: 128, borderRadius: RADIUS.xl + 4 },
 
   liveBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 4, borderRadius: RADIUS.pill, marginLeft: 10, gap: 5 },
   liveDot: { width: 6, height: 6, borderRadius: 3, marginRight: 4 },
