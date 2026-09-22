@@ -357,7 +357,7 @@ export default function App() {
   return (
     <>
       {content}
-      {Platform.OS === 'web' && <WebDownloadWidget theme={theme} />}
+      {Platform.OS === 'web' && !isInitializing && !user && <WebDownloadWidget theme={theme} />}
     </>
   );
 }
