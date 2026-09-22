@@ -879,7 +879,7 @@ const styles = StyleSheet.create({
   glowBlob: { position: 'absolute', width: 90, height: 90, borderRadius: 45, opacity: 0.12, right: -30, bottom: -30 },
   cardsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   cardMetricaWrap: { flex: 1, minWidth: 140 },
-  cardMetrica: { padding: 18, marginBottom: 0, minHeight: 128, borderRadius: RADIUS.xl + 4 },
+  cardMetrica: { flex: 1, padding: 18, marginBottom: 0, minHeight: 128, borderRadius: RADIUS.xl + 4 },
 
   liveBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 4, borderRadius: RADIUS.pill, marginLeft: 10, gap: 5 },
   liveDot: { width: 6, height: 6, borderRadius: 3, marginRight: 4 },
