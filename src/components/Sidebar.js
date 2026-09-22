@@ -68,7 +68,7 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
       isMobile && { position: 'absolute', zIndex: 50, display: isMenuOpen ? 'flex' : 'none', height: '100%' }
     ]}>
       <View style={styles.logoContainer}>
-        <View style={styles.logoBadge}>
+        <View style={[styles.logoBadge, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
           <Image source={require('../../assets/images/logo-techgestor.png')} style={styles.logoImg} resizeMode="contain" />
         </View>
         <View style={{ marginLeft: 10, flex: 1 }}>
@@ -131,7 +131,7 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
 const styles = StyleSheet.create({
   sidebar: { width: 216, height: '100%', borderRightWidth: 1, paddingVertical: 20, justifyContent: 'flex-start' },
   logoContainer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, marginBottom: 18 },
-  logoBadge: { width: 48, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0B1220', padding: 4 },
+  logoBadge: { width: 48, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', borderWidth: 1, padding: 4 },
   logoImg: { width: '100%', height: '100%' },
   menuItems: { flex: 1, width: '100%' },
   btnMenu: { flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 12, width: '100%', marginVertical: 2, borderRadius: RADIUS.md },

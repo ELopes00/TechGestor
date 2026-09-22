@@ -44,7 +44,7 @@ export default function WebDownloadWidget({ theme }) {
         <View style={[styles.overlay, { backgroundColor: theme.overlay }]}>
           <Card theme={theme} style={[styles.promptCard, { borderColor: theme.border }]}>
             <View style={styles.logoRow}>
-              <View style={styles.logoBadge}>
+              <View style={[styles.logoBadge, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
                 <Image source={require('../../assets/images/logo-techgestor.png')} style={styles.logoImg} resizeMode="contain" />
               </View>
             </View>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   btnAgoraNao: { marginTop: 12, paddingVertical: 8 },
   btnAgoraNaoText: { fontSize: 13, fontWeight: '600' },
   logoRow: { marginBottom: 14, alignItems: 'center' },
-  logoBadge: { width: 84, height: 64, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0B1220', padding: 8 },
+  logoBadge: { width: 84, height: 64, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, padding: 8 },
   logoImg: { width: '100%', height: '100%' },
   title: { fontSize: 19, marginBottom: 6, fontWeight: '700' },
   subtitle: { fontSize: 12.5, marginBottom: 24, textAlign: 'center', lineHeight: 18 },

@@ -54,7 +54,7 @@ export default function LoginScreen({ theme }) {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Card theme={theme} style={[styles.card, { borderColor: theme.border }]}>
         <View style={styles.logoRow}>
-          <View style={styles.logoBadge}>
+          <View style={[styles.logoBadge, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
             <Image source={require('../../assets/images/logo-techgestor.png')} style={styles.logoImg} resizeMode="contain" />
           </View>
         </View>
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
   card: { width: '100%', maxWidth: 380, alignItems: 'center', padding: 32, borderRadius: RADIUS.xl, borderWidth: 1, ...SHADOW.sm },
   logoRow: { marginBottom: 14, alignItems: 'center' },
-  logoBadge: { width: 84, height: 64, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0B1220', padding: 8 },
+  logoBadge: { width: 84, height: 64, borderRadius: RADIUS.lg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, padding: 8 },
   logoImg: { width: '100%', height: '100%' },
   title: { fontSize: 19, marginBottom: 6, fontWeight: '700' },
   subtitle: { fontSize: 12.5, marginBottom: 24, textAlign: 'center', lineHeight: 18 },

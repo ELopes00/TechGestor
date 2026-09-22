@@ -11,7 +11,7 @@ import 'react-native-gesture-handler';
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Image, Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -333,7 +333,8 @@ export default function App() {
               <TouchableOpacity onPress={() => setIsMenuOpen(true)} style={styles.menuBtn} activeOpacity={0.7}>
                 <Text style={{ fontSize: 22, color: theme.text }}>☰</Text>
               </TouchableOpacity>
-              <Text style={{ marginLeft: 12, fontSize: 17, fontWeight: '700', color: theme.text, letterSpacing: 0.2 }}>
+              <Image source={require('./assets/images/logo-techgestor.png')} style={styles.headerLogo} resizeMode="contain" />
+              <Text style={{ marginLeft: 8, fontSize: 17, fontWeight: '700', color: theme.text, letterSpacing: 0.2 }}>
                 Tech<Text style={{ color: theme.primary }}>Gestor</Text>
               </Text>
             </View>
@@ -368,4 +369,5 @@ const styles = StyleSheet.create({
   overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(4,6,8,0.6)', zIndex: 40 },
   headerMobile: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1 },
   menuBtn: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  headerLogo: { width: 26, height: 20, marginLeft: 6 },
 });
