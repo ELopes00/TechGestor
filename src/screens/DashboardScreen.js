@@ -1,13 +1,12 @@
 import { getAuth } from 'firebase/auth'; // <--- Importação para identificar quem está logado
-import { useEffect, useId, useRef, useState } from 'react';
-import { Animated, Dimensions, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Dimensions, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
-import Svg, { Circle, Defs, G, LinearGradient, Path, Polygon, Polyline, Stop } from 'react-native-svg';
-import * as XLSX from 'xlsx';
+import Svg, { Circle, G } from 'react-native-svg';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Card } from '../components';
 import { RADIUS, SHADOW } from '../theme/themes';
-import { getStatusCategoria, getDataFechamento, calcularSLA, calcularMTTR, formatarMinutos, getCorPrioridade } from '../utils/helpers';
+import { getStatusCategoria, calcularSLA, calcularMTTR, formatarMinutos, getCorPrioridade } from '../utils/helpers';
 
 const PERIODOS = [
   { id: 'HOJE', label: 'Hoje' },
@@ -124,60 +123,6 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
   const slaPercent = calcularSLA(listaChamados);
   const mttrMinutos = calcularMTTR(listaChamados);
 
-  // --- TENDÊNCIA DOS ÚLTIMOS 7 DIAS (mini-gráficos dos cards) ---
-  const diaDeTimestamp = (ts) => Math.floor(ts / (24 * 60 * 60 * 1000));
-  const hojeDia = diaDeTimestamp(Date.now());
-
-  const tendenciaAbertura = Array.from({ length: 7 }, (_, i) => {
-    const dia = hojeDia - (6 - i);
-    return listaChamados.filter(c => c.dataAbertura && diaDeTimestamp(c.dataAbertura) === dia).length;
-  });
-
-  const tendenciaFechamento = Array.from({ length: 7 }, (_, i) => {
-    const dia = hojeDia - (6 - i);
-    return listaChamados.filter(c => {
-      const fechamento = getDataFechamento(c);
-      return fechamento && diaDeTimestamp(fechamento) === dia;
-    }).length;
-  });
-
-  const tendenciaMTTR = Array.from({ length: 7 }, (_, i) => {
-    const dia = hojeDia - (6 - i);
-    const doDia = listaChamados.filter(c => {
-      const fechamento = getDataFechamento(c);
-      return fechamento && c.dataAbertura && diaDeTimestamp(fechamento) === dia;
-    });
-    if (doDia.length === 0) return 0;
-    const mediaMs = doDia.reduce((soma, c) => soma + (getDataFechamento(c) - c.dataAbertura), 0) / doDia.length;
-    return Math.round(mediaMs / 60000);
-  });
-
-  const [ultimaAtualizacao, setUltimaAtualizacao] = useState(Date.now());
-  useEffect(() => { setUltimaAtualizacao(Date.now()); }, [chamados]);
-  const [horaRelogio, setHoraRelogio] = useState(new Date());
-  useEffect(() => {
-    const interval = setInterval(() => setHoraRelogio(new Date()), 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const exportarDados = () => {
-    const linhas = listaChamados.map(c => ({
-      Titulo: c.titulo || c.descricao || '',
-      Status: c.status || '',
-      Prioridade: c.prioridade || '',
-      Predio: c.predio || '',
-      Tecnico: c.tecnico || 'Fila',
-      Abertura: c.dataAbertura ? new Date(c.dataAbertura).toLocaleString('pt-BR') : '',
-      Fechamento: getDataFechamento(c) ? new Date(getDataFechamento(c)).toLocaleString('pt-BR') : '',
-    }));
-    const ws = XLSX.utils.json_to_sheet(linhas);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Chamados');
-    if (Platform.OS === 'web') {
-      XLSX.writeFile(wb, 'TechGestor_Chamados.xlsx');
-    }
-  };
-
   const severidadeCounts = ['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'].reduce((acc, sev) => {
     acc[sev] = listaChamados.filter(c => (c.prioridade || 'BAIXA') === sev && getStatusCategoria(c.status) !== 'CONCLUIDO').length;
     return acc;
@@ -280,45 +225,22 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
         <View>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={[styles.title, { color: theme.text, marginBottom: 2 }]}>Visão Geral</Text>
-            <View style={[styles.liveBadge, { backgroundColor: theme.successWash }]}>
-              <Animated.View style={[styles.liveDot, { backgroundColor: theme.online, opacity: pulseAnim }]} />
-              <Text style={{ color: theme.online, fontSize: 10, fontWeight: '800', letterSpacing: 0.3 }}>AO VIVO</Text>
+            <View style={[styles.liveBadge, { backgroundColor: theme.primarySoft }]}>
+              <Animated.View style={[styles.liveDot, { backgroundColor: theme.primary, opacity: pulseAnim }]} />
+              <Text style={{ color: theme.primary, fontSize: 10, fontWeight: '800', letterSpacing: 0.3 }}>AO VIVO</Text>
             </View>
           </View>
           <Text style={{ color: theme.subtext, fontSize: 13 }}>Acompanhe a operação em tempo real</Text>
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={[styles.toolbarBar, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
-            <MaterialIcons name="schedule" size={14} color={theme.subtext} style={{ marginRight: 6 }} />
-            <Text style={{ color: theme.subtext, fontSize: 12, fontWeight: '700', fontFamily: 'monospace' }}>
-              {horaRelogio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-            </Text>
-
-            <View style={[styles.toolbarDivider, { backgroundColor: theme.border }]} />
-
-            <MaterialIcons name="wifi" size={14} color={theme.online} />
-
-            <View style={[styles.toolbarDivider, { backgroundColor: theme.border }]} />
-
-            <View style={[styles.avatarCircle, { backgroundColor: theme.border }]}>
-              <MaterialIcons name="person" size={14} color={theme.text} />
+        <TouchableOpacity onPress={abrirSininho} style={[styles.bellBtn, { backgroundColor: theme.cardAlt, borderColor: theme.border }]} activeOpacity={0.75}>
+          <MaterialIcons name="notifications-none" size={22} color={theme.text} />
+          {notificacoesNaoLidas > 0 && (
+            <View style={[styles.badge, { borderColor: theme.background, backgroundColor: theme.offline }]}>
+              <Text style={styles.badgeText}>{notificacoesNaoLidas > 9 ? '9+' : notificacoesNaoLidas}</Text>
             </View>
-            <Text style={{ color: theme.text, fontSize: 13, fontWeight: '700', marginLeft: 7 }} numberOfLines={1}>
-              {usuarioLogado?.nomeCompleto || usuarioLogado?.login || 'Admin'}
-            </Text>
-            <MaterialIcons name="expand-more" size={16} color={theme.subtext} style={{ marginLeft: 4 }} />
-          </View>
-
-          <TouchableOpacity onPress={abrirSininho} style={[styles.bellBtn, { backgroundColor: theme.cardAlt, borderColor: theme.border, marginLeft: 8 }]} activeOpacity={0.75}>
-            <MaterialIcons name="notifications-none" size={22} color={theme.text} />
-            {notificacoesNaoLidas > 0 && (
-              <View style={[styles.badge, { borderColor: theme.background, backgroundColor: theme.offline }]}>
-                <Text style={styles.badgeText}>{notificacoesNaoLidas > 9 ? '9+' : notificacoesNaoLidas}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
+          )}
+        </TouchableOpacity>
       </View>
 
       {/* NOVO: CARTÃO DE IDENTIDADE DO TÉCNICO LOGADO */}
@@ -329,53 +251,71 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
             <Text style={{ color: theme.text, fontSize: 18, fontWeight: 'bold', marginTop: 4 }}>{usuarioLogado.nomeCompleto || usuarioLogado.login}</Text>
             <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 4 }}>🏢 {usuarioLogado.predio}</Text>
           </View>
-          <View style={[styles.statusPill, { backgroundColor: getStatusColor(getStatusReal(usuarioLogado)) + '22' }]}>
-            <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: getStatusColor(getStatusReal(usuarioLogado)), marginRight: 8 }} />
-            <Text style={{ color: getStatusColor(getStatusReal(usuarioLogado)), fontWeight: '700', fontSize: 14 }}>
+          <View style={{ alignItems: 'center', backgroundColor: theme.cardAlt, padding: 10, borderRadius: RADIUS.md }}>
+            <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: getStatusColor(getStatusReal(usuarioLogado)), marginBottom: 6 }} />
+            <Text style={{ color: getStatusColor(getStatusReal(usuarioLogado)), fontWeight: 'bold', fontSize: 12, textAlign: 'center' }}>
               {getStatusText(getStatusReal(usuarioLogado))}
             </Text>
           </View>
         </Card>
       )}
       
-      <View style={[styles.sectionHeaderRow, { justifyContent: 'space-between' }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialIcons name="assignment" size={16} color={theme.primary} style={{ marginRight: 6 }} />
-          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>Resumo de Chamados</Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ color: theme.textCode, fontSize: 11, marginRight: 12 }}>
-            Última atualização: {formatarTempo(ultimaAtualizacao)}
-          </Text>
-          {Platform.OS === 'web' && chamadosTotal > 0 && (
-            <TouchableOpacity onPress={exportarDados} style={[styles.exportBtn, { borderColor: theme.border, backgroundColor: theme.cardAlt }]} activeOpacity={0.75}>
-              <MaterialIcons name="file-download" size={13} color={theme.text} style={{ marginRight: 5 }} />
-              <Text style={{ color: theme.text, fontSize: 11, fontWeight: '700' }}>Exportar Dados</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+      <View style={styles.sectionHeaderRow}>
+        <MaterialIcons name="assignment" size={16} color={theme.primary} style={{ marginRight: 6 }} />
+        <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>Resumo de Chamados</Text>
       </View>
       <View style={styles.cardsRow}>
-        <CardMetrica
-          theme={theme} label="Abertos" valor={chamadosAbertos} icone="error-outline"
-          cor={theme.offline} trend={tendenciaAbertura}
-          onPress={() => (irParaChamados ? irParaChamados('ABERTO') : setTelaAtiva && setTelaAtiva('CHAMADOS'))}
-        />
-        <CardMetrica
-          theme={theme} label="Andamento" valor={chamadosAndamento} icone="schedule"
-          cor={theme.sec} trend={tendenciaAbertura}
-          onPress={() => (irParaChamados ? irParaChamados('ANDAMENTO') : setTelaAtiva && setTelaAtiva('CHAMADOS'))}
-        />
-        <CardMetrica
-          theme={theme} label="Concluídos" valor={chamadosConcluidos} icone="check-circle-outline"
-          cor={theme.primary} trend={tendenciaFechamento}
-          onPress={() => (irParaChamados ? irParaChamados('CONCLUIDO') : setTelaAtiva && setTelaAtiva('CHAMADOS'))}
-        />
-        <CardMetrica
-          theme={theme} label="Total" valor={chamadosTotal} icone="format-list-bulleted"
-          cor={theme.tert} trend={tendenciaAbertura}
-          onPress={() => (irParaChamados ? irParaChamados('TODOS') : setTelaAtiva && setTelaAtiva('CHAMADOS'))}
-        />
+        <TouchableOpacity activeOpacity={0.7} style={styles.cardMetricaWrap} onPress={() => (irParaChamados ? irParaChamados('ABERTO') : setTelaAtiva && setTelaAtiva('CHAMADOS'))}>
+          <Card theme={theme} style={[styles.cardMetrica, { overflow: 'hidden' }]}>
+            <View style={[styles.glowBlob, { backgroundColor: theme.offline }]} />
+            <View style={styles.metricaTopRow}>
+              <Text style={[styles.metricaLabel, { color: theme.textCode }]}>Abertos</Text>
+              <View style={[styles.metricaIconBox, { backgroundColor: theme.cardAlt }]}>
+                <MaterialIcons name="error-outline" size={14} color={theme.offline} />
+              </View>
+            </View>
+            <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosAbertos}</Text>
+          </Card>
+        </TouchableOpacity>
+
+        <TouchableOpacity activeOpacity={0.7} style={styles.cardMetricaWrap} onPress={() => (irParaChamados ? irParaChamados('ANDAMENTO') : setTelaAtiva && setTelaAtiva('CHAMADOS'))}>
+          <Card theme={theme} style={[styles.cardMetrica, { overflow: 'hidden' }]}>
+            <View style={[styles.glowBlob, { backgroundColor: theme.sec }]} />
+            <View style={styles.metricaTopRow}>
+              <Text style={[styles.metricaLabel, { color: theme.textCode }]}>Andamento</Text>
+              <View style={[styles.metricaIconBox, { backgroundColor: theme.cardAlt }]}>
+                <MaterialIcons name="schedule" size={14} color={theme.sec} />
+              </View>
+            </View>
+            <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosAndamento}</Text>
+          </Card>
+        </TouchableOpacity>
+
+        <TouchableOpacity activeOpacity={0.7} style={styles.cardMetricaWrap} onPress={() => (irParaChamados ? irParaChamados('CONCLUIDO') : setTelaAtiva && setTelaAtiva('CHAMADOS'))}>
+          <Card theme={theme} style={[styles.cardMetrica, { overflow: 'hidden' }]}>
+            <View style={[styles.glowBlob, { backgroundColor: theme.primary }]} />
+            <View style={styles.metricaTopRow}>
+              <Text style={[styles.metricaLabel, { color: theme.textCode }]}>Concluídos</Text>
+              <View style={[styles.metricaIconBox, { backgroundColor: theme.cardAlt }]}>
+                <MaterialIcons name="check-circle-outline" size={14} color={theme.primary} />
+              </View>
+            </View>
+            <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosConcluidos}</Text>
+          </Card>
+        </TouchableOpacity>
+
+        <TouchableOpacity activeOpacity={0.7} style={styles.cardMetricaWrap} onPress={() => (irParaChamados ? irParaChamados('TODOS') : setTelaAtiva && setTelaAtiva('CHAMADOS'))}>
+          <Card theme={theme} style={[styles.cardMetrica, { overflow: 'hidden' }]}>
+            <View style={[styles.glowBlob, { backgroundColor: theme.tert }]} />
+            <View style={styles.metricaTopRow}>
+              <Text style={[styles.metricaLabel, { color: theme.textCode }]}>Total</Text>
+              <View style={[styles.metricaIconBox, { backgroundColor: theme.cardAlt }]}>
+                <MaterialIcons name="format-list-bulleted" size={14} color={theme.tert} />
+              </View>
+            </View>
+            <Text style={{ color: theme.text, fontSize: 28, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{chamadosTotal}</Text>
+          </Card>
+        </TouchableOpacity>
       </View>
 
       {chamadosTotal > 0 && (
@@ -393,39 +333,29 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
       <View style={styles.cardsRow}>
         <View style={styles.cardMetricaWrap}>
           <Card theme={theme} style={[styles.cardMetrica, { overflow: 'hidden' }]}>
+            <View style={[styles.glowBlob, { backgroundColor: theme.online }]} />
             <View style={styles.metricaTopRow}>
-              <Text style={[styles.metricaLabel, { color: theme.subtext }]}>SLA Cumprido</Text>
-              <MaterialIcons name="check-circle" size={20} color={theme.online} />
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: 6 }}>
-              <View style={{ flex: 1, marginRight: 14, paddingBottom: 6 }}>
-                <Text style={[styles.metricaValor, { color: theme.text }]}>
-                  {slaPercent == null ? '—' : `${slaPercent}%`}
-                </Text>
-                <View style={[styles.progressTrackSm, { backgroundColor: theme.cardAlt, marginTop: 14 }]}>
-                  <View style={[styles.progressFill, { width: `${slaPercent == null ? 0 : slaPercent}%`, backgroundColor: theme.online }]} />
-                </View>
+              <Text style={[styles.metricaLabel, { color: theme.textCode }]}>SLA Cumprido</Text>
+              <View style={[styles.metricaIconBox, { backgroundColor: theme.cardAlt }]}>
+                <MaterialIcons name="verified" size={14} color={theme.online} />
               </View>
-              <Gauge percent={slaPercent} theme={theme} size={132} />
+            </View>
+            <Text style={{ color: theme.online, fontSize: 26, fontWeight: '800', marginTop: 8, fontFamily: 'monospace' }}>{slaPercent == null ? '—' : `${slaPercent}%`}</Text>
+            <View style={[styles.progressTrackSm, { backgroundColor: theme.cardAlt }]}>
+              <View style={[styles.progressFill, { width: `${slaPercent == null ? 0 : slaPercent}%`, backgroundColor: theme.online }]} />
             </View>
           </Card>
         </View>
-
         <View style={styles.cardMetricaWrap}>
           <Card theme={theme} style={[styles.cardMetrica, { overflow: 'hidden' }]}>
+            <View style={[styles.glowBlob, { backgroundColor: theme.tert }]} />
             <View style={styles.metricaTopRow}>
-              <Text style={[styles.metricaLabel, { color: theme.subtext }]}>MTTR Médio</Text>
-              <MaterialIcons name="timer" size={20} color={theme.tert} />
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12 }}>
-              <View style={{ flex: 1, marginRight: 14 }}>
-                <Sparkline data={tendenciaMTTR} color={theme.tert} height={54} />
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                <Text style={[styles.metricaValor, { color: theme.text }]}>{formatarMinutos(mttrMinutos)}</Text>
-                <Text style={{ color: theme.subtext, fontSize: 14, marginLeft: 6 }}>(avg.)</Text>
+              <Text style={[styles.metricaLabel, { color: theme.textCode }]}>MTTR Médio</Text>
+              <View style={[styles.metricaIconBox, { backgroundColor: theme.cardAlt }]}>
+                <MaterialIcons name="timer" size={14} color={theme.tert} />
               </View>
             </View>
+            <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800', marginTop: 10, fontFamily: 'monospace' }}>{formatarMinutos(mttrMinutos)}</Text>
           </Card>
         </View>
       </View>
@@ -701,96 +631,7 @@ export default function DashboardScreen({ chamados = [], eventos = [], users = [
   );
 }
 
-// Ocupa toda a largura disponível do card: mede o container via onLayout, já que
-// o SVG precisa de largura em pixels (não aceita porcentagem sem distorcer o traço).
-function Sparkline({ data = [], color, height = 46 }) {
-  const gradId = useId().replace(/:/g, '');
-  const [largura, setLargura] = useState(0);
-
-  const max = Math.max(...data, 1);
-  const step = data.length > 1 ? largura / (data.length - 1) : 0;
-  const points = data.map((v, i) => `${i * step},${height - (v / max) * (height - 6) - 3}`).join(' ');
-  const areaPoints = `0,${height} ${points} ${largura},${height}`;
-
-  return (
-    <View style={{ height, marginTop: 10 }} onLayout={(e) => setLargura(e.nativeEvent.layout.width)}>
-      {largura > 0 && (
-        <Svg width={largura} height={height}>
-          <Defs>
-            <LinearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={color} stopOpacity={0.45} />
-              <Stop offset="1" stopColor={color} stopOpacity={0} />
-            </LinearGradient>
-          </Defs>
-          <Polygon points={areaPoints} fill={`url(#${gradId})`} />
-          <Polyline points={points} fill="none" stroke={color} strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
-        </Svg>
-      )}
-    </View>
-  );
-}
-
-// Velocímetro: semicírculo dividido em faixas verde→amarelo→laranja→vermelho,
-// com ponteiro apontando o percentual atual (0% = esquerda, 100% = direita).
-const GAUGE_FAIXAS = [
-  { ate: 0.45, cor: '#22C55E' },
-  { ate: 0.70, cor: '#EAB308' },
-  { ate: 0.86, cor: '#F97316' },
-  { ate: 1.00, cor: '#EF4444' },
-];
-
-function Gauge({ percent, theme, size = 132 }) {
-  const strokeWidth = 15;
-  const raio = (size - strokeWidth) / 2;
-  const cx = size / 2;
-  const cy = size / 2;
-  const arco = Math.PI * raio;
-  const clamped = Math.max(0, Math.min(100, percent ?? 0));
-
-  const arcoPath = `M ${strokeWidth / 2} ${cy} A ${raio} ${raio} 0 0 1 ${size - strokeWidth / 2} ${cy}`;
-
-  // Ângulo do ponteiro: 180° (esquerda) a 0° (direita), em coordenadas SVG (y invertido).
-  const anguloRad = Math.PI * (1 - clamped / 100);
-  const ponteiroRaio = raio - strokeWidth / 2 - 4;
-  const px = cx + Math.cos(anguloRad) * ponteiroRaio;
-  const py = cy - Math.sin(anguloRad) * ponteiroRaio;
-
-  let inicio = 0;
-  return (
-    <View style={{ width: size, alignItems: 'center' }}>
-      <Svg width={size} height={cy + 6}>
-        {GAUGE_FAIXAS.map((faixa, i) => {
-          const dash = (faixa.ate - inicio) * arco;
-          const offset = -inicio * arco;
-          inicio = faixa.ate;
-          return (
-            <Path
-              key={i}
-              d={arcoPath}
-              stroke={percent == null ? theme.cardAlt : faixa.cor}
-              strokeWidth={strokeWidth}
-              strokeDasharray={`${dash} ${arco}`}
-              strokeDashoffset={offset}
-              fill="none"
-            />
-          );
-        })}
-
-        {percent != null && (
-          <>
-            <Path d={`M ${cx} ${cy} L ${px} ${py}`} stroke="#FFFFFF" strokeWidth={3} strokeLinecap="round" />
-            <Circle cx={cx} cy={cy} r={5} fill="#FFFFFF" />
-          </>
-        )}
-      </Svg>
-      <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800', marginTop: -14 }}>
-        {percent == null ? '—' : `${percent}%`}
-      </Text>
-    </View>
-  );
-}
-
-function DonutChart({ data, theme, size = 184, strokeWidth = 32 }) {
+function DonutChart({ data, theme, size = 156, strokeWidth = 20 }) {
   const [selected, setSelected] = useState(null);
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -809,21 +650,7 @@ function DonutChart({ data, theme, size = 184, strokeWidth = 32 }) {
   const toggle = (label) => setSelected(prev => (prev === label ? null : label));
 
   return (
-    <View style={styles.donutRow}>
-      <View style={styles.donutLegendCol}>
-        {segments.map((s, i) => (
-          <TouchableOpacity
-            key={i}
-            activeOpacity={0.7}
-            onPress={() => toggle(s.label)}
-            style={[styles.donutLegendItem, selected === s.label && { backgroundColor: theme.cardAlt }]}
-          >
-            <View style={{ width: 11, height: 11, borderRadius: 3, backgroundColor: s.color, marginRight: 9 }} />
-            <Text style={{ color: theme.text, fontSize: 13.5, fontWeight: '600' }} numberOfLines={1}>{s.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
+    <View style={{ alignItems: 'center' }}>
       <View style={{ width: size, height: size }}>
         <Svg width={size} height={size}>
           <G rotation={-90} originX={size / 2} originY={size / 2}>
@@ -850,50 +677,37 @@ function DonutChart({ data, theme, size = 184, strokeWidth = 32 }) {
         <View style={[StyleSheet.absoluteFillObject, { alignItems: 'center', justifyContent: 'center' }]} pointerEvents="none">
           {activeSegment ? (
             <>
-              <Text style={{ color: activeSegment.color, fontSize: 30, fontWeight: '800' }}>{activeSegment.value}</Text>
-              <Text style={{ color: theme.subtext, fontSize: 10, fontWeight: '700', textTransform: 'uppercase', marginTop: 2, letterSpacing: 0.3 }} numberOfLines={1}>{activeSegment.label}</Text>
+              <Text style={{ color: activeSegment.color, fontSize: 22, fontWeight: '800', fontFamily: 'monospace' }}>{activeSegment.value}</Text>
+              <Text style={{ color: theme.subtext, fontSize: 9, fontWeight: '700', textTransform: 'uppercase', marginTop: 2, letterSpacing: 0.3 }} numberOfLines={1}>{activeSegment.label}</Text>
             </>
           ) : (
-            <Text style={{ color: theme.text, fontSize: 34, fontWeight: '800', letterSpacing: -0.5 }}>{total}</Text>
+            <>
+              <Text style={{ color: theme.text, fontSize: 24, fontWeight: '800', fontFamily: 'monospace' }}>{total}</Text>
+              <Text style={{ color: theme.subtext, fontSize: 9, fontWeight: '700', textTransform: 'uppercase', marginTop: 2, letterSpacing: 0.3 }}>Total</Text>
+            </>
           )}
         </View>
       </View>
 
-      <View style={styles.donutPropCol}>
-        <Text style={{ color: theme.subtext, fontSize: 12, marginBottom: 10, textAlign: 'right' }}>Proportion</Text>
-        {segments.map((s, i) => {
-          const pct = total > 0 ? Math.round(s.fraction * 100) : 0;
-          return (
-            <TouchableOpacity
-              key={i}
-              activeOpacity={0.7}
-              onPress={() => toggle(s.label)}
-              style={styles.donutPropItem}
-            >
-              <View style={[styles.propBarTrack, { backgroundColor: theme.cardAlt }]}>
-                <View style={{ width: `${pct}%`, height: '100%', borderRadius: RADIUS.pill, backgroundColor: s.color }} />
-              </View>
-              <Text style={{ color: s.color, fontSize: 12.5, fontWeight: '700', minWidth: 38, textAlign: 'right' }}>{pct}%</Text>
-            </TouchableOpacity>
-          );
-        })}
+      <View style={{ marginTop: 18, width: '100%' }}>
+        {segments.map((s, i) => (
+          <TouchableOpacity
+            key={i}
+            activeOpacity={0.7}
+            onPress={() => toggle(s.label)}
+            style={{
+              flexDirection: 'row', alignItems: 'center', paddingVertical: 9, paddingHorizontal: 10, borderRadius: RADIUS.sm, marginBottom: 4,
+              backgroundColor: selected === s.label ? theme.cardAlt : 'transparent',
+            }}
+          >
+            <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: s.color, marginRight: 10 }} />
+            <Text style={{ flex: 1, color: theme.text, fontSize: 13, fontWeight: '600' }}>{s.label}</Text>
+            <Text style={{ color: theme.subtext, fontSize: 12, fontFamily: 'monospace', marginRight: 10 }}>{total > 0 ? Math.round(s.fraction * 100) : 0}%</Text>
+            <Text style={{ color: s.color, fontSize: 14, fontWeight: '800', fontFamily: 'monospace', minWidth: 26, textAlign: 'right' }}>{s.value}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
     </View>
-  );
-}
-
-function CardMetrica({ theme, label, valor, icone, cor, trend, onPress }) {
-  return (
-    <TouchableOpacity activeOpacity={0.7} style={styles.cardMetricaWrap} onPress={onPress}>
-      <Card theme={theme} style={[styles.cardMetrica, { overflow: 'hidden' }]}>
-        <View style={styles.metricaTopRow}>
-          <Text style={[styles.metricaLabel, { color: theme.subtext }]}>{label}</Text>
-          <MaterialIcons name={icone} size={20} color={cor} />
-        </View>
-        <Text style={[styles.metricaValor, { color: theme.text }]}>{valor}</Text>
-        <Sparkline data={trend} color={cor} height={46} />
-      </Card>
-    </TouchableOpacity>
   );
 }
 
@@ -902,23 +716,13 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 15, fontWeight: '700', marginBottom: 12 },
   sectionHeaderRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   metricaLabelRow: { flexDirection: 'row', alignItems: 'center' },
-  metricaTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  metricaLabel: { fontSize: 12, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8, flex: 1, marginRight: 6 },
-  metricaValor: { fontSize: 38, fontWeight: '800', letterSpacing: -0.8, marginTop: 6 },
-  metricaIconBox: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
-  cardsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  cardMetricaWrap: { flex: 1, minWidth: 160 },
-  cardMetrica: { flex: 1, padding: 18, marginBottom: 0, minHeight: 150, borderRadius: RADIUS.xl + 4 },
-
-  statusPill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, borderRadius: RADIUS.pill },
-  avatarCircle: { width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-
-  donutRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  donutLegendCol: { flex: 1, minWidth: 90 },
-  donutLegendItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 6, borderRadius: RADIUS.sm },
-  donutPropCol: { flex: 1, minWidth: 90, alignItems: 'flex-end' },
-  donutPropItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, width: '100%', justifyContent: 'flex-end' },
-  propBarTrack: { flex: 1, maxWidth: 46, height: 7, borderRadius: RADIUS.pill, overflow: 'hidden', marginRight: 8 },
+  metricaTopRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  metricaLabel: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6, flex: 1, marginRight: 6 },
+  metricaIconBox: { width: 28, height: 28, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
+  glowBlob: { position: 'absolute', width: 90, height: 90, borderRadius: 45, opacity: 0.12, right: -30, bottom: -30 },
+  cardsRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  cardMetricaWrap: { flex: 1, minWidth: 120, margin: 5 },
+  cardMetrica: { padding: 18, marginBottom: 0 },
 
   liveBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 4, borderRadius: RADIUS.pill, marginLeft: 10, gap: 5 },
   liveDot: { width: 6, height: 6, borderRadius: 3, marginRight: 4 },
@@ -931,9 +735,6 @@ const styles = StyleSheet.create({
   periodTab: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: RADIUS.pill },
 
   bellBtn: { width: 42, height: 42, borderRadius: RADIUS.md, borderWidth: 1, alignItems: 'center', justifyContent: 'center', position: 'relative' },
-  toolbarBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, height: 42, borderRadius: RADIUS.md, borderWidth: 1 },
-  toolbarDivider: { width: 1, height: 16, marginHorizontal: 10 },
-  exportBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: RADIUS.sm, borderWidth: 1 },
   badge: { position: 'absolute', top: -4, right: -4, borderRadius: 12, width: 20, height: 20, justifyContent: 'center', alignItems: 'center', borderWidth: 2 },
   badgeText: { color: '#fff', fontSize: 10, fontWeight: 'bold' },
 

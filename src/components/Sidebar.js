@@ -14,7 +14,7 @@ const NAV_ICONS = {
   LOGS: 'receipt-long',
 };
 
-export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, setIsDarkMode, user }) {
+export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, setIsDarkMode, user, isMobile, isMenuOpen, setIsMenuOpen }) {
 
   const NavItem = ({ id, label }) => {
     const active = telaAtiva === id;
@@ -22,7 +22,10 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
       <TouchableOpacity
         activeOpacity={0.75}
         style={[styles.btnMenu, active && { backgroundColor: theme.primarySoft }]}
-        onPress={() => setTelaAtiva(id)}>
+        onPress={() => {
+          setTelaAtiva(id);
+          if (isMobile) setIsMenuOpen(false);
+        }}>
         <MaterialIcons name={NAV_ICONS[id]} size={20} color={active ? theme.primary : theme.subtext} />
         <Text style={[styles.txtMenu, { color: active ? theme.primary : theme.subtext }]}>{label}</Text>
       </TouchableOpacity>
@@ -59,7 +62,11 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
   };
 
   return (
-    <View style={[styles.sidebar, { backgroundColor: theme.barBg, borderColor: theme.border }]}>
+    <View style={[
+      styles.sidebar,
+      { backgroundColor: theme.barBg, borderColor: theme.border },
+      isMobile && { position: 'absolute', zIndex: 50, display: isMenuOpen ? 'flex' : 'none', height: '100%' }
+    ]}>
       <View style={styles.logoContainer}>
         <View style={[styles.logoBadge, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
           <Image source={require('../../assets/images/logo-techgestor.png')} style={styles.logoImg} resizeMode="contain" />

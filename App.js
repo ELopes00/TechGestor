@@ -11,8 +11,9 @@ import 'react-native-gesture-handler';
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Image, Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -28,8 +29,6 @@ import LogsScreen from './src/screens/LogsScreen';
 import PerfilScreen from './src/screens/PerfilScreen';
 import WebDownloadWidget from './src/components/WebDownloadWidget';
 
-import BottomTabBar, { TAB_BAR_HEIGHT } from './src/components/BottomTabBar';
-import MoreSheet from './src/components/MoreSheet';
 import Sidebar from './src/components/Sidebar';
 import { DataService } from './src/services/DataService';
 import { THEMES } from './src/theme/themes';
@@ -315,15 +314,34 @@ export default function App() {
     content = (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
 
-        {!isMobile && (
-          <Sidebar
-            theme={theme} telaAtiva={telaAtiva} setTelaAtiva={mudarTela}
-            isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode}
-            user={user}
+        {isMobile && isMenuOpen && (
+          <TouchableOpacity
+            activeOpacity={1}
+            style={styles.overlay}
+            onPress={() => setIsMenuOpen(false)}
           />
         )}
 
-        <View style={[styles.mainContent, isMobile && { paddingBottom: TAB_BAR_HEIGHT }]}>
+        <Sidebar
+          theme={theme} telaAtiva={telaAtiva} setTelaAtiva={mudarTela}
+          isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode}
+          user={user} isMobile={isMobile} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen}
+        />
+
+        <View style={styles.mainContent}>
+
+          {isMobile && (
+            <View style={[styles.headerMobile, { backgroundColor: theme.barBg, borderColor: theme.border }]}>
+              <TouchableOpacity onPress={() => setIsMenuOpen(true)} style={styles.menuBtn} activeOpacity={0.7}>
+                <MaterialIcons name="menu" size={24} color={theme.text} />
+              </TouchableOpacity>
+              <Image source={require('./assets/images/logo-techgestor.png')} style={styles.headerLogo} resizeMode="contain" />
+              <Text style={{ marginLeft: 8, fontSize: 17, fontWeight: '700', color: theme.text, letterSpacing: 0.2 }}>
+                Tech<Text style={{ color: theme.primary }}>Gestor</Text>
+              </Text>
+            </View>
+          )}
+
           <FadeSwitch telaKey={telaAtiva}>
             {telaAtiva === 'DASHBOARD' && <DashboardScreen chamados={chamados} eventos={eventos} users={users} theme={theme} setTelaAtiva={setTelaAtiva} irParaChamados={irParaChamados} />}
             {telaAtiva === 'CHAMADOS' && <ChamadosScreen user={user} chamados={chamados} eventos={eventos} users={users} inventario={inventario} theme={theme} addLog={gerirLogs} showPush={(msg) => console.log(msg)} filtroStatusInicial={filtroChamadosInicial} mostrarNovoChamado={!origemDashboard} />}
@@ -337,27 +355,6 @@ export default function App() {
             {telaAtiva === 'PERFIL' && <PerfilScreen user={user} theme={theme} onLogout={handleLogout} />}
           </FadeSwitch>
         </View>
-
-        {isMobile && (
-          <>
-            <BottomTabBar
-              theme={theme}
-              telaAtiva={telaAtiva}
-              maisAtivo={isMenuOpen}
-              onSelect={(id) => { mudarTela(id); setIsMenuOpen(false); }}
-              onOpenMais={() => setIsMenuOpen(true)}
-            />
-            <MoreSheet
-              theme={theme}
-              visible={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              onNavigate={(id) => { mudarTela(id); setIsMenuOpen(false); }}
-              user={user}
-              isDarkMode={isDarkMode}
-              setIsDarkMode={setIsDarkMode}
-            />
-          </>
-        )}
       </View>
     );
   }
@@ -386,4 +383,8 @@ function FadeSwitch({ telaKey, children }) {
 const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row' },
   mainContent: { flex: 1 },
+  overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(4,6,8,0.6)', zIndex: 40 },
+  headerMobile: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1 },
+  menuBtn: { width: 40, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  headerLogo: { width: 26, height: 20, marginLeft: 6 },
 });
