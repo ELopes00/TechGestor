@@ -9,7 +9,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import * as XLSX from 'xlsx';
 
-import { Btn, Card } from '../components';
+import { Btn, Card, PageHeader } from '../components';
 import ProntuarioItem from '../components/ProntuarioItem';
 import { DataService } from '../services/DataService';
 import { RADIUS, SHADOW } from '../theme/themes';
@@ -583,19 +583,9 @@ export default function InventarioScreen({ inventario, chamados, addLog, theme, 
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={{ padding: 16 }} keyboardShouldPersistTaps="handled">
-        
-        <View style={{ marginBottom: 4 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <MaterialIcons name="inventory-2" size={19} color={theme.primary} style={{ marginRight: 7 }} />
-            <Text style={{ fontWeight: '800', fontSize: 22, color: theme.text }}>Inventário</Text>
-            <View style={{ marginLeft: 8, paddingHorizontal: 8, paddingVertical: 2, borderRadius: RADIUS.pill, backgroundColor: theme.primarySoft }}>
-              <Text style={{ color: theme.primary, fontSize: 11, fontWeight: '800' }}>{inventario.length}</Text>
-            </View>
-          </View>
-          <Text style={{ color: theme.subtext, fontSize: 13, marginTop: 2 }}>Gestão de equipamentos</Text>
-        </View>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15, marginTop: 12 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }} keyboardShouldPersistTaps="handled">
+        <PageHeader theme={theme} trail="PATRIMÔNIO" title="Inventário de Equipamentos" subtitle={`${inventario.length} equipamentos registrados • prontuário e auditoria por tombamento`} />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 }}>
           <TouchableOpacity onPress={exportarPDF} style={[styles.toolBtn, { backgroundColor: theme.cardAlt, borderColor: theme.border }]} activeOpacity={0.75}>
             <Text style={{ color: theme.text, fontWeight: '700', fontSize: 12 }}>EXPORTAR PDF</Text>
           </TouchableOpacity>

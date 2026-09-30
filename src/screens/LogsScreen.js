@@ -1,6 +1,6 @@
 import { ScrollView, Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Card } from '../components';
+import { Card, PageHeader } from '../components';
 import { RADIUS } from '../theme/themes';
 
 const getLogVisual = (mensagem = '', theme) => {
@@ -18,14 +18,8 @@ const getLogVisual = (mensagem = '', theme) => {
 export default function LogsScreen({ logs = [], theme }) {
 
   return (
-    <ScrollView style={{ padding: 20 }}>
-      <View style={{ marginBottom: 20 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialIcons name="receipt-long" size={19} color={theme.primary} style={{ marginRight: 7 }} />
-          <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800' }}>Auditoria de Logs</Text>
-        </View>
-        <Text style={{ color: theme.subtext, fontSize: 13, marginTop: 2 }}>Histórico em tempo real de ações no sistema</Text>
-      </View>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+      <PageHeader theme={theme} trail="AUDITORIA" title="Auditoria de Logs" subtitle={`Histórico em tempo real de ações no sistema • últimos ${logs.length} registros`} />
 
       <Card theme={theme} style={{ padding: 0, overflow: 'hidden', borderRadius: RADIUS.lg }}>
         {logs.length === 0 ? (

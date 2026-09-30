@@ -4,44 +4,57 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert, Image, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { Btn, Card } from '../components';
+import { Avatar, Badge, Btn, Card, EmptyState, Field, FilterChip, PriorityBadge, SlaBadge, useBreakpoints } from '../components';
 import { DataService } from '../services/DataService';
-import { RADIUS } from '../theme/themes';
+import { RADIUS, SHADOW } from '../theme/themes';
 import { CHECKLIST_PADRAO, FRASES_RAPIDAS, PRIORIDADES, SETORES } from '../utils/constants';
-import { getCorPrioridade, getStatusCategoria, getTempoDecorrido, isSlaVencido } from '../utils/helpers';
+import {
+  calcularSLA, formatProtocolo, formatTempoRelativo, gerarProtocolo, getPrioridadeVisual,
+  getStatusCategoria, getStatusVisual, isChamadoFechado, isSlaVencido,
+} from '../utils/helpers';
 
-// STATUS ATUALIZADOS CONFORME O PEDIDO
+// STATUS DO FLUXO DE ATENDIMENTO
 const STATUS_OPCOES = [
   'Aguardando atendimento', 'Em andamento', 'Em separação de equipamentos', 'Instalado', 'finalizado'
 ];
+const STATUS_LABEL = { finalizado: 'Finalizado' };
+const CATEGORIAS = { ABERTO: 'Abertos', ANDAMENTO: 'Em atendimento', CONCLUIDO: 'Concluídos' };
+
+const avisar = (titulo, msg) => {
+  if (Platform.OS === 'web') window.alert(`${titulo}\n\n${msg}`);
+  else Alert.alert(titulo, msg);
+};
 
 export default function ChamadosScreen({ user, chamados, users, inventario, addLog, theme, showPush, filtroStatusInicial, mostrarNovoChamado = true }) {
-  
-  // NOVOS CAMPOS DO FORMULÁRIO
+  const { isMobile, isDesktop, width } = useBreakpoints();
+
+  // CAMPOS DO FORMULÁRIO
   const [tituloChamado, setTituloChamado] = useState('');
   const [solicitante, setSolicitante] = useState('');
   const [sala, setSala] = useState('');
   const [observacao, setObservacao] = useState('');
   const [desc, setDesc] = useState('');
-  
+
   const [setor, setSetor] = useState(SETORES[0]);
   const [tecSel, setTecSel] = useState('');
   const [equipSel, setEquipSel] = useState(null);
   const [prioridade, setPrioridade] = useState('BAIXA');
   const [formAnexos, setFormAnexos] = useState([]);
-  
+  const [novoOpen, setNovoOpen] = useState(false);
+  const [msgForm, setMsgForm] = useState('');
+
   const [showTecs, setShowTecs] = useState(false);
-  const [showSetores, setShowSetores] = useState(false);
   const [showEquips, setShowEquips] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filtroPrioridade, setFiltroPrioridade] = useState('TODOS');
   const [filtroStatus, setFiltroStatus] = useState(filtroStatusInicial || 'TODOS');
-  
+  const [filtroUnidade, setFiltroUnidade] = useState('TODOS');
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedChamado, setSelectedChamado] = useState(null);
   const [chatMsg, setChatMsg] = useState('');
   const [notaInternaMsg, setNotaInternaMsg] = useState('');
-  const [transferId, setTransferId] = useState(null);
+  const [transferChamado, setTransferChamado] = useState(null);
   const [abaAtiva, setAbaAtiva] = useState('MEUS');
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [chamadoParaAssumir, setChamadoParaAssumir] = useState(null);
@@ -59,7 +72,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
 
   const [hasPermission, setHasPermission] = useState(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [cameraTarget, setCameraTarget] = useState(''); 
+  const [cameraTarget, setCameraTarget] = useState('');
   const cameraRef = useRef(null);
 
   useEffect(() => {
@@ -70,29 +83,48 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     if (Platform.OS !== 'web') getCameraPermissions();
   }, []);
 
+  useEffect(() => { if (filtroStatusInicial) setFiltroStatus(filtroStatusInicial); }, [filtroStatusInicial]);
+
+  // Mantém o modal de detalhes sincronizado com o Firestore em tempo real.
+  useEffect(() => {
+    if (!selectedChamado) return;
+    const atual = chamados.find((c) => c.id === selectedChamado.id);
+    if (atual && atual !== selectedChamado) setSelectedChamado(atual);
+  }, [chamados]);
+
   const registrarLog = (msg) => { if (addLog) addLog(msg); };
 
   const todosTecnicos = users.filter((u) => u.perfil === 'TECNICO');
-  const tecnicosDoSetorAtual = todosTecnicos.filter(u => u.predio === setor); 
+  const tecnicosDoSetorAtual = todosTecnicos.filter(u => u.predio === setor);
+
+  const pertenceAba = (c, aba) => {
+    if (aba === 'MEUS') return user.perfil === 'ADM' ? true : c.tecnico === user.login;
+    const semTecnico = !c.tecnico || c.tecnico === '';
+    const mesmoPredio = c.predio === user.predio || user.perfil === 'ADM';
+    return semTecnico && mesmoPredio && !isChamadoFechado(c.status);
+  };
+
+  const matchStatus = (c) => {
+    if (filtroStatus === 'TODOS') return true;
+    if (CATEGORIAS[filtroStatus]) return getStatusCategoria(c.status) === filtroStatus;
+    return String(c.status || '').toLowerCase() === filtroStatus.toLowerCase();
+  };
 
   const chamadosVisiveis = chamados.filter((c) => {
     const termo = searchText.toLowerCase();
-    const matchesSearch = c.descricao?.toLowerCase().includes(termo) || c.titulo?.toLowerCase().includes(termo) || c.solicitante?.toLowerCase().includes(termo) || c.tecnico?.toLowerCase().includes(termo);
-    const matchesPriority = filtroPrioridade === 'TODOS' ? true : c.prioridade === filtroPrioridade;
-    const matchesStatus = filtroStatus === 'TODOS' ? true : getStatusCategoria(c.status) === filtroStatus;
-    let matchesTab = false;
-
-    if (abaAtiva === 'MEUS') {
-      if (user.perfil === 'ADM') matchesTab = true;
-      else matchesTab = c.tecnico === user.login;
-    } else if (abaAtiva === 'FILA') {
-      const semTecnico = !c.tecnico || c.tecnico === '';
-      const mesmoPredio = c.predio === user.predio || user.perfil === 'ADM';
-      const naoEstaFechado = c.status !== 'FECHADO' && c.status !== 'finalizado';
-      matchesTab = semTecnico && mesmoPredio && naoEstaFechado;
-    }
-    return matchesTab && matchesSearch && matchesPriority && matchesStatus;
+    const matchesSearch = !termo || [c.descricao, c.titulo, c.solicitante, c.tecnico, c.sala, c.predio, c.equipamento?.pat, formatProtocolo(c)]
+      .some((v) => String(v || '').toLowerCase().includes(termo));
+    const matchesPriority = filtroPrioridade === 'TODOS' ? true : (c.prioridade || 'BAIXA') === filtroPrioridade;
+    const matchesUnidade = filtroUnidade === 'TODOS' ? true : c.predio === filtroUnidade;
+    return pertenceAba(c, abaAtiva) && matchesSearch && matchesPriority && matchStatus(c) && matchesUnidade;
   });
+
+  const qtdMeus = chamados.filter((c) => pertenceAba(c, 'MEUS') && !isChamadoFechado(c.status)).length;
+  const qtdFila = chamados.filter((c) => pertenceAba(c, 'FILA')).length;
+  const qtdSlaCritico = chamados.filter((c) => !isChamadoFechado(c.status) && isSlaVencido(c)).length;
+  const inicioDia = new Date(); inicioDia.setHours(0, 0, 0, 0);
+  const atendimentosHoje = chamados.filter((c) => c.dataAbertura >= inicioDia.getTime()).length;
+  const slaGeral = calcularSLA(chamados);
 
   const toggleSelection = (id) => {
     if (selectedIds.includes(id)) setSelectedIds(selectedIds.filter(i => i !== id));
@@ -101,11 +133,11 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
 
   const bulkExcluir = () => {
     if (selectedIds.length === 0) return;
-    if (user.perfil !== 'ADM') return Alert.alert('Erro', 'Apenas Administradores podem excluir chamados.');
+    if (user.perfil !== 'ADM') return avisar('Erro', 'Apenas Administradores podem excluir chamados.');
 
     const acaoExcluir = () => {
       const idsParaApagar = [...selectedIds];
-      setIsSelectMode(false); 
+      setIsSelectMode(false);
       setSelectedIds([]);
       setTimeout(() => { if (showPush) showPush(`🗑️ ${idsParaApagar.length} chamados excluídos.`); }, 100);
       idsParaApagar.forEach(id => DataService.deletarChamado(id).catch(e => console.log('Erro:', e)));
@@ -113,7 +145,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     };
 
     const msg = `Apagar ${selectedIds.length} chamados permanentemente?`;
-    if (Platform.OS === 'web') { if (window.confirm(msg)) acaoExcluir(); } 
+    if (Platform.OS === 'web') { if (window.confirm(msg)) acaoExcluir(); }
     else { Alert.alert("Atenção", msg, [{ text: "Cancelar" }, { text: "Excluir", style: 'destructive', onPress: acaoExcluir }]); }
   };
 
@@ -121,15 +153,15 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     if (selectedIds.length === 0) return;
     const msgSistema = { user: 'SISTEMA', texto: `✅ ${user.login} assumiu em lote.`, time: Date.now() };
     const idsParaAssumir = [...selectedIds];
-    
+
     setIsSelectMode(false); setSelectedIds([]); setAbaAtiva('MEUS');
     setTimeout(() => { if (showPush) showPush(`🙋‍♂️ ${idsParaAssumir.length} chamados assumidos!`); }, 100);
 
     idsParaAssumir.forEach(id => {
       const chamadoTarget = chamados.find(c => c.id === id);
       if (chamadoTarget) {
-        DataService.atualizarChamado(id, { 
-          tecnico: user.login, status: 'Em andamento', historico: [msgSistema, ...(chamadoTarget.historico || [])] 
+        DataService.atualizarChamado(id, {
+          tecnico: user.login, status: 'Em andamento', historico: [msgSistema, ...(chamadoTarget.historico || [])]
         }).catch(e => console.log(e));
       }
     });
@@ -137,10 +169,11 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   };
 
   const autoEscalar = () => {
-    if (tecnicosDoSetorAtual.length === 0) return Alert.alert('Aviso', `Nenhum técnico no setor ${setor}.`);
+    if (tecnicosDoSetorAtual.length === 0) return setMsgForm(`Nenhum técnico escalado em ${setor}.`);
     const indiceAleatorio = Math.floor(Math.random() * tecnicosDoSetorAtual.length);
     const tecnicoSorteado = tecnicosDoSetorAtual[indiceAleatorio].login;
     setTecSel(tecnicoSorteado);
+    setMsgForm('');
     if (showPush) showPush(`⚡ ${tecnicoSorteado} sorteado para o chamado!`);
   };
 
@@ -151,9 +184,9 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
         const file = result.assets[0];
         setFormAnexos([...formAnexos, { id: Date.now().toString(), nome: file.name, uri: file.uri, type: 'doc' }]);
       }
-    } catch (err) { Alert.alert("Erro", "Não foi possível selecionar o arquivo."); }
+    } catch (err) { avisar("Erro", "Não foi possível selecionar o arquivo."); }
   };
-  
+
   const anexarNoDetalhe = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
@@ -161,18 +194,18 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
         const file = result.assets[0];
         const novoDoc = { id: Date.now().toString(), nome: file.name, uri: file.uri, type: 'doc' };
         const novosAnexos = [...(selectedChamado.anexos || []), novoDoc];
-        
+
         await DataService.atualizarChamado(selectedChamado.id, { anexos: novosAnexos });
         setSelectedChamado({ ...selectedChamado, anexos: novosAnexos });
         registrarLog(`📎 ANEXOU ARQUIVO NO CHAMADO #${selectedChamado.id.substring(0,4)}`);
       }
-    } catch (err) { Alert.alert("Erro", "Não foi possível anexar."); }
+    } catch (err) { avisar("Erro", "Não foi possível anexar."); }
   };
 
   const abrirCamera = (target) => {
-    if (Platform.OS === 'web') return Alert.alert('Aviso', 'A câmara só funciona no telemóvel.');
-    if (hasPermission === null) return Alert.alert('Aviso', 'A pedir permissão da câmara...');
-    if (hasPermission === false) return Alert.alert('Erro', 'Sem acesso à câmara.');
+    if (Platform.OS === 'web') return avisar('Aviso', 'A câmera só funciona no aplicativo do celular.');
+    if (hasPermission === null) return avisar('Aviso', 'Solicitando permissão da câmera...');
+    if (hasPermission === false) return avisar('Erro', 'Sem acesso à câmera.');
     setCameraTarget(target);
     setIsCameraOpen(true);
   };
@@ -180,7 +213,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   const tirarFoto = async () => {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.5, base64: true });
-      setIsCameraOpen(false); 
+      setIsCameraOpen(false);
       const novaFoto = { id: Date.now().toString(), nome: `Foto_${Date.now()}.jpg`, uri: photo.uri, type: 'imagem', base64: photo.base64 };
 
       if (cameraTarget === 'form') {
@@ -196,26 +229,28 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
 
   const abrir = async () => {
     if (!tituloChamado || !solicitante || !desc || !sala) {
-      return Alert.alert('Erro', 'Preencha os campos obrigatórios: Chamado, Solicitante, Sala e Descrição.');
+      return setMsgForm('Preencha os campos obrigatórios: Chamado, Solicitante, Sala e Descrição.');
     }
-    if (isSavingChamado) return; 
-    
+    if (isSavingChamado) return;
+
     setIsSavingChamado(true);
+    setMsgForm('');
     const novoChamado = {
+      protocolo: gerarProtocolo(),
       titulo: tituloChamado,
       solicitante,
       sala,
       observacao,
-      descricao: desc, 
-      predio: setor, 
-      status: 'Aguardando atendimento', 
+      descricao: desc,
+      predio: setor,
+      status: 'Aguardando atendimento',
       tecnico: tecSel || '',
-      prioridade, 
-      dataAbertura: Date.now(), 
-      equipamento: equipSel, 
+      prioridade,
+      dataAbertura: Date.now(),
+      equipamento: equipSel,
       historico: [],
-      anexos: formAnexos, 
-      checklist: CHECKLIST_PADRAO, 
+      anexos: formAnexos,
+      checklist: CHECKLIST_PADRAO,
       abertoPor: user.login
     };
 
@@ -230,11 +265,11 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
           DataService.enviarPushNotification(tecnicoTarget.expoPushToken, '🚨 Novo Chamado Escalonado!', `${tituloChamado} - Sala: ${sala}`).catch(e => console.log(e));
         }
       }
-      
-      // Limpar formulário
-      setTituloChamado(''); setSolicitante(''); setSala(''); setObservacao(''); setDesc(''); 
+
+      setTituloChamado(''); setSolicitante(''); setSala(''); setObservacao(''); setDesc('');
       setSetor(SETORES[0]); setTecSel(''); setPrioridade('BAIXA'); setEquipSel(null); setFormAnexos([]);
-    } catch (e) { Alert.alert('Erro', 'Falha ao salvar chamado.'); } finally { setIsSavingChamado(false); }
+      setNovoOpen(false);
+    } catch (e) { setMsgForm('Falha ao salvar chamado. Tente novamente.'); } finally { setIsSavingChamado(false); }
   };
 
   const prepararAssumir = (id) => { setChamadoParaAssumir(id); setConfirmModalVisible(true); };
@@ -243,7 +278,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     if (!chamadoParaAssumir) return;
     const chamadoTarget = chamados.find(c => c.id === chamadoParaAssumir);
     const msgSistema = { user: 'SISTEMA', texto: `✅ ${user.login} assumiu o chamado da fila.`, time: Date.now() };
-    
+
     setConfirmModalVisible(false); setChamadoParaAssumir(null); setAbaAtiva('MEUS');
     await DataService.atualizarChamado(chamadoParaAssumir, {
       tecnico: user.login, status: 'Em andamento', historico: [msgSistema, ...(chamadoTarget.historico || [])]
@@ -256,7 +291,7 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     if (!msgFinal.trim()) return;
     const novaMsg = { user: user.login, texto: msgFinal, time: Date.now() };
     const novoHistorico = [novaMsg, ...(selectedChamado.historico || [])];
-    
+
     await DataService.atualizarChamado(selectedChamado.id, { historico: novoHistorico });
     setSelectedChamado({ ...selectedChamado, historico: novoHistorico });
     registrarLog(`📝 COMENTOU CHAMADO #${selectedChamado.id.substring(0,4)}`);
@@ -290,54 +325,54 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
     const chamadoTarget = chamados.find(c => c.id === chamadoId);
     const destinoStr = novoTecnico ? novoTecnico : `Fila (${novoPredio})`;
     const msgSistema = { user: 'SISTEMA', texto: `🔄 Transferido para ${destinoStr}`, time: Date.now() };
-    
-    setTransferId(null); 
-    Alert.alert('Sucesso', 'Chamado transferido!');
-    await DataService.atualizarChamado(chamadoId, { 
-      tecnico: novoTecnico, 
-      predio: novoPredio || chamadoTarget.predio, 
+
+    setTransferChamado(null);
+    await DataService.atualizarChamado(chamadoId, {
+      tecnico: novoTecnico,
+      predio: novoPredio || chamadoTarget.predio,
       status: novoTecnico ? 'Em andamento' : 'Aguardando atendimento',
-      historico: [msgSistema, ...(chamadoTarget.historico || [])] 
+      historico: [msgSistema, ...(chamadoTarget.historico || [])]
     });
     registrarLog(`🔄 TRANSFERIU CHAMADO PARA ${destinoStr}`);
+    if (showPush) showPush(`Chamado transferido para ${destinoStr}`);
   };
 
   const alterarStatusChamado = async () => {
     if (!novoStatusSel) return;
     if (novoStatusSel === 'finalizado' || novoStatusSel === 'FECHADO') {
       setShowStatusModal(false);
-      return Alert.alert('Aviso', 'Para marcar como Finalizado, preencha o campo Solução/Notas e clique em FECHAR CHAMADO.');
+      return setMsgErro('Para finalizar, descreva a solução abaixo e toque em FECHAR CHAMADO.');
     }
 
     const txtNota = notaStatus.trim() ? `\n📝 Nota: ${notaStatus}` : '';
     const msgSistema = { user: 'SISTEMA', texto: `🔄 Status atualizado: ${novoStatusSel}${txtNota}`, time: Date.now() };
-    
+
     await DataService.atualizarChamado(selectedChamado.id, {
       status: novoStatusSel, historico: [msgSistema, ...(selectedChamado.historico || [])]
     });
 
     setSelectedChamado({ ...selectedChamado, status: novoStatusSel, historico: [msgSistema, ...(selectedChamado.historico || [])] });
     registrarLog(`🔄 ALTEROU STATUS CHAMADO #${selectedChamado.id.substring(0,4)} para ${novoStatusSel}`);
-    
+
     setShowStatusModal(false); setNotaStatus(''); setNovoStatusSel('');
   };
 
   const fecharChamado = async () => {
-    if (!solucao || solucao.trim().length === 0) return setMsgErro("⚠️ Descreva a solução.");
+    if (!solucao || solucao.trim().length === 0) return setMsgErro("Descreva a solução antes de fechar o chamado.");
     try {
       const msgFechamento = { user: 'SISTEMA', texto: `🏁 CHAMADO FINALIZADO POR ${user.login}.\n📝 SOLUÇÃO: ${solucao}`, time: Date.now() };
       const tecnicoFinal = selectedChamado.tecnico ? selectedChamado.tecnico : user.login;
-      
-      setModalVisible(false); 
+
+      setModalVisible(false);
       if (showPush) showPush("🏁 Chamado Finalizado!");
 
       await DataService.atualizarChamado(selectedChamado.id, {
         status: 'finalizado', tecnico: tecnicoFinal, dataFechamento: Date.now(), historico: [msgFechamento, ...(selectedChamado.historico || [])], checklist: selectedChamado.checklist || []
       });
-      
+
       registrarLog(`✅ FECHOU CHAMADO #${selectedChamado.id.substring(0,4)}`);
-      setSolucao(''); setMsgErro(''); 
-    } catch (error) { Alert.alert("Erro", "Falha ao fechar no banco."); }
+      setSolucao(''); setMsgErro('');
+    } catch (error) { avisar("Erro", "Falha ao fechar no banco."); }
   };
 
   const toggleCheck = async (idCheck) => {
@@ -349,303 +384,236 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   const abrirModalDetalhes = (c) => { setSelectedChamado(c); setMsgErro(''); setSolucao(''); setModalVisible(true); setShowStatusModal(false); };
 
   const handleExcluir = (id) => {
-    if (user.perfil !== 'ADM') return Alert.alert('Acesso Negado', 'Apenas Administradores podem excluir chamados.');
+    if (user.perfil !== 'ADM') return avisar('Acesso Negado', 'Apenas Administradores podem excluir chamados.');
     const acao = () => {
+      setModalVisible(false);
       DataService.deletarChamado(id).catch(e => console.log(e));
       registrarLog(`🗑️ EXCLUIU CHAMADO #${id.substring(0,4)}`);
       if (showPush) showPush("🗑️ Chamado apagado.");
     };
-    if (Platform.OS === 'web') { if (window.confirm("Deseja apagar este chamado permanentemente?")) acao(); } 
+    if (Platform.OS === 'web') { if (window.confirm("Deseja apagar este chamado permanentemente?")) acao(); }
     else { Alert.alert("Excluir", "Deseja apagar este chamado permanentemente?", [{ text: "Cancelar", style: "cancel" }, { text: "Excluir", style: "destructive", onPress: acao }]); }
   };
 
   const getTempoResolucao = (chamado) => {
-    const msgFinal = chamado.historico?.find(h => h.texto.includes('CHAMADO FINALIZADO') || h.texto.includes('CHAMADO FECHADO') || h.texto.includes('Status atualizado: finalizado'));
-    if (msgFinal && chamado.dataAbertura) {
-      const endTime = msgFinal.time;
+    const msgFinal = chamado.historico?.find(h => h.texto?.includes('CHAMADO FINALIZADO') || h.texto?.includes('CHAMADO FECHADO') || h.texto?.includes('Status atualizado: finalizado'));
+    const endTime = chamado.dataFechamento || msgFinal?.time;
+    if (endTime && chamado.dataAbertura) {
       const diff = endTime - chamado.dataAbertura;
       const horas = Math.floor(diff / (1000 * 60 * 60));
       const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const dataFormatada = new Date(endTime).toLocaleString('pt-BR');
-      return `${dataFormatada} (Levou ${horas}h ${minutos}m)`;
+      return `${dataFormatada} (levou ${horas}h ${minutos}m)`;
     }
     return 'Indisponível';
   };
 
-  const isChamadoFechado = (status) => status === 'FECHADO' || status === 'finalizado';
+  const cols = width >= 1400 ? 3 : width >= 900 ? 2 : 1;
+  const unidades = ['TODOS', ...SETORES];
+
+  const trocarAba = (aba) => { setAbaAtiva(aba); setIsSelectMode(false); setSelectedIds([]); };
+
+  // ---------------------------------------------------------------- CARD
+  const ChamadoCard = ({ c }) => {
+    const fechado = isChamadoFechado(c.status);
+    const vencido = !fechado && isSlaVencido(c);
+    const isSelected = selectedIds.includes(c.id);
+    const prio = getPrioridadeVisual(c.prioridade);
+    const st = getStatusVisual(c.status);
+    const corBorda = fechado ? theme.neutral : vencido || c.prioridade === 'ALTA' || c.prioridade === 'CRITICA' ? theme.offline : c.prioridade === 'MEDIA' ? theme.primary : st.dot === '#1a9c5c' ? theme.online : theme.neutral;
+    const tecnicoObj = users.find((u) => u.login === c.tecnico);
+
+    return (
+      <View style={{ width: `${100 / cols}%`, paddingHorizontal: 8, marginBottom: 16 }}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => { if (isSelectMode) toggleSelection(c.id); else abrirModalDetalhes(c); }}
+          style={[styles.ticketCard, { backgroundColor: theme.card, borderColor: isSelected ? theme.primary : theme.border, borderLeftColor: corBorda }, SHADOW.sm]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flexShrink: 1 }}>
+              {(isSelectMode || user.perfil === 'ADM' || abaAtiva === 'FILA') && (
+                <TouchableOpacity
+                  onPress={() => { if (!isSelectMode) setIsSelectMode(true); toggleSelection(c.id); }}
+                  hitSlop={8}
+                  style={[styles.checkbox, { borderColor: isSelected ? theme.primary : theme.textCode, backgroundColor: isSelected ? theme.primary : 'transparent' }]}
+                >
+                  {isSelected && <MaterialIcons name="check" size={13} color="#fff" />}
+                </TouchableOpacity>
+              )}
+              <Text style={{ color: theme.subtext, fontSize: 14, fontWeight: '600', letterSpacing: 0.3 }}>{formatProtocolo(c)}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              {vencido && <SlaBadge />}
+              <Badge label={prio.label} color={prio.color} bg={prio.bg} border={prio.border} />
+            </View>
+          </View>
+
+          <Text style={{ color: theme.text, fontSize: 17, fontWeight: '600', marginTop: 12, letterSpacing: -0.2 }} numberOfLines={2}>{c.titulo || c.descricao}</Text>
+          <View style={styles.metaRow}>
+            <MaterialIcons name="account-circle" size={15} color={theme.subtext} />
+            <Text style={[styles.metaText, { color: theme.subtext }]} numberOfLines={1}>{c.solicitante || 'Solicitante não informado'}</Text>
+          </View>
+          <View style={styles.metaRow}>
+            <MaterialIcons name="location-on" size={15} color={theme.subtext} />
+            <Text style={[styles.metaText, { color: theme.subtext }]} numberOfLines={1}>{c.sala ? `${c.sala} - ` : ''}{c.predio}</Text>
+          </View>
+          {c.equipamento && (
+            <View style={styles.metaRow}>
+              <MaterialIcons name="computer" size={15} color={theme.primary} />
+              <Text style={[styles.metaText, { color: theme.primary }]} numberOfLines={1}>{c.equipamento.nome} ({c.equipamento.pat})</Text>
+            </View>
+          )}
+
+          <View style={[styles.statusStrip, { backgroundColor: st.bg }]}>
+            <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: st.dot, marginRight: 8 }} />
+            <Text style={{ color: st.color === '#64748b' ? theme.text : st.color, fontSize: 13, fontWeight: '500', flex: 1 }} numberOfLines={2}>Status: {STATUS_LABEL[c.status] || c.status || 'Aguardando atendimento'}</Text>
+            <Text style={{ color: theme.subtext, fontSize: 12, marginLeft: 8 }}>{formatTempoRelativo(c.dataAbertura)}</Text>
+          </View>
+
+          <View style={[styles.cardFoot, { borderTopColor: theme.border }]}>
+            <Text style={{ color: theme.primary, fontSize: 13, fontWeight: '500' }}>Toque para detalhes ›</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {abaAtiva === 'FILA' && !fechado && (
+                <TouchableOpacity onPress={() => prepararAssumir(c.id)} style={[styles.footBtn, { backgroundColor: theme.successWash, borderColor: theme.online + '55' }]}>
+                  <MaterialIcons name="pan-tool" size={13} color={theme.online} />
+                  <Text style={{ color: theme.online, fontSize: 12, fontWeight: '700', marginLeft: 5 }}>Assumir</Text>
+                </TouchableOpacity>
+              )}
+              {!fechado && (
+                <TouchableOpacity onPress={() => setTransferChamado(c)} style={[styles.footBtn, { backgroundColor: theme.cardAlt, borderColor: theme.cardAlt }]}>
+                  <MaterialIcons name="swap-horiz" size={15} color={theme.text} />
+                  <Text style={{ color: theme.text, fontSize: 12, fontWeight: '500', marginLeft: 4 }}>Transferir</Text>
+                </TouchableOpacity>
+              )}
+              {c.tecnico ? (
+                <Avatar nome={tecnicoObj?.nomeCompleto || c.tecnico} size={32} theme={theme} color={fechado ? theme.primaryStrong : st.dot === '#1a9c5c' ? '#1a9c5c' : theme.primaryStrong} />
+              ) : (
+                <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: theme.cardAlt, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ color: theme.subtext, fontWeight: '700', fontSize: 12 }}>--</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={{ padding: 16 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <MaterialIcons name="assignment" size={18} color={theme.primary} style={{ marginRight: 6 }} />
-            <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>Chamados</Text>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: isMobile ? 16 : 24 }} keyboardShouldPersistTaps="handled">
+
+        {/* CABEÇALHO */}
+        <Card theme={theme} style={{ flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between' }}>
+          <View style={{ flex: isMobile ? undefined : 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Text style={{ color: theme.primaryStrong, fontSize: 12.5, fontWeight: '700', letterSpacing: 0.9 }}>TJRR • DITEC • CENTRAL DE CHAMADOS</Text>
+              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: theme.neutral, marginHorizontal: 10, opacity: 0.6 }} />
+              <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: theme.online, marginRight: 6 }} />
+              <Text style={{ color: theme.online, fontSize: 12.5 }}>SLA Operacional em {slaGeral == null ? '—' : `${slaGeral}%`}</Text>
+            </View>
+            <Text style={{ color: theme.text, fontSize: isMobile ? 21 : 26, fontWeight: '600', marginTop: 6, letterSpacing: -0.4 }}>Gestão de Incidentes e Requisições Técnicas</Text>
           </View>
-          {user.perfil === 'ADM' && !isSelectMode ? (
-            <TouchableOpacity onPress={() => setIsSelectMode(true)} style={{ backgroundColor: theme.cardAlt, paddingHorizontal: 12, paddingVertical: 8, borderRadius: RADIUS.md, borderWidth: 1, borderColor: theme.border }} activeOpacity={0.75}>
-              <Text style={{ color: theme.text, fontSize: 12, fontWeight: '600' }}>Selecionar Vários</Text>
+          <Btn theme={theme} variant="soft" icon="add-task" title="+ Novo chamado" onPress={() => { setMsgForm(''); setNovoOpen(true); }} style={{ marginTop: isMobile ? 14 : 0, marginLeft: isMobile ? 0 : 16, height: 46 }} />
+        </Card>
+
+        {/* ABAS + INDICADORES */}
+        <View style={[styles.tabsRow, { borderBottomColor: theme.border, flexDirection: isDesktop ? 'row' : 'column', alignItems: isDesktop ? 'center' : 'flex-start' }]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => trocarAba('MEUS')} style={[styles.tab, abaAtiva === 'MEUS' && { backgroundColor: theme.primary }, abaAtiva === 'MEUS' && SHADOW.glow]} activeOpacity={0.8}>
+              <MaterialIcons name="assignment-ind" size={18} color={abaAtiva === 'MEUS' ? '#fff' : theme.text} />
+              <Text style={[styles.tabText, { color: abaAtiva === 'MEUS' ? '#fff' : theme.text }]}>{user.perfil === 'ADM' ? 'TODOS OS CHAMADOS' : 'MEUS CHAMADOS'}</Text>
+              <View style={[styles.tabCount, { backgroundColor: abaAtiva === 'MEUS' ? '#fff' : theme.cardAlt }]}>
+                <Text style={{ color: theme.primary, fontSize: 12, fontWeight: '700' }}>{qtdMeus}</Text>
+              </View>
             </TouchableOpacity>
-          ) : null}
+            <TouchableOpacity onPress={() => trocarAba('FILA')} style={[styles.tab, abaAtiva === 'FILA' && { backgroundColor: theme.primary }, abaAtiva === 'FILA' && SHADOW.glow]} activeOpacity={0.8}>
+              <MaterialIcons name="call-split" size={18} color={abaAtiva === 'FILA' ? '#fff' : theme.text} />
+              <Text style={[styles.tabText, { color: abaAtiva === 'FILA' ? '#fff' : theme.text }]}>FILA {user.perfil === 'ADM' ? 'GERAL' : `(${user.predio || 'Geral'})`}</Text>
+              <View style={[styles.tabCount, { backgroundColor: abaAtiva === 'FILA' ? '#fff' : theme.cardAlt }]}>
+                <Text style={{ color: theme.primary, fontSize: 12, fontWeight: '700' }}>{qtdFila}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', marginTop: isDesktop ? 0 : 12 }}>
+            <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: theme.offline, marginRight: 8 }} />
+            <Text style={{ color: theme.text, fontSize: 13.5 }}>Alerta SLA crítico: <Text style={{ fontWeight: '700' }}>{qtdSlaCritico}</Text></Text>
+            <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: theme.neutral, marginHorizontal: 12 }} />
+            <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: theme.online, marginRight: 8 }} />
+            <Text style={{ color: theme.text, fontSize: 13.5 }}>Atendimentos hoje: <Text style={{ fontWeight: '700' }}>{atendimentosHoje}</Text></Text>
+          </View>
         </View>
-        <Text style={{ color: theme.subtext, fontSize: 13, marginBottom: 15 }}>Abertura e acompanhamento de chamados técnicos</Text>
 
-        <View style={{ flexDirection: 'row', marginBottom: 15, backgroundColor: theme.card, borderRadius: RADIUS.md, padding: 5, borderWidth: 1, borderColor: theme.border }}>
-          <TouchableOpacity onPress={() => { setAbaAtiva('MEUS'); setIsSelectMode(false); setSelectedIds([]); }} style={{ flex: 1, paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'MEUS' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
-            <Text style={{ color: abaAtiva === 'MEUS' ? theme.primary : theme.subtext, fontWeight: '700', fontSize: 12.5 }}>MEUS CHAMADOS</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { setAbaAtiva('FILA'); setIsSelectMode(false); setSelectedIds([]); }} style={{ flex: 1, paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'FILA' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
-            <Text style={{ color: abaAtiva === 'FILA' ? theme.sec : theme.subtext, fontWeight: '700', fontSize: 12.5 }}>FILA ({user.predio || 'Geral'})</Text>
-          </TouchableOpacity>
-        </View>
-
+        {/* SELEÇÃO EM LOTE */}
         {isSelectMode && (
-          <View style={{ backgroundColor: theme.primary, padding: 15, borderRadius: 10, marginBottom: 15, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={{ color: '#fff', fontWeight: 'bold' }}>{selectedIds.length} selecionados</Text>
-            <View style={{ flexDirection: 'row' }}>
+          <View style={[styles.bulkBar, { backgroundColor: theme.shellBg }]}>
+            <Text style={{ color: '#fff', fontWeight: '700' }}>{selectedIds.length} selecionado(s)</Text>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
               {abaAtiva === 'FILA' && selectedIds.length > 0 && (
-                <TouchableOpacity onPress={bulkAssumir} style={{ backgroundColor: '#fff', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 5, marginRight: 8 }}>
-                  <Text style={{ color: theme.primary, fontWeight: 'bold', fontSize: 12 }}>🙋‍♂️ ASSUMIR</Text>
+                <TouchableOpacity onPress={bulkAssumir} style={[styles.bulkBtn, { backgroundColor: theme.online }]}>
+                  <Text style={styles.bulkBtnText}>ASSUMIR</Text>
                 </TouchableOpacity>
               )}
               {user.perfil === 'ADM' && selectedIds.length > 0 && (
-                <TouchableOpacity onPress={bulkExcluir} style={{ backgroundColor: theme.offline, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 5, marginRight: 8 }}>
-                  <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>🗑️ EXCLUIR</Text>
+                <TouchableOpacity onPress={bulkExcluir} style={[styles.bulkBtn, { backgroundColor: theme.offline }]}>
+                  <Text style={styles.bulkBtnText}>EXCLUIR</Text>
                 </TouchableOpacity>
               )}
-              <TouchableOpacity onPress={() => { setIsSelectMode(false); setSelectedIds([]); }} style={{ paddingHorizontal: 5, paddingVertical: 5 }}>
-                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 12 }}>❌ SAIR</Text>
+              <TouchableOpacity onPress={() => { setIsSelectMode(false); setSelectedIds([]); }} style={[styles.bulkBtn, { backgroundColor: 'rgba(255,255,255,0.12)' }]}>
+                <Text style={styles.bulkBtnText}>CANCELAR</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
 
-        <Card theme={theme} style={{ padding: 10, marginBottom: 10, flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialIcons name="search" size={18} color={theme.subtext} style={{ marginLeft: 4, marginRight: 8 }} />
-          <TextInput style={{ flex: 1, backgroundColor: theme.inputBg, color: theme.text, padding: 8, borderRadius: 8, borderWidth: 1, borderColor: theme.border }} placeholder="Buscar por erro, assunto ou técnico..." placeholderTextColor={theme.subtext} value={searchText} onChangeText={setSearchText} />
-        </Card>
-
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-          {[
-            { id: 'TODOS', label: 'Todos', cor: theme.primary },
-            { id: 'ABERTO', label: 'Abertos', cor: theme.offline },
-            { id: 'ANDAMENTO', label: 'Andamento', cor: theme.sec },
-            { id: 'CONCLUIDO', label: 'Concluídos', cor: theme.online },
-          ].map((f) => (
-            <TouchableOpacity
-              key={f.id}
-              onPress={() => setFiltroStatus(f.id)}
-              style={{
-                flexDirection: 'row', alignItems: 'center', backgroundColor: filtroStatus === f.id ? f.cor : theme.cardAlt,
-                paddingHorizontal: 12, paddingVertical: 7, borderRadius: RADIUS.pill, marginRight: 8,
-              }}>
-              <Text style={{ color: filtroStatus === f.id ? '#fff' : theme.subtext, fontSize: 11.5, fontWeight: '700' }}>{f.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {mostrarNovoChamado && (
+        {/* BUSCA E FILTROS */}
         <Card theme={theme}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-            <MaterialIcons name="add-circle-outline" size={16} color={theme.primary} style={{ marginRight: 6 }} />
-            <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Novo Chamado</Text>
-          </View>
-          
-          <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%', borderWidth: 1, borderColor: theme.border }]} placeholder="Chamado (Assunto principal)" value={tituloChamado} onChangeText={setTituloChamado} placeholderTextColor={theme.subtext} />
-          
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <TextInput style={[styles.input, { flex: 1, marginRight: 5, backgroundColor: theme.inputBg, color: theme.text, borderWidth: 1, borderColor: theme.border }]} placeholder="Solicitante" value={solicitante} onChangeText={setSolicitante} placeholderTextColor={theme.subtext} />
-            <TextInput style={[styles.input, { flex: 1, marginLeft: 5, backgroundColor: theme.inputBg, color: theme.text, borderWidth: 1, borderColor: theme.border }]} placeholder="Sala" value={sala} onChangeText={setSala} placeholderTextColor={theme.subtext} />
-          </View>
-
-          <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%', borderWidth: 1, borderColor: theme.border }]} placeholder="Descrição do Problema" value={desc} onChangeText={setDesc} placeholderTextColor={theme.subtext} />
-          
-          <TextInput style={[styles.input, { backgroundColor: theme.inputBg, color: theme.text, width: '100%', borderWidth: 1, borderColor: theme.border, height: 60, textAlignVertical: 'top' }]} placeholder="Observação (Opcional)" value={observacao} onChangeText={setObservacao} multiline placeholderTextColor={theme.subtext} />
-
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-            <TouchableOpacity style={[styles.input, { flex: 1, marginRight: 5, backgroundColor: theme.inputBg, borderColor: theme.border, borderWidth: 1, justifyContent: 'center' }]} onPress={() => setShowSetores(!showSetores)}>
-              <Text style={{ color: theme.text }}>Setor: {setor} ↓</Text>
-            </TouchableOpacity>
-            
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableOpacity style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, borderColor: theme.border, borderWidth: 1, justifyContent: 'center', marginRight: 5 }]} onPress={() => setShowTecs(!showTecs)}>
-                <Text style={{ color: tecSel ? theme.text : theme.subtext, fontSize: 12 }}>{tecSel || 'Técnico ↓'}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={autoEscalar} style={{ backgroundColor: theme.primary, padding: 10, borderRadius: 8 }}>
-                <Text style={{ fontSize: 16 }}>⚡</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={[styles.searchBar, { backgroundColor: theme.cardAlt }]}>
+            <MaterialIcons name="search" size={21} color={theme.subtext} />
+            <TextInput
+              style={[{ flex: 1, color: theme.text, fontSize: 14.5, marginLeft: 10, height: 46 }, Platform.OS === 'web' && { outlineStyle: 'none' }]}
+              placeholder="Buscar por protocolo, solicitante, sala ou tombamento TJRR..."
+              placeholderTextColor={theme.textCode}
+              value={searchText}
+              onChangeText={setSearchText}
+            />
+            {searchText ? (
+              <TouchableOpacity onPress={() => setSearchText('')}><MaterialIcons name="close" size={20} color={theme.subtext} /></TouchableOpacity>
+            ) : null}
           </View>
 
-          {showSetores && (
-            <View style={{ backgroundColor: theme.card, borderRadius: 12, marginBottom: 10, borderWidth: 1, borderColor: theme.border }}>
-              {SETORES.map((s) => (
-                <TouchableOpacity key={s} style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: theme.border }} onPress={() => { setSetor(s); setTecSel(''); setShowSetores(false); }}>
-                  <Text style={{ color: theme.text }}>{s}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          {showTecs && (
-            <View style={{ backgroundColor: theme.card, borderRadius: 12, marginBottom: 10, borderWidth: 1, borderColor: theme.border }}>
-              {tecnicosDoSetorAtual.map((t) => (
-                <TouchableOpacity key={t.login} style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: theme.border }} onPress={() => { setTecSel(t.login); setShowTecs(false); }}>
-                  <Text style={{ color: theme.text }}>{t.login}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          <TouchableOpacity style={[styles.input, { width: '100%', backgroundColor: theme.inputBg, borderColor: theme.border, borderWidth: 1, justifyContent: 'center', marginBottom: 10 }]} onPress={() => setShowEquips(!showEquips)}>
-            <Text style={{ color: equipSel ? theme.text : theme.subtext }}>{equipSel ? `Equipamento: ${equipSel.nome} (${equipSel.pat})` : 'Vincular Equipamento ↓'}</Text>
-          </TouchableOpacity>
-
-          {showEquips && (
-            <View style={{ backgroundColor: theme.card, borderRadius: 12, marginBottom: 10, borderWidth: 1, borderColor: theme.border }}>
-              {inventario.map((i) => (
-                <TouchableOpacity key={i.id} style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: theme.border }} onPress={() => { setEquipSel(i); setShowEquips(false); }}>
-                  <Text style={{ color: theme.text }}>{i.nome} - {i.pat}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-            {PRIORIDADES.map((p) => (
-              <TouchableOpacity key={p} style={{ flex: 1, padding: 8, alignItems: 'center', backgroundColor: prioridade === p ? getCorPrioridade(p, theme) : theme.inputBg, marginHorizontal: 2, borderRadius: 5 }} onPress={() => setPrioridade(p)}>
-                <Text style={{ color: prioridade === p ? '#fff' : theme.subtext, fontSize: 10, fontWeight: 'bold' }}>{p}</Text>
-              </TouchableOpacity>
+          <FiltroLinha theme={theme} label="STATUS" isMobile={isMobile}>
+            <FilterChip theme={theme} label="Todos" active={filtroStatus === 'TODOS'} onPress={() => setFiltroStatus('TODOS')} />
+            {CATEGORIAS[filtroStatus] && <FilterChip theme={theme} label={CATEGORIAS[filtroStatus]} active onPress={() => setFiltroStatus('TODOS')} />}
+            {STATUS_OPCOES.map((s) => (
+              <FilterChip key={s} theme={theme} label={STATUS_LABEL[s] || s} active={filtroStatus === s} onPress={() => setFiltroStatus(s)} />
             ))}
-          </View>
-
-          <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'space-between' }}>
-            <TouchableOpacity onPress={anexarNoFormulario} style={{ flexDirection: 'row', alignItems: 'center', padding: 10, backgroundColor: theme.inputBg, borderRadius: 8, flex: 1, marginRight: 5, justifyContent: 'center', borderWidth: 1, borderColor: theme.border }}>
-              <Text style={{ fontSize: 16, marginRight: 5 }}>📎</Text>
-              <Text style={{ color: theme.text, fontSize: 12, fontWeight: 'bold' }}>Arquivo</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity onPress={() => abrirCamera('form')} style={{ flexDirection: 'row', alignItems: 'center', padding: 10, backgroundColor: theme.primary, borderRadius: 8, flex: 1, marginLeft: 5, justifyContent: 'center' }}>
-              <Text style={{ fontSize: 16, marginRight: 5 }}>📸</Text>
-              <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Tirar Foto</Text>
-            </TouchableOpacity>
-          </View>
-
-          {formAnexos.length > 0 && (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 15 }}>
-              {formAnexos.map((doc, index) => (
-                <View key={index} style={{ marginRight: 10, marginBottom: 10, alignItems: 'center' }}>
-                  {doc.type === 'imagem' ? (
-                    <Image source={{ uri: doc.uri }} style={{ width: 60, height: 60, borderRadius: 8, borderWidth: 1, borderColor: theme.border }} />
-                  ) : (
-                    <View style={{ width: 60, height: 60, borderRadius: 8, backgroundColor: theme.inputBg, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: theme.border }}>
-                      <Text style={{ fontSize: 24 }}>📄</Text>
-                    </View>
-                  )}
-                  <TouchableOpacity onPress={() => setFormAnexos(formAnexos.filter((_, i) => i !== index))} style={{ position: 'absolute', top: -5, right: -5, backgroundColor: theme.offline, borderRadius: 10, width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>X</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-          )}
-
-          <TouchableOpacity style={[styles.input, { backgroundColor: isSavingChamado ? '#555' : theme.primary, alignItems: 'center', justifyContent: 'center', width: '100%', borderColor: 'transparent' }]} onPress={abrir} disabled={isSavingChamado}>
-            <Text style={{ color: '#fff', fontWeight: 'bold' }}>{isSavingChamado ? 'A ABRIR CHAMADO...' : 'ABRIR CHAMADO'}</Text>
-          </TouchableOpacity>
+          </FiltroLinha>
+          <FiltroLinha theme={theme} label="PRIORIDADE" isMobile={isMobile}>
+            <FilterChip theme={theme} label="Todas" active={filtroPrioridade === 'TODOS'} onPress={() => setFiltroPrioridade('TODOS')} />
+            {[...PRIORIDADES].reverse().map((p) => (
+              <FilterChip key={p} theme={theme} label={getPrioridadeVisual(p).label} active={filtroPrioridade === p} onPress={() => setFiltroPrioridade(p)} />
+            ))}
+          </FiltroLinha>
+          <FiltroLinha theme={theme} label="UNIDADE" isMobile={isMobile} last>
+            {unidades.map((u) => (
+              <FilterChip key={u} theme={theme} label={u === 'TODOS' ? 'Todas' : u} active={filtroUnidade === u} onPress={() => setFiltroUnidade(u)} />
+            ))}
+          </FiltroLinha>
         </Card>
+
+        {/* GRID DE CHAMADOS */}
+        {chamadosVisiveis.length === 0 ? (
+          <Card theme={theme}><EmptyState theme={theme} icon="inbox" text="Nenhum chamado encontrado com os filtros atuais." /></Card>
+        ) : (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -8 }}>
+            {chamadosVisiveis.map((c) => <ChamadoCard key={c.id} c={c} />)}
+          </View>
         )}
-
-        {chamadosVisiveis.length === 0 && (
-          <View style={{ alignItems: 'center', marginTop: 30 }}><Text style={{ color: theme.subtext }}>Nenhum chamado encontrado.</Text></View>
-        )}
-
-        {chamadosVisiveis.map((c) => {
-          const vencido = !isChamadoFechado(c.status) && isSlaVencido(c);
-          const isSelected = selectedIds.includes(c.id);
-
-          return (
-            <View key={c.id}>
-              <TouchableOpacity activeOpacity={0.8} onPress={() => { if (isSelectMode) toggleSelection(c.id); else abrirModalDetalhes(c); }}>
-                <Card theme={theme} style={{ borderLeftWidth: 6, borderLeftColor: isChamadoFechado(c.status) ? theme.subtext : vencido ? theme.warning : getCorPrioridade(c.prioridade, theme), borderColor: isSelected ? theme.primary : vencido ? theme.warning : theme.border, borderWidth: isSelected ? 2 : vencido ? 1 : 0, backgroundColor: isSelected ? theme.inputBg : theme.card }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View style={{ flex: 1 }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
-                        {isSelectMode && (
-                          <View style={{ width: 16, height: 16, borderRadius: 4, borderWidth: 1, borderColor: theme.primary, marginRight: 8, backgroundColor: isSelected ? theme.primary : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-                            {isSelected && <Text style={{ color: '#fff', fontSize: 10 }}>✓</Text>}
-                          </View>
-                        )}
-                        <View style={{ backgroundColor: isChamadoFechado(c.status) ? theme.subtext : vencido ? theme.warning : getCorPrioridade(c.prioridade, theme), paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginRight: 8 }}>
-                          <Text style={{ color: '#fff', fontSize: 9, fontWeight: 'bold' }}>{isChamadoFechado(c.status) ? 'FINALIZADO' : vencido ? 'ATRASADO' : c.prioridade}</Text>
-                        </View>
-                        <Text style={{ color: vencido ? theme.warning : theme.subtext, fontSize: 10, fontWeight: vencido ? 'bold' : 'normal', fontFamily: 'monospace' }}>⏱ {getTempoDecorrido(c.dataAbertura)}</Text>
-                      </View>
-                      <Text style={{ color: theme.text, fontWeight: 'bold', fontSize: 16 }}>{c.titulo || c.descricao}</Text>
-                      <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2 }}>Solicitante: {c.solicitante || 'N/A'} | Sala: {c.sala || 'N/A'}</Text>
-                      {(() => {
-                        const cat = getStatusCategoria(c.status);
-                        const statusColor = cat === 'CONCLUIDO' ? theme.online : cat === 'ANDAMENTO' ? theme.primary : theme.subtext;
-                        return (
-                          <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', backgroundColor: theme.cardAlt, paddingHorizontal: 8, paddingVertical: 3, borderRadius: RADIUS.pill, marginTop: 6 }}>
-                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: statusColor, marginRight: 6 }} />
-                            <Text style={{ color: statusColor, fontSize: 10, fontWeight: '700', textTransform: 'uppercase' }}>{c.status}</Text>
-                          </View>
-                        );
-                      })()}
-                      {c.equipamento && <Text style={{ color: theme.primary, fontSize: 11, marginTop: 4 }}>🖥 {c.equipamento.nome} ({c.equipamento.pat})</Text>}
-                    </View>
-
-                    {!isSelectMode && user.perfil === 'ADM' && (
-                      <TouchableOpacity onPress={() => handleExcluir(c.id)} style={{ paddingLeft: 10 }}>
-                        <Text style={{ fontSize: 22 }}>🗑️</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                  <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 5 }}>📍 {c.predio} | 👨‍🔧 {c.tecnico || (<Text style={{ color: theme.sec, fontWeight: 'bold' }}>AGUARDANDO TÉCNICO</Text>)}</Text>
-                  
-                  {!isSelectMode && (
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-                      <Text style={{ color: theme.primary, fontSize: 10 }}>Toque para detalhes 💬</Text>
-                      {abaAtiva === 'FILA' && (
-                        <TouchableOpacity style={{ backgroundColor: theme.online, paddingVertical: 5, paddingHorizontal: 10, borderRadius: 5 }} onPress={() => prepararAssumir(c.id)}>
-                          <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>🙋‍♂️ ASSUMIR</Text>
-                        </TouchableOpacity>
-                      )}
-                      {abaAtiva === 'MEUS' && !isChamadoFechado(c.status) && (
-                        <TouchableOpacity style={{ backgroundColor: theme.inputBg, padding: 5, borderRadius: 5, borderWidth: 1, borderColor: theme.border }} onPress={() => setTransferId(transferId === c.id ? null : c.id)}>
-                          <Text style={{ color: theme.text, fontSize: 10 }}>⇄ Transferir</Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  )}
-                </Card>
-              </TouchableOpacity>
-              
-              {transferId === c.id && !isSelectMode && (
-                <View style={{ backgroundColor: theme.card, borderRadius: 10, marginBottom: 15, padding: 10, marginLeft: 20, borderWidth: 1, borderColor: theme.primary }}>
-                  <Text style={{ color: theme.subtext, marginBottom: 5, fontSize: 12 }}>Transferir para Fila do Setor:</Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 15 }}>
-                    {SETORES.map(s => (
-                      <TouchableOpacity key={s} onPress={() => transferirChamado(c.id, c.tecnico, '', s)} style={{ backgroundColor: theme.inputBg, padding: 8, borderRadius: 8, marginRight: 8, borderWidth: 1, borderColor: theme.border }}>
-                        <Text style={{ color: theme.primary, fontSize: 11, fontWeight: 'bold' }}>🏢 {s}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-
-                  <Text style={{ color: theme.subtext, marginBottom: 5, fontSize: 12 }}>Ou transferir direto para Técnico/Admin:</Text>
-                  {todosTecnicos.filter((t) => t.login !== c.tecnico).map((t) => (
-                    <TouchableOpacity key={t.login} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: theme.border }} onPress={() => transferirChamado(c.id, c.tecnico, t.login, t.predio)}>
-                      <Text style={{ color: theme.text, fontWeight: 'bold' }}>➜ {t.login} <Text style={{ color: theme.sec, fontSize: 10 }}>({t.predio})</Text></Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-            </View>
-          );
-        })}
       </ScrollView>
 
+      {/* CÂMERA */}
       <Modal visible={isCameraOpen} animationType="slide" transparent={false} onRequestClose={() => setIsCameraOpen(false)}>
         <View style={{ flex: 1, backgroundColor: '#000' }}>
           <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back">
@@ -660,235 +628,382 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
         </View>
       </Modal>
 
-      <Modal visible={modalVisible} animationType="slide" transparent={true} onRequestClose={() => setModalVisible(false)}>
-        {selectedChamado && (
-          <View style={{ flex: 1, backgroundColor: theme.overlay, justifyContent: 'flex-end' }}>
-            <View style={{ height: '90%', backgroundColor: theme.background, borderTopLeftRadius: RADIUS.xl, borderTopRightRadius: RADIUS.xl, padding: 20 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-                <Text style={{ color: theme.text, fontSize: 20, fontWeight: 'bold' }}>Chamado #<Text style={{ fontFamily: 'monospace' }}>{(selectedChamado.id?.substring(0,4) || '---').toUpperCase()}</Text></Text>
-                <TouchableOpacity onPress={() => setModalVisible(false)}><Text style={{ color: theme.primary, fontSize: 18 }}>Fechar</Text></TouchableOpacity>
+      {/* NOVO CHAMADO */}
+      <Modal visible={novoOpen} animationType="fade" transparent onRequestClose={() => setNovoOpen(false)}>
+        <View style={[styles.modalBg, { backgroundColor: theme.overlay, justifyContent: isMobile ? 'flex-end' : 'center' }]}>
+          <View style={[styles.modalCard, { backgroundColor: theme.background, borderColor: theme.border, maxWidth: 720, height: isMobile ? '94%' : '90%', borderBottomLeftRadius: isMobile ? 0 : RADIUS.lg, borderBottomRightRadius: isMobile ? 0 : RADIUS.lg }, SHADOW.lg]}>
+            <View style={[styles.modalHeader, { borderBottomColor: theme.border, backgroundColor: theme.surface }]}>
+              <View>
+                <Text style={{ color: theme.primary, fontSize: 11.5, fontWeight: '700', letterSpacing: 0.8 }}>CENTRAL DE CHAMADOS</Text>
+                <Text style={{ color: theme.text, fontSize: 19, fontWeight: '600', marginTop: 2 }}>Registrar novo chamado</Text>
               </View>
-              
-              <ScrollView style={{ flex: 1, marginBottom: 10 }} keyboardShouldPersistTaps="handled">
-                <Card theme={theme}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-                    <Text style={{ color: theme.sec, fontWeight: 'bold', fontSize: 16 }}>Status: {selectedChamado.status}</Text>
-                    {!isChamadoFechado(selectedChamado.status) && (
-                      <TouchableOpacity onPress={() => setShowStatusModal(!showStatusModal)} style={{ backgroundColor: theme.primary, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 }}>
-                        <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>MUDAR STATUS</Text>
+              <TouchableOpacity onPress={() => setNovoOpen(false)} style={styles.closeBtn}><MaterialIcons name="close" size={22} color={theme.subtext} /></TouchableOpacity>
+            </View>
+
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }} keyboardShouldPersistTaps="handled">
+              <Field theme={theme} label="Chamado (assunto principal) *" icon="title" value={tituloChamado} onChangeText={setTituloChamado} placeholder="Ex.: Falha de conexão com o PJe" />
+              <View style={{ flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 0 : 12 }}>
+                <Field theme={theme} style={{ flex: 1 }} label="Solicitante *" icon="person-outline" value={solicitante} onChangeText={setSolicitante} placeholder="Nome e cargo" />
+                <Field theme={theme} style={{ flex: 1 }} label="Sala *" icon="meeting-room" value={sala} onChangeText={setSala} placeholder="Ex.: Gabinete 302" />
+              </View>
+              <Field theme={theme} label="Descrição do problema *" icon="description" value={desc} onChangeText={setDesc} placeholder="O que está acontecendo?" />
+              <Field theme={theme} label="Observação (opcional)" multiline value={observacao} onChangeText={setObservacao} placeholder="Informações adicionais" />
+
+              <Text style={[styles.formLabel, { color: theme.subtext }]}>UNIDADE</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 6 }}>
+                {SETORES.map((s) => <FilterChip key={s} theme={theme} label={s} active={setor === s} onPress={() => { setSetor(s); setTecSel(''); }} />)}
+              </View>
+
+              <Text style={[styles.formLabel, { color: theme.subtext }]}>PRIORIDADE</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 6 }}>
+                {PRIORIDADES.map((p) => {
+                  const v = getPrioridadeVisual(p);
+                  const ativo = prioridade === p;
+                  return (
+                    <TouchableOpacity key={p} onPress={() => setPrioridade(p)} style={[styles.prioBtn, { backgroundColor: ativo ? (p === 'CRITICA' ? v.bg : v.color === '#64748b' ? '#64748b' : v.color) : theme.card, borderColor: ativo ? 'transparent' : theme.border }]}>
+                      <Text style={{ color: ativo ? '#fff' : v.color, fontSize: 12, fontWeight: '700', letterSpacing: 0.6 }}>{v.label}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              <Text style={[styles.formLabel, { color: theme.subtext }]}>TÉCNICO RESPONSÁVEL</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+                <TouchableOpacity onPress={() => setShowTecs(!showTecs)} style={[styles.selectBox, { backgroundColor: theme.inputBg, borderColor: theme.border, flex: 1 }]}>
+                  <MaterialIcons name="engineering" size={18} color={theme.subtext} />
+                  <Text style={{ color: tecSel ? theme.text : theme.textCode, marginLeft: 8, flex: 1 }}>{tecSel || `Deixar na fila de ${setor}`}</Text>
+                  <MaterialIcons name={showTecs ? 'expand-less' : 'expand-more'} size={20} color={theme.subtext} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={autoEscalar} style={[styles.autoBtn, { backgroundColor: theme.primarySoft, borderColor: theme.primaryBorder }]}>
+                  <MaterialIcons name="bolt" size={18} color={theme.primary} />
+                  {!isMobile && <Text style={{ color: theme.primary, fontWeight: '700', fontSize: 12, letterSpacing: 0.6, marginLeft: 4 }}>AUTO</Text>}
+                </TouchableOpacity>
+              </View>
+              {showTecs && (
+                <View style={[styles.dropList, { backgroundColor: theme.card, borderColor: theme.border }]}>
+                  <TouchableOpacity style={[styles.dropItem, { borderBottomColor: theme.border }]} onPress={() => { setTecSel(''); setShowTecs(false); }}>
+                    <Text style={{ color: theme.subtext }}>Sem técnico (fila da unidade)</Text>
+                  </TouchableOpacity>
+                  {tecnicosDoSetorAtual.length === 0 && <Text style={{ color: theme.subtext, padding: 12, fontStyle: 'italic' }}>Nenhum técnico escalado em {setor}.</Text>}
+                  {tecnicosDoSetorAtual.map((t) => (
+                    <TouchableOpacity key={t.login} style={[styles.dropItem, { borderBottomColor: theme.border }]} onPress={() => { setTecSel(t.login); setShowTecs(false); }}>
+                      <Avatar nome={t.nomeCompleto || t.login} size={26} theme={theme} />
+                      <Text style={{ color: theme.text, marginLeft: 10 }}>{t.nomeCompleto || t.login} <Text style={{ color: theme.subtext }}>@{t.login}</Text></Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+
+              <Text style={[styles.formLabel, { color: theme.subtext }]}>EQUIPAMENTO VINCULADO</Text>
+              <TouchableOpacity onPress={() => setShowEquips(!showEquips)} style={[styles.selectBox, { backgroundColor: theme.inputBg, borderColor: theme.border, marginBottom: 6 }]}>
+                <MaterialIcons name="computer" size={18} color={theme.subtext} />
+                <Text style={{ color: equipSel ? theme.text : theme.textCode, marginLeft: 8, flex: 1 }} numberOfLines={1}>{equipSel ? `${equipSel.nome} (${equipSel.pat})` : 'Nenhum equipamento'}</Text>
+                <MaterialIcons name={showEquips ? 'expand-less' : 'expand-more'} size={20} color={theme.subtext} />
+              </TouchableOpacity>
+              {showEquips && (
+                <ScrollView style={[styles.dropList, { backgroundColor: theme.card, borderColor: theme.border, maxHeight: 220 }]} nestedScrollEnabled>
+                  <TouchableOpacity style={[styles.dropItem, { borderBottomColor: theme.border }]} onPress={() => { setEquipSel(null); setShowEquips(false); }}>
+                    <Text style={{ color: theme.subtext }}>Nenhum equipamento</Text>
+                  </TouchableOpacity>
+                  {inventario.map((i) => (
+                    <TouchableOpacity key={i.id} style={[styles.dropItem, { borderBottomColor: theme.border }]} onPress={() => { setEquipSel(i); setShowEquips(false); }}>
+                      <Text style={{ color: theme.text }}>{i.nome} <Text style={{ color: theme.subtext }}>• {i.pat}</Text></Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              )}
+
+              <Text style={[styles.formLabel, { color: theme.subtext }]}>ANEXOS</Text>
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <Btn theme={theme} variant="outline" icon="attach-file" title="Arquivo" onPress={anexarNoFormulario} style={{ flex: 1, marginTop: 0 }} />
+                <Btn theme={theme} variant="outline" icon="photo-camera" title="Foto" onPress={() => abrirCamera('form')} style={{ flex: 1, marginTop: 0 }} />
+              </View>
+              {formAnexos.length > 0 && (
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 12 }}>
+                  {formAnexos.map((doc, index) => (
+                    <View key={index} style={{ marginRight: 10, marginBottom: 10 }}>
+                      {doc.type === 'imagem' ? (
+                        <Image source={{ uri: doc.uri }} style={[styles.thumb, { borderColor: theme.border }]} />
+                      ) : (
+                        <View style={[styles.thumb, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
+                          <MaterialIcons name="description" size={22} color={theme.subtext} />
+                          <Text style={{ fontSize: 9, color: theme.subtext, marginTop: 4, paddingHorizontal: 4 }} numberOfLines={1}>{doc.nome}</Text>
+                        </View>
+                      )}
+                      <TouchableOpacity onPress={() => setFormAnexos(formAnexos.filter((_, i) => i !== index))} style={styles.removeThumb}>
+                        <MaterialIcons name="close" size={12} color="#fff" />
                       </TouchableOpacity>
-                    )}
-                  </View>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </ScrollView>
 
-                  {showStatusModal && (
-                    <View style={{ backgroundColor: theme.inputBg, padding: 15, borderRadius: 10, marginBottom: 15, borderWidth: 1, borderColor: theme.border }}>
-                      <Text style={{ color: theme.text, fontWeight: 'bold', marginBottom: 10 }}>Alterar Status para:</Text>
-                      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-                        {STATUS_OPCOES.map(st => (
-                          <TouchableOpacity key={st} onPress={() => setNovoStatusSel(st)} style={{ backgroundColor: novoStatusSel === st ? theme.primary : theme.card, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, marginRight: 8, borderWidth: 1, borderColor: novoStatusSel === st ? theme.primary : theme.border }}>
-                            <Text style={{ color: novoStatusSel === st ? '#fff' : theme.subtext, fontSize: 12 }}>{st}</Text>
-                          </TouchableOpacity>
-                        ))}
-                      </ScrollView>
-                      <TextInput 
-                        style={[styles.input, { backgroundColor: theme.card, color: theme.text, width: '100%', height: 60, textAlignVertical: 'top', marginVertical: 10 }]} 
-                        placeholder="Nota opcional sobre a mudança..." 
-                        placeholderTextColor={theme.subtext} multiline 
-                        value={notaStatus} onChangeText={setNotaStatus} 
-                      />
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Btn title="CANCELAR" outline theme={theme} onPress={() => { setShowStatusModal(false); setNovoStatusSel(''); setNotaStatus(''); }} style={{ flex: 1, marginRight: 5 }} />
-                        <Btn title="CONFIRMAR" theme={theme} onPress={alterarStatusChamado} style={{ flex: 1, marginLeft: 5 }} />
+            <View style={[styles.modalFooter, { borderTopColor: theme.border, backgroundColor: theme.surface }]}>
+              {msgForm ? <Text style={{ color: theme.offline, fontSize: 12.5, marginBottom: 8 }}>{msgForm}</Text> : null}
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <Btn theme={theme} variant="outline" title="Cancelar" onPress={() => setNovoOpen(false)} style={{ flex: 1, marginTop: 0 }} />
+                <Btn theme={theme} icon="send" title={isSavingChamado ? 'Registrando...' : 'Abrir chamado'} onPress={abrir} disabled={isSavingChamado} style={{ flex: 2, marginTop: 0 }} />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* TRANSFERÊNCIA */}
+      <Modal visible={!!transferChamado} animationType="fade" transparent onRequestClose={() => setTransferChamado(null)}>
+        <TouchableOpacity activeOpacity={1} onPress={() => setTransferChamado(null)} style={[styles.modalBg, { backgroundColor: theme.overlay, justifyContent: 'center', padding: 20 }]}>
+          <TouchableOpacity activeOpacity={1} style={[styles.smallModal, { backgroundColor: theme.surface, borderColor: theme.border }, SHADOW.lg]}>
+            {transferChamado && (
+              <>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: theme.text, fontSize: 17, fontWeight: '600' }}>Transferir chamado</Text>
+                    <Text style={{ color: theme.subtext, fontSize: 12.5, marginTop: 2 }} numberOfLines={1}>{formatProtocolo(transferChamado)} • {transferChamado.titulo || transferChamado.descricao}</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => setTransferChamado(null)} style={styles.closeBtn}><MaterialIcons name="close" size={20} color={theme.subtext} /></TouchableOpacity>
+                </View>
+                <Text style={[styles.formLabel, { color: theme.subtext }]}>PARA A FILA DA UNIDADE</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                  {SETORES.map((s) => <FilterChip key={s} theme={theme} label={s} active={false} onPress={() => transferirChamado(transferChamado.id, transferChamado.tecnico, '', s)} />)}
+                </View>
+                <Text style={[styles.formLabel, { color: theme.subtext }]}>OU DIRETO PARA UM TÉCNICO</Text>
+                <ScrollView style={{ maxHeight: 260 }}>
+                  {todosTecnicos.filter((t) => t.login !== transferChamado.tecnico).map((t) => (
+                    <TouchableOpacity key={t.login} style={[styles.dropItem, { borderBottomColor: theme.border }]} onPress={() => transferirChamado(transferChamado.id, transferChamado.tecnico, t.login, t.predio)}>
+                      <Avatar nome={t.nomeCompleto || t.login} size={30} theme={theme} />
+                      <View style={{ marginLeft: 10, flex: 1 }}>
+                        <Text style={{ color: theme.text, fontWeight: '600' }}>{t.nomeCompleto || t.login}</Text>
+                        <Text style={{ color: theme.subtext, fontSize: 12 }}>@{t.login} • {t.predio}</Text>
                       </View>
+                      <MaterialIcons name="chevron-right" size={20} color={theme.subtext} />
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </>
+            )}
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* DETALHES DO CHAMADO */}
+      <Modal visible={modalVisible} animationType="fade" transparent onRequestClose={() => setModalVisible(false)}>
+        {selectedChamado && (() => {
+          const fechado = isChamadoFechado(selectedChamado.status);
+          const historico = selectedChamado.historico || [];
+          const st = getStatusVisual(selectedChamado.status);
+          return (
+            <View style={[styles.modalBg, { backgroundColor: theme.overlay, justifyContent: isMobile ? 'flex-end' : 'center' }]}>
+              <View style={[styles.modalCard, { backgroundColor: theme.background, borderColor: theme.border, maxWidth: 820, height: isMobile ? '94%' : '92%', borderBottomLeftRadius: isMobile ? 0 : RADIUS.lg, borderBottomRightRadius: isMobile ? 0 : RADIUS.lg }, SHADOW.lg]}>
+                <View style={[styles.modalHeader, { borderBottomColor: theme.border, backgroundColor: theme.surface }]}>
+                  <View style={{ flex: 1, marginRight: 12 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      <Text style={{ color: theme.primary, fontSize: 13, fontWeight: '700', letterSpacing: 0.4 }}>{formatProtocolo(selectedChamado)}</Text>
+                      <PriorityBadge prioridade={selectedChamado.prioridade} />
+                      {!fechado && isSlaVencido(selectedChamado) && <SlaBadge />}
                     </View>
+                    <Text style={{ color: theme.text, fontSize: 19, fontWeight: '600', marginTop: 4 }} numberOfLines={2}>{selectedChamado.titulo || selectedChamado.descricao}</Text>
+                  </View>
+                  {user.perfil === 'ADM' && (
+                    <TouchableOpacity onPress={() => handleExcluir(selectedChamado.id)} style={styles.closeBtn}><MaterialIcons name="delete-outline" size={21} color={theme.offline} /></TouchableOpacity>
                   )}
+                  <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeBtn}><MaterialIcons name="close" size={22} color={theme.subtext} /></TouchableOpacity>
+                </View>
 
-                  {isChamadoFechado(selectedChamado.status) && (
-                    <View style={{ backgroundColor: theme.primarySoft, padding: 10, borderRadius: 8, marginBottom: 15, borderWidth: 1, borderColor: theme.primary }}>
-                      <Text style={{ color: theme.primary, fontWeight: 'bold', fontSize: 12 }}>⏱ Tempo de solução: {getTempoResolucao(selectedChamado)}</Text>
+                <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: isMobile ? 14 : 20 }} keyboardShouldPersistTaps="handled">
+                  {/* STATUS */}
+                  <Card theme={theme}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                      <View style={[styles.statusStrip, { backgroundColor: st.bg, marginTop: 0, flex: 1 }]}>
+                        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: st.dot, marginRight: 8 }} />
+                        <Text style={{ color: theme.text, fontWeight: '600' }}>Status: {STATUS_LABEL[selectedChamado.status] || selectedChamado.status}</Text>
+                      </View>
+                      {!fechado && (
+                        <Btn theme={theme} variant="soft" icon="published-with-changes" title="Mudar status" compact onPress={() => setShowStatusModal(!showStatusModal)} style={{ marginTop: 0 }} />
+                      )}
                     </View>
-                  )}
 
-                  <View style={{ backgroundColor: theme.inputBg, padding: 12, borderRadius: 8, borderWidth: 1, borderColor: theme.border, marginBottom: 15 }}>
-                    <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Título / Assunto:</Text>
-                    <Text style={{ color: theme.text, fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>{selectedChamado.titulo || '---'}</Text>
-                    
-                    <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Solicitante:</Text>
-                    <Text style={{ color: theme.text, fontSize: 14, marginBottom: 8 }}>{selectedChamado.solicitante || 'Não informado'}</Text>
-
-                    <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Localização (Setor / Sala):</Text>
-                    <Text style={{ color: theme.text, fontSize: 14, marginBottom: 8 }}>{selectedChamado.predio} / {selectedChamado.sala || 'Não informada'}</Text>
-                    
-                    <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Descrição do Problema:</Text>
-                    <Text style={{ color: theme.text, fontSize: 14, marginBottom: selectedChamado.observacao ? 8 : 0 }}>{selectedChamado.descricao}</Text>
-
-                    {selectedChamado.observacao ? (
-                      <>
-                        <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 2 }}>Observação Adicional:</Text>
-                        <Text style={{ color: theme.text, fontSize: 14 }}>{selectedChamado.observacao}</Text>
-                      </>
-                    ) : null}
-                  </View>
-                  
-                  <Text style={{ color: theme.subtext, fontSize: 12 }}>Equipamento Vinculado:</Text>
-                  <Text style={{ color: theme.text, marginBottom: 10 }}>{selectedChamado.equipamento ? `${selectedChamado.equipamento.nome} - Pat: ${selectedChamado.equipamento.pat}` : 'Não informado'}</Text>
-                  
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
-                    <MaterialIcons name="attach-file" size={13} color={theme.subtext} style={{ marginRight: 4 }} />
-                    <Text style={{ color: theme.subtext, fontSize: 12 }}>Documentos Anexados:</Text>
-                  </View>
-                  <View style={{ marginTop: 5, marginBottom: 10 }}>
-                    {(!selectedChamado.anexos || selectedChamado.anexos.length === 0) && (
-                      <Text style={{ color: theme.text, fontSize: 12, fontStyle: 'italic' }}>Sem anexos.</Text>
+                    {showStatusModal && (
+                      <View style={[styles.innerBox, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
+                        <Text style={{ color: theme.text, fontWeight: '600', marginBottom: 10 }}>Alterar status para:</Text>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                          {STATUS_OPCOES.map((s) => <FilterChip key={s} theme={theme} label={STATUS_LABEL[s] || s} active={novoStatusSel === s} onPress={() => setNovoStatusSel(s)} />)}
+                        </View>
+                        <Field theme={theme} multiline value={notaStatus} onChangeText={setNotaStatus} placeholder="Nota opcional sobre a mudança..." style={{ marginTop: 6 }} />
+                        <View style={{ flexDirection: 'row', gap: 10 }}>
+                          <Btn title="Cancelar" variant="outline" theme={theme} onPress={() => { setShowStatusModal(false); setNovoStatusSel(''); setNotaStatus(''); }} style={{ flex: 1, marginTop: 0 }} />
+                          <Btn title="Confirmar" theme={theme} onPress={alterarStatusChamado} style={{ flex: 1, marginTop: 0 }} />
+                        </View>
+                      </View>
                     )}
-                    
-                    {selectedChamado.anexos && selectedChamado.anexos.length > 0 && (
-                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10, marginTop: 10 }}>
+
+                    {fechado && (
+                      <View style={[styles.innerBox, { backgroundColor: theme.successWash, borderColor: theme.online + '40' }]}>
+                        <Text style={{ color: theme.online, fontWeight: '600', fontSize: 13 }}>Encerrado em {getTempoResolucao(selectedChamado)}</Text>
+                      </View>
+                    )}
+
+                    <View style={{ flexDirection: isMobile ? 'column' : 'row', flexWrap: 'wrap', marginTop: 16 }}>
+                      <InfoItem theme={theme} icon="account-circle" label="Solicitante" valor={selectedChamado.solicitante || 'Não informado'} />
+                      <InfoItem theme={theme} icon="location-on" label="Unidade / Sala" valor={`${selectedChamado.predio} / ${selectedChamado.sala || 'Não informada'}`} />
+                      <InfoItem theme={theme} icon="engineering" label="Técnico" valor={selectedChamado.tecnico || 'Aguardando técnico'} />
+                      <InfoItem theme={theme} icon="schedule" label="Aberto" valor={`${selectedChamado.dataAbertura ? new Date(selectedChamado.dataAbertura).toLocaleString('pt-BR') : '—'}${selectedChamado.abertoPor ? ` por ${selectedChamado.abertoPor}` : ''}`} />
+                      <InfoItem theme={theme} icon="computer" label="Equipamento" valor={selectedChamado.equipamento ? `${selectedChamado.equipamento.nome} • Pat. ${selectedChamado.equipamento.pat}` : 'Não informado'} />
+                    </View>
+
+                    <View style={[styles.innerBox, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
+                      <Text style={[styles.formLabel, { color: theme.subtext, marginTop: 0 }]}>DESCRIÇÃO DO PROBLEMA</Text>
+                      <Text style={{ color: theme.text, fontSize: 14, lineHeight: 20 }}>{selectedChamado.descricao}</Text>
+                      {selectedChamado.observacao ? (
+                        <>
+                          <Text style={[styles.formLabel, { color: theme.subtext }]}>OBSERVAÇÃO</Text>
+                          <Text style={{ color: theme.text, fontSize: 14, lineHeight: 20 }}>{selectedChamado.observacao}</Text>
+                        </>
+                      ) : null}
+                    </View>
+
+                    {/* ANEXOS */}
+                    <Text style={[styles.formLabel, { color: theme.subtext }]}>DOCUMENTOS ANEXADOS</Text>
+                    {(!selectedChamado.anexos || selectedChamado.anexos.length === 0) ? (
+                      <Text style={{ color: theme.subtext, fontSize: 13, fontStyle: 'italic' }}>Sem anexos.</Text>
+                    ) : (
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                         {selectedChamado.anexos.map((doc, i) => (
                           <View key={i} style={{ marginRight: 10, marginBottom: 10 }}>
                             {doc.type === 'imagem' ? (
-                               <Image source={{ uri: doc.uri }} style={{ width: 80, height: 80, borderRadius: 8, borderWidth: 1, borderColor: theme.border }} />
+                              <Image source={{ uri: doc.uri }} style={[styles.thumb, { width: 84, height: 84, borderColor: theme.border }]} />
                             ) : (
-                               <View style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: theme.inputBg, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: theme.border }}>
-                                 <MaterialIcons name="description" size={24} color={theme.subtext} />
-                                 <Text style={{ fontSize: 8, color: theme.subtext, marginTop: 5, textAlign: 'center' }} numberOfLines={1}>{doc.nome}</Text>
-                               </View>
+                              <View style={[styles.thumb, { width: 84, height: 84, backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
+                                <MaterialIcons name="description" size={24} color={theme.subtext} />
+                                <Text style={{ fontSize: 9, color: theme.subtext, marginTop: 5, paddingHorizontal: 4 }} numberOfLines={1}>{doc.nome}</Text>
+                              </View>
                             )}
                           </View>
                         ))}
                       </View>
                     )}
-                    
-                    {!isChamadoFechado(selectedChamado.status) && (
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, marginBottom: 15 }}>
-                        <TouchableOpacity onPress={anexarNoDetalhe} style={{ flexDirection: 'row', padding: 10, backgroundColor: theme.inputBg, borderRadius: 8, flex: 1, marginRight: 5, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: theme.border }}>
-                          <MaterialIcons name="attach-file" size={14} color={theme.text} style={{ marginRight: 5 }} />
-                          <Text style={{ color: theme.text, fontSize: 12, fontWeight: 'bold' }}>Arquivo</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => abrirCamera('detalhe')} style={{ flexDirection: 'row', padding: 10, backgroundColor: theme.primary, borderRadius: 8, flex: 1, marginLeft: 5, alignItems: 'center', justifyContent: 'center' }}>
-                          <MaterialIcons name="photo-camera" size={14} color="#fff" style={{ marginRight: 5 }} />
-                          <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Foto</Text>
-                        </TouchableOpacity>
+                    {!fechado && (
+                      <View style={{ flexDirection: 'row', gap: 10, marginTop: 6 }}>
+                        <Btn theme={theme} variant="outline" icon="attach-file" title="Arquivo" compact onPress={anexarNoDetalhe} style={{ flex: 1, marginTop: 0 }} />
+                        <Btn theme={theme} variant="outline" icon="photo-camera" title="Foto" compact onPress={() => abrirCamera('detalhe')} style={{ flex: 1, marginTop: 0 }} />
                       </View>
                     )}
-                  </View>
+                  </Card>
 
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, marginBottom: 5 }}>
-                    <MaterialIcons name="checklist" size={15} color={theme.primary} style={{ marginRight: 6 }} />
-                    <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Protocolo de Atendimento</Text>
-                  </View>
-                  <View style={{ backgroundColor: theme.inputBg, padding: 10, borderRadius: 10, marginBottom: 10 }}>
-                    {selectedChamado.checklist && selectedChamado.checklist.map((item) => (
-                      <TouchableOpacity key={item.id} onPress={() => !isChamadoFechado(selectedChamado.status) && toggleCheck(item.id)} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                        <View style={{ width: 20, height: 20, borderRadius: 4, borderWidth: 1, borderColor: theme.text, marginRight: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: item.checked ? theme.primary : 'transparent' }}>
-                          {item.checked && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
+                  {/* CHECKLIST + FECHAMENTO */}
+                  <Card theme={theme}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                      <MaterialIcons name="checklist" size={18} color={theme.primary} style={{ marginRight: 8 }} />
+                      <Text style={{ color: theme.text, fontWeight: '600', fontSize: 15 }}>Protocolo de atendimento</Text>
+                    </View>
+                    {(selectedChamado.checklist || []).map((item) => (
+                      <TouchableOpacity key={item.id} onPress={() => !fechado && toggleCheck(item.id)} style={styles.checkRow} activeOpacity={0.7}>
+                        <View style={[styles.checkbox, { borderColor: item.checked ? theme.primary : theme.textCode, backgroundColor: item.checked ? theme.primary : 'transparent' }]}>
+                          {item.checked && <MaterialIcons name="check" size={13} color="#fff" />}
                         </View>
-                        <Text style={{ color: theme.text, textDecorationLine: item.checked ? 'line-through' : 'none', opacity: item.checked ? 0.5 : 1 }}>{item.text}</Text>
+                        <Text style={{ color: theme.text, textDecorationLine: item.checked ? 'line-through' : 'none', opacity: item.checked ? 0.55 : 1 }}>{item.text}</Text>
                       </TouchableOpacity>
                     ))}
-                  </View>
 
-                  {!isChamadoFechado(selectedChamado.status) && (
-                    <View style={{ marginTop: 15, marginBottom: 10 }}>
-                      <Text style={{ color: theme.primary, fontWeight: 'bold', marginBottom: 5 }}>Solução / Notas (Obrigatório):</Text>
-                      <TextInput style={{ backgroundColor: theme.inputBg, color: theme.text, padding: 10, borderRadius: 8, height: 80, textAlignVertical: 'top', borderWidth: 1, borderColor: theme.border }} multiline placeholder="Descreva o que foi feito..." placeholderTextColor={theme.subtext} value={solucao} onChangeText={setSolucao} />
-                    </View>
-                  )}
-                  {msgErro ? <Text style={{ color: theme.offline, fontWeight: 'bold', textAlign: 'center', marginBottom: 5 }}>{msgErro}</Text> : null}
-                  {!isChamadoFechado(selectedChamado.status) && (<Btn title="FECHAR CHAMADO DEFINITIVAMENTE" theme={theme} onPress={fecharChamado} />)}
-                </Card>
-
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, marginBottom: 5 }}>
-                  <MaterialIcons name="chat-bubble-outline" size={15} color={theme.primary} style={{ marginRight: 6 }} />
-                  <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Histórico / Chat</Text>
-                </View>
-                
-                {!isChamadoFechado(selectedChamado.status) && (
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', marginBottom: 10, maxHeight: 40 }}>
-                    {FRASES_RAPIDAS.map((frase, index) => (
-                      <TouchableOpacity key={index} style={{ backgroundColor: theme.inputBg, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 15, marginRight: 8, borderWidth: 1, borderColor: theme.border }} onPress={() => enviarMensagem(frase)}>
-                        <Text style={{ color: theme.text, fontSize: 11 }}>{frase}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                )}
-
-                {selectedChamado.historico.length === 0 ? (
-                  <Text style={{ color: theme.subtext }}>Nenhuma mensagem ainda.</Text>
-                ) : (
-                  selectedChamado.historico.map((msg, i) => (
-                    <View
-                      key={i}
-                      style={{
-                        alignSelf: msg.user === user.login ? 'flex-end' : msg.user === 'SISTEMA' ? 'center' : 'flex-start',
-                        backgroundColor: msg.user === user.login ? theme.messageUser || theme.primary : msg.user === 'SISTEMA' ? theme.border : theme.messageTec || theme.inputBg,
-                        padding: 10,
-                        borderRadius: RADIUS.lg,
-                        marginBottom: 6,
-                        maxWidth: '85%',
-                        borderWidth: 1,
-                        borderColor: msg.user === user.login ? theme.primary + '55' : theme.border,
-                      }}>
-                      <Text style={{ color: msg.user === user.login ? theme.tert : theme.primary, fontSize: 10, fontWeight: 'bold', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.3 }}>{msg.user}</Text>
-                      <Text style={{ color: theme.text }}>{msg.texto}</Text>
-                      <Text style={{ color: theme.textCode, fontSize: 8, textAlign: 'right', marginTop: 2, fontFamily: 'monospace' }}>{new Date(msg.time).toLocaleTimeString().slice(0, 5)}</Text>
-                    </View>
-                  ))
-                )}
-
-                {user.perfil === 'ADM' && (
-                  <>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 4 }}>
-                      <MaterialIcons name="lock-outline" size={15} color={theme.violet} style={{ marginRight: 6 }} />
-                      <Text style={{ color: theme.violet, fontWeight: 'bold' }}>Notas Internas</Text>
-                    </View>
-                    <Text style={{ color: theme.subtext, fontSize: 11, marginBottom: 8 }}>Visível apenas para Administradores — não aparece para o técnico atribuído.</Text>
-                    {(!selectedChamado.notasInternas || selectedChamado.notasInternas.length === 0) ? (
-                      <Text style={{ color: theme.subtext }}>Nenhuma nota interna ainda.</Text>
-                    ) : (
-                      selectedChamado.notasInternas.map((msg, i) => (
-                        <View key={i} style={{ alignSelf: msg.user === user.login ? 'flex-end' : 'flex-start', backgroundColor: theme.violetWash, borderWidth: 1, borderColor: theme.violet, padding: 10, borderRadius: RADIUS.lg, marginBottom: 6, maxWidth: '85%' }}>
-                          <Text style={{ color: theme.violet, fontSize: 10, fontWeight: 'bold', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.3 }}>{msg.user}</Text>
-                          <Text style={{ color: theme.text }}>{msg.texto}</Text>
-                          <Text style={{ color: theme.textCode, fontSize: 8, textAlign: 'right', marginTop: 2, fontFamily: 'monospace' }}>{new Date(msg.time).toLocaleTimeString().slice(0, 5)}</Text>
-                        </View>
-                      ))
+                    {!fechado && (
+                      <>
+                        <Field theme={theme} label="Solução / notas (obrigatório para fechar)" multiline value={solucao} onChangeText={(t) => { setSolucao(t); if (msgErro) setMsgErro(''); }} placeholder="Descreva o que foi feito..." style={{ marginTop: 12 }} />
+                        {msgErro ? <Text style={{ color: theme.offline, fontWeight: '600', marginBottom: 4 }}>{msgErro}</Text> : null}
+                        <Btn title="Fechar chamado definitivamente" icon="task-alt" variant="success" theme={theme} onPress={fecharChamado} />
+                      </>
                     )}
-                  </>
+                  </Card>
+
+                  {/* HISTÓRICO / CHAT */}
+                  <Card theme={theme}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                      <MaterialIcons name="forum" size={18} color={theme.primary} style={{ marginRight: 8 }} />
+                      <Text style={{ color: theme.text, fontWeight: '600', fontSize: 15 }}>Histórico / Chat</Text>
+                    </View>
+                    {!fechado && (
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+                        {FRASES_RAPIDAS.map((frase, index) => (
+                          <TouchableOpacity key={index} style={[styles.quickChip, { backgroundColor: theme.cardAlt, borderColor: theme.border }]} onPress={() => enviarMensagem(frase)}>
+                            <Text style={{ color: theme.text, fontSize: 12 }}>{frase}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
+                    )}
+                    {historico.length === 0 ? (
+                      <Text style={{ color: theme.subtext }}>Nenhuma mensagem ainda.</Text>
+                    ) : historico.map((msg, i) => {
+                      const meu = msg.user === user.login;
+                      const sistema = msg.user === 'SISTEMA';
+                      return (
+                        <View key={i} style={[styles.bubble, {
+                          alignSelf: meu ? 'flex-end' : sistema ? 'center' : 'flex-start',
+                          backgroundColor: meu ? theme.messageUser : sistema ? theme.neutralWash : theme.messageTec,
+                          borderColor: meu ? theme.primaryBorder : theme.border,
+                        }]}>
+                          <Text style={{ color: sistema ? theme.subtext : theme.primary, fontSize: 10.5, fontWeight: '700', marginBottom: 2, letterSpacing: 0.4 }}>{String(msg.user).toUpperCase()}</Text>
+                          <Text style={{ color: theme.text, fontSize: 13.5 }}>{msg.texto}</Text>
+                          <Text style={{ color: theme.textCode, fontSize: 10, textAlign: 'right', marginTop: 3 }}>{new Date(msg.time).toLocaleString('pt-BR').slice(0, 17)}</Text>
+                        </View>
+                      );
+                    })}
+                  </Card>
+
+                  {user.perfil === 'ADM' && (
+                    <Card theme={theme} style={{ borderColor: theme.violet + '55' }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <MaterialIcons name="lock-outline" size={18} color={theme.violet} style={{ marginRight: 8 }} />
+                        <Text style={{ color: theme.violet, fontWeight: '600', fontSize: 15 }}>Notas internas</Text>
+                      </View>
+                      <Text style={{ color: theme.subtext, fontSize: 12, marginTop: 2, marginBottom: 10 }}>Visível apenas para Administradores — não aparece para o técnico atribuído.</Text>
+                      {(!selectedChamado.notasInternas || selectedChamado.notasInternas.length === 0) ? (
+                        <Text style={{ color: theme.subtext }}>Nenhuma nota interna ainda.</Text>
+                      ) : selectedChamado.notasInternas.map((msg, i) => (
+                        <View key={i} style={[styles.bubble, { alignSelf: msg.user === user.login ? 'flex-end' : 'flex-start', backgroundColor: theme.violetWash, borderColor: theme.violet + '55' }]}>
+                          <Text style={{ color: theme.violet, fontSize: 10.5, fontWeight: '700', marginBottom: 2 }}>{String(msg.user).toUpperCase()}</Text>
+                          <Text style={{ color: theme.text, fontSize: 13.5 }}>{msg.texto}</Text>
+                          <Text style={{ color: theme.textCode, fontSize: 10, textAlign: 'right', marginTop: 3 }}>{new Date(msg.time).toLocaleString('pt-BR').slice(0, 17)}</Text>
+                        </View>
+                      ))}
+                      {!fechado && (
+                        <View style={styles.composer}>
+                          <TextInput style={[styles.composerInput, { backgroundColor: theme.inputBg, color: theme.text, borderColor: theme.violet + '66' }, Platform.OS === 'web' && { outlineStyle: 'none' }]} placeholder="Nota interna (visível só para admins)..." placeholderTextColor={theme.textCode} value={notaInternaMsg} onChangeText={setNotaInternaMsg} onSubmitEditing={enviarNotaInterna} />
+                          <TouchableOpacity onPress={enviarNotaInterna} style={[styles.sendBtn, { backgroundColor: theme.violet }]}>
+                            <MaterialIcons name="lock" size={17} color="#fff" />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    </Card>
+                  )}
+                </ScrollView>
+
+                {!fechado && (
+                  <View style={[styles.modalFooter, { borderTopColor: theme.border, backgroundColor: theme.surface }]}>
+                    <View style={[styles.composer, { marginTop: 0 }]}>
+                      <TextInput style={[styles.composerInput, { backgroundColor: theme.inputBg, color: theme.text, borderColor: theme.border }, Platform.OS === 'web' && { outlineStyle: 'none' }]} placeholder="Digite uma mensagem..." placeholderTextColor={theme.textCode} value={chatMsg} onChangeText={setChatMsg} onSubmitEditing={() => enviarMensagem(null)} />
+                      <TouchableOpacity onPress={() => enviarMensagem(null)} style={[styles.sendBtn, { backgroundColor: theme.primary }]}>
+                        <MaterialIcons name="send" size={17} color="#fff" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 )}
-              </ScrollView>
-
-              {user.perfil === 'ADM' && !isChamadoFechado(selectedChamado.status) && (
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                  <TextInput style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, color: theme.text, marginVertical: 0, marginRight: 10, borderWidth: 1, borderColor: theme.violet }]} placeholder="Nota interna (visível só para admins)..." placeholderTextColor={theme.subtext} value={notaInternaMsg} onChangeText={setNotaInternaMsg} />
-                  <TouchableOpacity onPress={enviarNotaInterna} style={{ backgroundColor: theme.violet, padding: 12, borderRadius: 12 }}>
-                    <MaterialIcons name="lock" size={16} color="#fff" />
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {!isChamadoFechado(selectedChamado.status) && (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TextInput style={[styles.input, { flex: 1, backgroundColor: theme.inputBg, color: theme.text, marginVertical: 0, marginRight: 10 }]} placeholder="Digite uma mensagem..." placeholderTextColor={theme.subtext} value={chatMsg} onChangeText={setChatMsg} />
-                  <TouchableOpacity onPress={() => enviarMensagem(null)} style={{ backgroundColor: theme.primary, padding: 12, borderRadius: 12 }}>
-                    <MaterialIcons name="send" size={16} color="#fff" />
-                  </TouchableOpacity>
-                </View>
-              )}
+              </View>
             </View>
-          </View>
-        )}
+          );
+        })()}
       </Modal>
 
-      <Modal visible={confirmModalVisible} animationType="fade" transparent={true} onRequestClose={() => setConfirmModalVisible(false)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-          <View style={{ backgroundColor: theme.card, borderRadius: 15, padding: 20, width: '100%', maxWidth: 350, borderWidth: 1, borderColor: theme.primary }}>
-            <Text style={{ fontSize: 24, marginBottom: 10, textAlign: 'center' }}>🤝</Text>
-            <Text style={{ color: theme.text, fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginBottom: 10 }}>Assumir Chamado?</Text>
-            <Text style={{ color: theme.subtext, textAlign: 'center', marginBottom: 20 }}>Este chamado sairá da fila do prédio e ficará sob sua responsabilidade.</Text>
-            <View style={{ flexDirection: 'row' }}>
-              <Btn title="CANCELAR" onPress={() => setConfirmModalVisible(false)} theme={theme} danger style={{ flex: 1, marginRight: 5 }} />
-              <Btn title="SIM, ASSUMIR" onPress={confirmarAssumir} theme={theme} style={{ flex: 1, marginLeft: 5 }} />
+      {/* CONFIRMAR ASSUMIR */}
+      <Modal visible={confirmModalVisible} animationType="fade" transparent onRequestClose={() => setConfirmModalVisible(false)}>
+        <View style={[styles.modalBg, { backgroundColor: theme.overlay, justifyContent: 'center', padding: 20 }]}>
+          <View style={[styles.smallModal, { backgroundColor: theme.surface, borderColor: theme.border, alignItems: 'center', maxWidth: 380 }, SHADOW.lg]}>
+            <View style={{ width: 52, height: 52, borderRadius: 26, backgroundColor: theme.successWash, alignItems: 'center', justifyContent: 'center' }}>
+              <MaterialIcons name="handshake" size={26} color={theme.online} />
+            </View>
+            <Text style={{ color: theme.text, fontSize: 18, fontWeight: '600', marginTop: 12 }}>Assumir chamado?</Text>
+            <Text style={{ color: theme.subtext, textAlign: 'center', marginTop: 6, marginBottom: 8 }}>Este chamado sairá da fila da unidade e ficará sob sua responsabilidade.</Text>
+            <View style={{ flexDirection: 'row', gap: 10, alignSelf: 'stretch' }}>
+              <Btn title="Cancelar" variant="outline" onPress={() => setConfirmModalVisible(false)} theme={theme} style={{ flex: 1 }} />
+              <Btn title="Sim, assumir" variant="success" onPress={confirmarAssumir} theme={theme} style={{ flex: 1 }} />
             </View>
           </View>
         </View>
@@ -897,7 +1012,60 @@ export default function ChamadosScreen({ user, chamados, users, inventario, addL
   );
 }
 
+const FiltroLinha = ({ theme, label, children, isMobile, last }) => (
+  <View style={{ flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'flex-start', marginTop: 14, marginBottom: last ? -8 : 0 }}>
+    <Text style={{ color: theme.subtext, fontSize: 12, fontWeight: '600', letterSpacing: 0.8, width: 110, marginTop: 7, marginBottom: isMobile ? 6 : 0 }}>{label}:</Text>
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', flex: 1 }}>{children}</View>
+  </View>
+);
+
+const InfoItem = ({ theme, icon, label, valor }) => (
+  <View style={{ width: '50%', minWidth: 220, flexDirection: 'row', marginBottom: 12, paddingRight: 10 }}>
+    <View style={{ width: 32, height: 32, borderRadius: RADIUS.md, backgroundColor: theme.cardAlt, alignItems: 'center', justifyContent: 'center', marginRight: 10 }}>
+      <MaterialIcons name={icon} size={16} color={theme.primary} />
+    </View>
+    <View style={{ flex: 1 }}>
+      <Text style={{ color: theme.subtext, fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase' }}>{label}</Text>
+      <Text style={{ color: theme.text, fontSize: 13.5, marginTop: 2 }}>{valor}</Text>
+    </View>
+  </View>
+);
+
 const styles = StyleSheet.create({
-  sectionTitle: { fontWeight: '800', fontSize: 22, marginBottom: 20 },
-  input: { padding: 12, marginVertical: 8, borderRadius: 12, width: 250, height: 45, borderWidth: 1, borderColor: 'rgba(140,150,160,0.28)' }
+  tabsRow: { justifyContent: 'space-between', paddingBottom: 14, marginBottom: 16, borderBottomWidth: 1 },
+  tab: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, height: 46, borderRadius: RADIUS.md, marginRight: 8 },
+  tabText: { fontSize: 13, fontWeight: '700', letterSpacing: 0.9, marginLeft: 8 },
+  tabCount: { marginLeft: 10, minWidth: 24, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
+  bulkBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, borderRadius: RADIUS.lg, marginBottom: 16, flexWrap: 'wrap', gap: 8 },
+  bulkBtn: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: RADIUS.sm },
+  bulkBtnText: { color: '#fff', fontWeight: '700', fontSize: 12, letterSpacing: 0.6 },
+  searchBar: { flexDirection: 'row', alignItems: 'center', borderRadius: RADIUS.md, paddingHorizontal: 14 },
+  ticketCard: { flex: 1, borderWidth: 1, borderLeftWidth: 4, borderRadius: RADIUS.lg, padding: 16 },
+  checkbox: { width: 18, height: 18, borderRadius: 4, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
+  metaRow: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
+  metaText: { fontSize: 13, marginLeft: 6, flex: 1 },
+  statusStrip: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 8, borderRadius: RADIUS.md, marginTop: 12 },
+  cardFoot: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, marginTop: 'auto', paddingTop: 12, flexWrap: 'wrap', gap: 8 },
+  footBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, height: 30, borderRadius: RADIUS.pill, borderWidth: 1 },
+  modalBg: { flex: 1, alignItems: 'center' },
+  modalCard: { width: '100%', borderRadius: RADIUS.lg, borderWidth: 1, overflow: 'hidden' },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1 },
+  modalFooter: { padding: 14, borderTopWidth: 1 },
+  closeBtn: { width: 38, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
+  smallModal: { width: '100%', maxWidth: 520, borderRadius: RADIUS.lg, borderWidth: 1, padding: 20 },
+  formLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 0.6, marginTop: 10, marginBottom: 8 },
+  prioBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: RADIUS.sm, borderWidth: 1, marginRight: 8, marginBottom: 8 },
+  selectBox: { flexDirection: 'row', alignItems: 'center', height: 44, borderRadius: RADIUS.md, borderWidth: 1, paddingHorizontal: 12 },
+  autoBtn: { flexDirection: 'row', alignItems: 'center', height: 44, paddingHorizontal: 12, borderRadius: RADIUS.md, borderWidth: 1, marginLeft: 8 },
+  dropList: { borderRadius: RADIUS.md, borderWidth: 1, marginBottom: 8, overflow: 'hidden' },
+  dropItem: { flexDirection: 'row', alignItems: 'center', padding: 12, borderBottomWidth: 1 },
+  thumb: { width: 64, height: 64, borderRadius: RADIUS.md, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  removeThumb: { position: 'absolute', top: -6, right: -6, backgroundColor: '#dc2626', borderRadius: 10, width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
+  innerBox: { padding: 12, borderRadius: RADIUS.md, borderWidth: 1, marginTop: 14 },
+  checkRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 7 },
+  quickChip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: RADIUS.pill, borderWidth: 1, marginRight: 8 },
+  bubble: { padding: 10, borderRadius: RADIUS.lg, borderWidth: 1, marginBottom: 8, maxWidth: '85%' },
+  composer: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
+  composerInput: { flex: 1, height: 44, borderRadius: RADIUS.md, borderWidth: 1, paddingHorizontal: 12, marginRight: 10, fontSize: 14 },
+  sendBtn: { width: 44, height: 44, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center' },
 });

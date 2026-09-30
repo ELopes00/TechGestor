@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Alert, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { Btn, Card } from '../components';
+import { Btn, Card, PageHeader } from '../components';
 import { DataService } from '../services/DataService';
 import { RADIUS, SHADOW } from '../theme/themes';
 import { SETORES } from '../utils/constants';
@@ -206,12 +206,8 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
   const isEventoFechado = (status) => status === 'CONCLUIDO' || status === 'finalizado';
 
   return (
-    <ScrollView style={{ padding: 20 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-        <MaterialIcons name="event" size={19} color={theme.primary} style={{ marginRight: 7 }} />
-        <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800' }}>Gestão de Eventos</Text>
-      </View>
-      <Text style={{ color: theme.subtext, fontSize: 13, marginBottom: 18 }}>Eventos internos e externos da equipe</Text>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+      <PageHeader theme={theme} trail="EVENTOS E AUDIÊNCIAS" title="Gestão de Eventos" subtitle="Eventos internos e externos, sessões plenárias e audiências" />
 
       {user.perfil === 'ADM' && (
         <Card theme={theme}>
@@ -220,13 +216,13 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
             <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Novo Evento</Text>
           </View>
           <View style={{flexDirection: 'row', marginBottom: 15}}>
-            <TouchableOpacity onPress={()=>setTipo('INTERNO')} style={[styles.tab, {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: tipo==='INTERNO'?theme.sec:theme.inputBg}]}>
-              <MaterialIcons name="apartment" size={14} color="#fff" style={{ marginRight: 5 }} />
-              <Text style={{color:'#fff', fontWeight: 'bold'}}>INTERNO</Text>
+            <TouchableOpacity onPress={()=>setTipo('INTERNO')} style={[styles.tab, {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: tipo==='INTERNO'?theme.sec:theme.cardAlt, borderWidth: 1, borderColor: theme.border}]}>
+              <MaterialIcons name="apartment" size={14} color={tipo==='INTERNO' ? '#fff' : theme.subtext} style={{ marginRight: 5 }} />
+              <Text style={{color: tipo==='INTERNO' ? '#fff' : theme.subtext, fontWeight: 'bold'}}>INTERNO</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>setTipo('EXTERNO')} style={[styles.tab, {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: tipo==='EXTERNO'?theme.tert:theme.inputBg}]}>
-              <MaterialIcons name="directions-car" size={14} color="#fff" style={{ marginRight: 5 }} />
-              <Text style={{color:'#fff', fontWeight: 'bold'}}>EXTERNO</Text>
+            <TouchableOpacity onPress={()=>setTipo('EXTERNO')} style={[styles.tab, {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: tipo==='EXTERNO'?theme.primary:theme.cardAlt, borderWidth: 1, borderColor: theme.border}]}>
+              <MaterialIcons name="directions-car" size={14} color={tipo==='EXTERNO' ? '#fff' : theme.subtext} style={{ marginRight: 5 }} />
+              <Text style={{color: tipo==='EXTERNO' ? '#fff' : theme.subtext, fontWeight: 'bold'}}>EXTERNO</Text>
             </TouchableOpacity>
           </View>
 
@@ -503,7 +499,7 @@ export default function EventosScreen({ user, eventos, users, theme, addLog }) {
                 <Text style={{ color: theme.tert, fontWeight: 'bold', alignSelf: 'flex-start', marginBottom: 5, fontSize: 12 }}>Logística de Deslocação:</Text>
                 <View style={{ flexDirection: 'row', width: '100%', marginBottom: 10 }}>
                   {['CARRO EMPRESA', 'MOTO PRÓPRIA'].map(t => (
-                    <TouchableOpacity key={t} onPress={() => setTransporte(t)} style={[styles.tab, { backgroundColor: transporte === t ? theme.tert : theme.inputBg, marginHorizontal: 2 }]}>
+                    <TouchableOpacity key={t} onPress={() => setTransporte(t)} style={[styles.tab, { backgroundColor: transporte === t ? theme.primary : theme.neutral, marginHorizontal: 2 }]}>
                       <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>{t}</Text>
                     </TouchableOpacity>
                   ))}

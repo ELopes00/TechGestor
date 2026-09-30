@@ -1,11 +1,63 @@
-export const getCorPrioridade = (p, theme) => {
+export const getCorPrioridade = (p) => {
   switch (p) {
-    case 'CRITICA': return theme ? theme.offline : '#EF4444';
-    case 'ALTA': return theme ? theme.sec : '#F59E0B';
-    case 'MEDIA': return theme ? theme.primary : '#0284C7';
-    default: return theme ? theme.online : '#10B981';
+    case 'CRITICA': return '#b91c1c';
+    case 'ALTA': return '#dc2626';
+    case 'MEDIA': return '#d97706';
+    default: return '#8493ab';
   }
 };
+
+// Visual dos badges de prioridade (DESIGN.md: ALTA vermelho, MÉDIA âmbar,
+// NORMAL ardósia). CRÍTICA ganha fundo sólido para se destacar da ALTA.
+export const getPrioridadeVisual = (p) => {
+  switch (p) {
+    case 'CRITICA': return { label: 'CRÍTICA', color: '#ffffff', bg: '#b91c1c', border: '#b91c1c' };
+    case 'ALTA': return { label: 'ALTA', color: '#dc2626', bg: '#dc262614', border: '#dc262640' };
+    case 'MEDIA': return { label: 'MÉDIA', color: '#b45309', bg: '#d9770618', border: '#d9770640' };
+    default: return { label: 'NORMAL', color: '#64748b', bg: '#8493ab18', border: '#8493ab40' };
+  }
+};
+
+// Visual dos chips de status, com o vocabulário do fluxo de atendimento.
+export const getStatusVisual = (status) => {
+  const s = String(status || '').toLowerCase();
+  if (s.includes('finaliz') || s.includes('fechad') || s.includes('conclu')) return { color: '#64748b', bg: '#8493ab18', border: '#8493ab40', dot: '#64748b' };
+  if (s.includes('instalad')) return { color: '#1a9c5c', bg: '#1a9c5c18', border: '#1a9c5c40', dot: '#1a9c5c' };
+  if (s.includes('separa')) return { color: '#b45309', bg: '#d9770618', border: '#d9770640', dot: '#d97706' };
+  if (s.includes('aguardando') || s === 'aberto' || !s) return { color: '#64748b', bg: '#8493ab18', border: '#8493ab40', dot: '#8493ab' };
+  return { color: '#2a78d6', bg: '#2a78d618', border: '#2a78d640', dot: '#2a78d6' };
+};
+
+export const getIniciais = (nome) => {
+  const partes = String(nome || '').replace(/[._-]+/g, ' ').trim().split(/\s+/).filter(Boolean);
+  if (partes.length === 0) return '--';
+  if (partes.length === 1) return partes[0].substring(0, 2).toUpperCase();
+  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+};
+
+// Protocolo exibido nos chamados: usa o campo salvo (chamados novos) ou deriva
+// um identificador estável do ano de abertura + id do documento (antigos).
+export const formatProtocolo = (chamado) => {
+  if (!chamado) return '#----';
+  if (chamado.protocolo) return `#${chamado.protocolo}`;
+  const ano = chamado.dataAbertura ? new Date(chamado.dataAbertura).getFullYear() : new Date().getFullYear();
+  return `#${ano}-${String(chamado.id || '').substring(0, 4).toUpperCase()}`;
+};
+
+export const gerarProtocolo = () => `${new Date().getFullYear()}-${String(Date.now()).slice(-5)}`;
+
+export const formatTempoRelativo = (timestamp) => {
+  if (!timestamp) return '—';
+  const min = Math.floor((Date.now() - timestamp) / 60000);
+  if (min < 1) return 'agora';
+  if (min < 60) return `${min}min atrás`;
+  const horas = Math.floor(min / 60);
+  if (horas < 24) return min % 60 ? `${horas}h ${min % 60}m atrás` : `${horas}h atrás`;
+  const dias = Math.floor(horas / 24);
+  return dias === 1 ? 'Ontem' : `${dias}d atrás`;
+};
+
+export const isChamadoFechado = (status) => status === 'FECHADO' || status === 'finalizado' || getStatusCategoria(status) === 'CONCLUIDO';
 
 export const getCorStatus = (s, theme) => {
   switch (s) {

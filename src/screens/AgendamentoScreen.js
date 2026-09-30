@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Btn, Card } from '../components';
+import { Btn, Card, PageHeader } from '../components';
 import { DataService } from '../services/DataService';
 import { RADIUS } from '../theme/themes';
 
@@ -67,12 +67,8 @@ export default function AgendamentoScreen({ user, agendamentos, setAgendamentos,
   const tarefasDoDia = agendamentos.filter(a => a.data === selectedDate);
 
   return (
-    <ScrollView style={{ padding: 20 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-        <MaterialIcons name="calendar-month" size={19} color={theme.primary} style={{ marginRight: 7 }} />
-        <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800' }}>Agenda da Equipe</Text>
-      </View>
-      <Text style={{ color: theme.subtext, fontSize: 13, marginBottom: 16 }}>Planeje e acompanhe os atendimentos</Text>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+      <PageHeader theme={theme} trail="AGENDA" title="Agenda da Equipe" subtitle="Planeje e acompanhe os atendimentos programados" />
 
       {/* CALENDÁRIO AGENDA */}
       <Card theme={theme} style={{ marginBottom: 15, padding: 12 }}>

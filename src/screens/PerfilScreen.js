@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Alert, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Card, Btn } from '../components';
+import { Card, Btn, PageHeader } from '../components';
 import { DataService } from '../services/DataService';
 import { RADIUS } from '../theme/themes';
 
@@ -37,11 +37,8 @@ export default function PerfilScreen({ user, theme, onLogout }) {
   };
 
   return (
-    <ScrollView style={{ flex: 1, padding: 16, backgroundColor: theme.background }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-        <MaterialIcons name="person-outline" size={19} color={theme.primary} style={{ marginRight: 7 }} />
-        <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 0 }]}>Meu Perfil</Text>
-      </View>
+    <ScrollView style={{ flex: 1, backgroundColor: theme.background }} contentContainerStyle={{ padding: 20 }}>
+      <PageHeader theme={theme} trail="PERFIL" title="Meu Perfil" subtitle="Dados de acesso, expediente e segurança da conta" />
 
       {/* INFORMAÇÕES DO usuario */}
       <Card theme={theme} style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center' }}>

@@ -11,9 +11,9 @@ import 'react-native-gesture-handler';
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { MaterialIcons } from '@expo/vector-icons';
 
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -30,9 +30,23 @@ import PerfilScreen from './src/screens/PerfilScreen';
 import WebDownloadWidget from './src/components/WebDownloadWidget';
 
 import Sidebar from './src/components/Sidebar';
+import TopBar from './src/components/TopBar';
 import { DataService } from './src/services/DataService';
 import { THEMES } from './src/theme/themes';
-import { fracaoSlaDecorrida, getDataHoraAgendamento, parseDataBR, parseDataISO } from './src/utils/helpers';
+import { fracaoSlaDecorrida, getDataHoraAgendamento, isChamadoFechado, parseDataBR, parseDataISO } from './src/utils/helpers';
+
+// Web: carrega a fonte Inter (tipografia do DESIGN.md) e aplica como padrão,
+// preservando as fontes de ícones do @expo/vector-icons.
+if (Platform.OS === 'web' && typeof document !== 'undefined' && !document.getElementById('tg-inter')) {
+  const link = document.createElement('link');
+  link.id = 'tg-inter';
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';
+  document.head.appendChild(link);
+  const style = document.createElement('style');
+  style.textContent = "[dir=\"auto\"], input, textarea { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }";
+  document.head.appendChild(style);
+}
 
 // COMENTADO PARA PERMITIR VER ERROS NO TELEFONE DURANTE OS TESTES
 // LogBox.ignoreAllLogs();
@@ -73,10 +87,17 @@ export default function App() {
     setOrigemDashboard(false);
     setTelaAtiva(tela);
   };
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkModeState] = useState(false);
+  useEffect(() => {
+    AsyncStorage.getItem('@tema_escuro').then((v) => { if (v === 'true') setIsDarkModeState(true); }).catch(() => {});
+  }, []);
+  const setIsDarkMode = (valor) => {
+    setIsDarkModeState(valor);
+    AsyncStorage.setItem('@tema_escuro', valor ? 'true' : 'false').catch(() => {});
+  };
 
   const { width, height } = useWindowDimensions();
-  const isMobile = Math.min(width, height) < 768;
+  const isMobile = width < 900 || Math.min(width, height) < 500;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const theme = THEMES[isDarkMode ? 'dark' : 'light'];
@@ -143,7 +164,7 @@ export default function App() {
             name: 'default',
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
-            lightColor: '#1DB954',
+            lightColor: '#2a78d6',
           });
         }
 
@@ -304,6 +325,14 @@ export default function App() {
     }
   };
 
+  // Badge do menu "Chamados": meus chamados abertos + fila sem técnico do meu prédio.
+  const chamadosBadge = user ? chamados.filter((c) => {
+    if (isChamadoFechado(c.status)) return false;
+    if (user.perfil === 'ADM') return true;
+    if (c.tecnico === user.login) return true;
+    return !c.tecnico && c.predio === user.predio;
+  }).length : 0;
+
   let content;
 
   if (isInitializing) {
@@ -326,24 +355,19 @@ export default function App() {
           theme={theme} telaAtiva={telaAtiva} setTelaAtiva={mudarTela}
           isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode}
           user={user} isMobile={isMobile} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen}
+          chamadosBadge={chamadosBadge}
         />
 
         <View style={styles.mainContent}>
 
-          {isMobile && (
-            <View style={[styles.headerMobile, { backgroundColor: theme.barBg, borderColor: theme.border }]}>
-              <TouchableOpacity onPress={() => setIsMenuOpen(true)} style={styles.menuBtn} activeOpacity={0.7}>
-                <MaterialIcons name="menu" size={24} color={theme.text} />
-              </TouchableOpacity>
-              <Image source={require('./assets/images/logo-techgestor.png')} style={styles.headerLogo} resizeMode="contain" />
-              <Text style={{ marginLeft: 8, fontSize: 17, fontWeight: '700', color: theme.text, letterSpacing: 0.2 }}>
-                Tech<Text style={{ color: theme.primary }}>Gestor</Text>
-              </Text>
-            </View>
-          )}
+          <TopBar
+            theme={theme} user={user} telaAtiva={telaAtiva} showMenu={isMobile} onMenu={() => setIsMenuOpen(true)}
+            isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode}
+            chamados={chamados} eventos={eventos} onNavigate={mudarTela}
+          />
 
           <FadeSwitch telaKey={telaAtiva}>
-            {telaAtiva === 'DASHBOARD' && <DashboardScreen chamados={chamados} eventos={eventos} users={users} theme={theme} setTelaAtiva={setTelaAtiva} irParaChamados={irParaChamados} />}
+            {telaAtiva === 'DASHBOARD' && <DashboardScreen user={user} chamados={chamados} eventos={eventos} users={users} theme={theme} setTelaAtiva={mudarTela} irParaChamados={irParaChamados} addLog={gerirLogs} />}
             {telaAtiva === 'CHAMADOS' && <ChamadosScreen user={user} chamados={chamados} eventos={eventos} users={users} inventario={inventario} theme={theme} addLog={gerirLogs} showPush={(msg) => console.log(msg)} filtroStatusInicial={filtroChamadosInicial} mostrarNovoChamado={!origemDashboard} />}
             {telaAtiva === 'EVENTOS' && <EventosScreen user={user} eventos={eventos} users={users} theme={theme} addLog={gerirLogs} />}
             {telaAtiva === 'INVENTARIO' && <InventarioScreen inventario={inventario} setInventario={setInventario} chamados={chamados} users={users} theme={theme} addLog={gerirLogs} />}
@@ -383,8 +407,5 @@ function FadeSwitch({ telaKey, children }) {
 const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row' },
   mainContent: { flex: 1 },
-  overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(4,6,8,0.6)', zIndex: 40 },
-  headerMobile: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1 },
-  menuBtn: { width: 40, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  headerLogo: { width: 26, height: 20, marginLeft: 6 },
+  overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(12,28,47,0.55)', zIndex: 40 },
 });

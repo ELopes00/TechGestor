@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Alert, Dimensions, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Btn, Card } from '../components';
+import { Btn, Card, PageHeader } from '../components';
 import { DataService } from '../services/DataService';
 import { RADIUS, SHADOW } from '../theme/themes';
 import { NIVEIS_TECNICO } from '../utils/constants';
@@ -230,22 +230,14 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
   };
 
   return (
-    <ScrollView style={{ padding: 20 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <View>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <MaterialIcons name="admin-panel-settings" size={19} color={theme.primary} style={{ marginRight: 7 }} />
-            <Text style={{ color: theme.text, fontSize: 22, fontWeight: '800' }}>Painel Administrativo</Text>
-          </View>
-          <Text style={{ color: theme.subtext, fontSize: 13, marginTop: 2 }}>Equipe, acessos e relatórios</Text>
-        </View>
-        {abaAtiva === 'RELATORIOS' && (
-          <TouchableOpacity onPress={exportarPDF} style={[{ flexDirection: 'row', alignItems: 'center', backgroundColor: theme.primary, paddingHorizontal: 16, paddingVertical: 10, borderRadius: RADIUS.md }, SHADOW.sm]} activeOpacity={0.85}>
-            <MaterialIcons name="picture-as-pdf" size={14} color="#fff" style={{ marginRight: 6 }} />
-            <Text style={{ color: '#fff', fontWeight: '700', fontSize: 12 }}>EXPORTAR PDF</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+      <PageHeader
+        theme={theme}
+        trail="ADMINISTRAÇÃO"
+        title="Painel Administrativo"
+        subtitle="Equipe, acessos e relatórios gerenciais"
+        right={abaAtiva === 'RELATORIOS' ? <Btn theme={theme} variant="soft" icon="picture-as-pdf" title="Exportar PDF" onPress={exportarPDF} style={{ marginTop: 0 }} /> : null}
+      />
 
       <View style={{ flexDirection: 'row', marginBottom: 20, backgroundColor: theme.card, borderRadius: RADIUS.md, padding: 5, borderWidth: 1, borderColor: theme.border }}>
         <TouchableOpacity onPress={() => setAbaAtiva('USUARIOS')} style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', paddingVertical: 11, alignItems: 'center', borderRadius: RADIUS.sm, backgroundColor: abaAtiva === 'USUARIOS' ? theme.primarySoft : 'transparent' }} activeOpacity={0.75}>
@@ -443,10 +435,10 @@ export default function AdminScreen({ users, chamados = [], eventos = [], addLog
             {editUser && (
               <>
                 <View style={{ flexDirection: 'row', marginBottom: 15, width: '100%' }}>
-                  <TouchableOpacity onPress={() => setEditUser({...editUser, perfil: 'TECNICO'})} style={{ flex: 1, padding: 10, borderRadius: 8, backgroundColor: editUser.perfil === 'TECNICO' ? theme.primary : theme.inputBg, marginRight: 5, alignItems: 'center' }}>
+                  <TouchableOpacity onPress={() => setEditUser({...editUser, perfil: 'TECNICO'})} style={{ flex: 1, padding: 10, borderRadius: 8, backgroundColor: editUser.perfil === 'TECNICO' ? theme.primary : theme.neutral, marginRight: 5, alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>TÉCNICO</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => setEditUser({...editUser, perfil: 'ADM'})} style={{ flex: 1, padding: 10, borderRadius: 8, backgroundColor: editUser.perfil === 'ADM' ? theme.tert : theme.inputBg, marginLeft: 5, alignItems: 'center' }}>
+                  <TouchableOpacity onPress={() => setEditUser({...editUser, perfil: 'ADM'})} style={{ flex: 1, padding: 10, borderRadius: 8, backgroundColor: editUser.perfil === 'ADM' ? theme.tert : theme.neutral, marginLeft: 5, alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>ADMIN</Text>
                   </TouchableOpacity>
                 </View>

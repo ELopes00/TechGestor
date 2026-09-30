@@ -3,31 +3,42 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { DataService } from '../services/DataService';
 import { RADIUS } from '../theme/themes';
 
+export const APP_VERSION = 'v2.5.0';
+
 const NAV_ICONS = {
-  DASHBOARD: 'space-dashboard',
-  CHAMADOS: 'assignment',
-  EVENTOS: 'event',
+  DASHBOARD: 'dashboard',
+  CHAMADOS: 'confirmation-number',
+  EVENTOS: 'event-available',
   INVENTARIO: 'inventory-2',
-  AGENDAMENTO: 'calendar-month',
+  AGENDAMENTO: 'calendar-today',
   PERFIL: 'person-outline',
-  ADMIN: 'tune',
+  ADMIN: 'admin-panel-settings',
   LOGS: 'receipt-long',
 };
 
-export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, setIsDarkMode, user, isMobile, isMenuOpen, setIsMenuOpen }) {
+export const PERFIL_LABEL = { ADM: 'Administrador', TECNICO: 'Técnico Operacional' };
 
-  const NavItem = ({ id, label }) => {
+// Shell escuro persistente (#14181f claro / #121212 escuro), com o brasão do
+// TJRR sempre dentro de um selo branco para manter o contraste.
+export default function Sidebar({ theme, telaAtiva, setTelaAtiva, user, isMobile, isMenuOpen, setIsMenuOpen, chamadosBadge = 0 }) {
+
+  const NavItem = ({ id, label, badge }) => {
     const active = telaAtiva === id;
     return (
       <TouchableOpacity
         activeOpacity={0.75}
-        style={[styles.btnMenu, active && { backgroundColor: theme.primarySoft }]}
+        style={[styles.btnMenu, active && { backgroundColor: theme.shellActive }]}
         onPress={() => {
           setTelaAtiva(id);
           if (isMobile) setIsMenuOpen(false);
         }}>
-        <MaterialIcons name={NAV_ICONS[id]} size={20} color={active ? theme.primary : theme.subtext} />
-        <Text style={[styles.txtMenu, { color: active ? theme.primary : theme.subtext }]}>{label}</Text>
+        <MaterialIcons name={NAV_ICONS[id]} size={20} color={active ? '#ffffff' : theme.shellSubtext} />
+        <Text style={[styles.txtMenu, { color: active ? '#ffffff' : '#cbd5e1', fontWeight: active ? '600' : '500' }]}>{label}</Text>
+        {badge > 0 && (
+          <View style={[styles.navBadge, { backgroundColor: active ? 'rgba(255,255,255,0.22)' : '#dc2626' }]}>
+            <Text style={styles.navBadgeText}>{badge > 99 ? '99+' : badge}</Text>
+          </View>
+        )}
       </TouchableOpacity>
     );
   };
@@ -61,32 +72,35 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
     }
   };
 
+  const statusOnline = !user?.status || user?.status === 'ONLINE';
+  const statusLabel = isAlmoco ? 'Pausa' : statusOnline ? 'Online' : user?.status === 'INDISPONIVEL' ? 'Ocupado' : 'Offline';
+  const statusColor = isAlmoco ? '#f59e0b' : statusOnline ? '#22c55e' : '#94a3b8';
+
   return (
     <View style={[
       styles.sidebar,
-      { backgroundColor: theme.barBg, borderColor: theme.border },
-      isMobile && { position: 'absolute', zIndex: 50, display: isMenuOpen ? 'flex' : 'none', height: '100%' }
+      { backgroundColor: theme.shellBg, borderColor: theme.shellBorder },
+      isMobile && { position: 'absolute', zIndex: 50, display: isMenuOpen ? 'flex' : 'none', height: '100%', width: 280 }
     ]}>
-      <View style={styles.logoContainer}>
-        <View style={[styles.logoBadge, { backgroundColor: theme.cardAlt, borderColor: theme.border }]}>
-          <Image source={require('../../assets/images/logo-techgestor.png')} style={styles.logoImg} resizeMode="contain" />
+      <View style={[styles.logoContainer, { borderBottomColor: theme.shellBorder }]}>
+        <View style={styles.logoBadge}>
+          <Image source={require('../../assets/images/brasao-tjrr.png')} style={styles.logoImg} resizeMode="contain" />
         </View>
-        <View style={{ marginLeft: 10, flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: theme.primary, marginRight: 6 }} />
-            <Text style={{ color: theme.text, fontWeight: '800', fontSize: 13, letterSpacing: 1, textTransform: 'uppercase' }}>TechGestor</Text>
-          </View>
+        <View style={{ marginLeft: 12, flex: 1 }}>
+          <Text style={{ color: '#ffffff', fontWeight: '700', fontSize: 16, letterSpacing: -0.2 }}>TechGestor</Text>
+          <Text style={{ color: theme.shellSubtext, fontSize: 11.5, letterSpacing: 0.6, marginTop: 1 }}>TJRR - TI</Text>
         </View>
-      </View>
-
-      <View style={{ paddingHorizontal: 18, marginBottom: 4 }}>
-        <Text style={{ color: theme.textCode, fontSize: 9.5, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2 }}>Operações</Text>
+        {isMobile && (
+          <TouchableOpacity onPress={() => setIsMenuOpen(false)} style={{ padding: 6 }}>
+            <MaterialIcons name="close" size={20} color={theme.shellSubtext} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.menuItems}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 12 }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 10, paddingTop: 14 }}>
           <NavItem id="DASHBOARD" label="Início" />
-          <NavItem id="CHAMADOS" label="Chamados" />
+          <NavItem id="CHAMADOS" label="Chamados" badge={chamadosBadge} />
           <NavItem id="EVENTOS" label="Eventos" />
           <NavItem id="INVENTARIO" label="Inventário" />
           <NavItem id="AGENDAMENTO" label="Agenda" />
@@ -94,7 +108,8 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
 
           {user?.perfil === 'ADM' && (
             <>
-              <View style={[styles.divider, { backgroundColor: theme.border }]} />
+              <View style={[styles.divider, { backgroundColor: theme.shellBorder }]} />
+              <Text style={[styles.sectionLabel, { color: '#7c8799' }]}>ADMINISTRAÇÃO</Text>
               <NavItem id="ADMIN" label="Admin" />
               <NavItem id="LOGS" label="Logs" />
             </>
@@ -102,40 +117,49 @@ export default function Sidebar({ theme, telaAtiva, setTelaAtiva, isDarkMode, se
         </ScrollView>
       </View>
 
-      <View style={{ paddingHorizontal: 12, paddingBottom: 18, paddingTop: 10, borderTopWidth: 1, borderTopColor: theme.border }}>
-
+      <View style={[styles.footer, { borderTopColor: theme.shellBorder }]}>
         <TouchableOpacity
           activeOpacity={0.75}
-          style={[styles.btnMenu, { marginBottom: 8, backgroundColor: isAlmoco ? theme.tert : 'transparent' }]}
+          style={[styles.pauseBtn, { borderColor: isAlmoco ? '#f59e0b66' : theme.shellBorder, backgroundColor: isAlmoco ? 'rgba(245,158,11,0.14)' : 'rgba(255,255,255,0.03)' }]}
           onPress={toggleAlmoco}
         >
-          <MaterialIcons name={isAlmoco ? 'play-arrow' : 'pause'} size={20} color={isAlmoco ? '#fff' : theme.subtext} />
-          <Text style={[styles.txtMenu, { color: isAlmoco ? '#fff' : theme.subtext }]}>{isAlmoco ? 'Retornar' : 'Pausa'}</Text>
+          <MaterialIcons name={isAlmoco ? 'play-arrow' : 'coffee'} size={16} color={isAlmoco ? '#f59e0b' : theme.shellSubtext} />
+          <Text style={{ color: isAlmoco ? '#f59e0b' : '#cbd5e1', fontSize: 12, fontWeight: '700', letterSpacing: 0.8, marginLeft: 8, textTransform: 'uppercase' }}>{isAlmoco ? 'Retornar da pausa' : 'Pausa regimental'}</Text>
         </TouchableOpacity>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 6 }}>
-          <TouchableOpacity style={styles.iconOnlyBtn} onPress={() => setIsDarkMode(!isDarkMode)} activeOpacity={0.7}>
-            <MaterialIcons name={isDarkMode ? 'light-mode' : 'dark-mode'} size={18} color={theme.subtext} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.iconOnlyBtn} onPress={() => DataService.logout()} activeOpacity={0.7}>
-            <MaterialIcons name="logout" size={18} color={theme.offline} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: statusColor, marginRight: 8 }} />
+            <Text style={{ color: '#e2e8f0', fontSize: 12.5, fontWeight: '500' }} numberOfLines={1}>{PERFIL_LABEL[user?.perfil] || 'Usuário'}</Text>
+          </View>
+          <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: RADIUS.sm, borderWidth: 1, borderColor: statusColor + '66', backgroundColor: statusColor + '1f' }}>
+            <Text style={{ color: statusColor, fontSize: 11, fontWeight: '700' }}>{statusLabel}</Text>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+          <Text style={{ color: '#6b7587', fontSize: 11 }}>{APP_VERSION} TJRR • DITEC</Text>
+          <TouchableOpacity onPress={() => DataService.logout()} style={{ flexDirection: 'row', alignItems: 'center', padding: 4 }} activeOpacity={0.7}>
+            <MaterialIcons name="logout" size={15} color="#f87171" />
+            <Text style={{ color: '#f87171', fontSize: 11, fontWeight: '600', marginLeft: 4 }}>Sair</Text>
           </TouchableOpacity>
         </View>
-
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  sidebar: { width: 216, height: '100%', borderRightWidth: 1, paddingVertical: 20, justifyContent: 'flex-start' },
-  logoContainer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 18, marginBottom: 18 },
-  logoBadge: { width: 48, height: 38, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', borderWidth: 1, padding: 4 },
+  sidebar: { width: 260, height: '100%', borderRightWidth: 1, justifyContent: 'flex-start' },
+  logoContainer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1 },
+  logoBadge: { width: 44, height: 44, borderRadius: RADIUS.md, alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff', borderWidth: 1, borderColor: 'rgba(226,232,240,0.8)', padding: 4 },
   logoImg: { width: '100%', height: '100%' },
   menuItems: { flex: 1, width: '100%' },
-  btnMenu: { flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 12, width: '100%', marginVertical: 2, borderRadius: RADIUS.md },
-  txtMenu: { fontSize: 12.5, marginLeft: 10, fontWeight: '700' },
-  divider: { height: 1, marginVertical: 10 },
-  iconOnlyBtn: { width: 32, height: 32, borderRadius: RADIUS.sm, alignItems: 'center', justifyContent: 'center' },
+  btnMenu: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 12, width: '100%', marginVertical: 2, borderRadius: RADIUS.md },
+  txtMenu: { fontSize: 14.5, marginLeft: 12, flex: 1 },
+  navBadge: { minWidth: 22, height: 20, borderRadius: 10, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center' },
+  navBadgeText: { color: '#ffffff', fontSize: 11, fontWeight: '700' },
+  divider: { height: 1, marginVertical: 12, marginHorizontal: 6 },
+  sectionLabel: { fontSize: 11, fontWeight: '600', letterSpacing: 1.2, paddingHorizontal: 12, marginBottom: 6 },
+  footer: { paddingHorizontal: 16, paddingBottom: 16, paddingTop: 14, borderTopWidth: 1 },
+  pauseBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 9, borderRadius: RADIUS.md, borderWidth: 1 },
 });
