@@ -3,7 +3,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { DataService } from '../services/DataService';
 import { RADIUS } from '../theme/themes';
 
-export const APP_VERSION = 'v2.5.0';
+export const APP_VERSION = 'v1.1.0';
 
 const NAV_ICONS = {
   DASHBOARD: 'dashboard',
