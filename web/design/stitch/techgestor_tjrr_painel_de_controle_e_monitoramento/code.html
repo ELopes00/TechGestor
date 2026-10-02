@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-tertiary-fixed-variant":"#005236","tertiary-fixed":"#6ffbbe","on-primary-fixed":"#001d35","secondary-container":"#5bb8fe","surface":"#faf8ff","on-error-container":"#93000a","surface-container-highest":"#dae2fd","primary":"#002541","outline":"#73777f","surface-bright":"#faf8ff","tertiary-container":"#00422b","on-tertiary":"#ffffff","surface-container":"#eaedff","surface-container-low":"#f2f3ff","error-container":"#ffdad6","secondary-fixed":"#cce5ff","on-secondary":"#ffffff","outline-variant":"#c2c7cf","on-primary":"#ffffff","on-primary-container":"#7fa6d0","secondary-fixed-dim":"#93ccff","surface-container-high":"#e2e7ff","on-error":"#ffffff","error":"#ba1a1a","primary-fixed-dim":"#a3caf6","on-surface-variant":"#42474e","on-surface":"#131b2e","surface-tint":"#3a6188","tertiary":"#002a1a","surface-variant":"#dae2fd","inverse-on-surface":"#eef0ff","on-tertiary-container":"#10b981","secondary":"#006398","background":"#faf8ff","on-tertiary-fixed":"#002113","on-secondary-container":"#00476e","surface-dim":"#d2d9f4","on-background":"#131b2e","tertiary-fixed-dim":"#4edea3","primary-fixed":"#d0e4ff","inverse-primary":"#a3caf6","inverse-surface":"#283044","on-primary-fixed-variant":"#1f496f","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#004b73","primary-container":"#0b3b60","on-secondary-fixed":"#001d31"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-md":"1rem","margin-mobile":"1rem","space-xl":"2rem","gutter-mobile":"0.75rem","gutter-desktop":"1.5rem","margin-desktop":"2rem",gutter:"1.25rem","space-lg":"1.5rem","space-xs":"0.25rem","space-sm":"0.5rem",margin:"1.5rem"},fontFamily:{"headline-xl":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-lg":["Inter"],"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-lg":["Inter"]},fontSize:{"headline-xl":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"700"}],"headline-sm":["16px",{lineHeight:"24px",letterSpacing:"-0.005em",fontWeight:"600"}],"display-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-lg":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}],"display-lg":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><img alt="Logo TechGestor TJRR" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCKdTwahu8_u9ttJtDBTy28WQVxHfhkkkdOiugHnKXttibgPX_IHgiSlffmGOunQpY5Y3fLgrrzd0hMLFmbO5RWZ2rbOSoVhqtCxvjblbttDh-we_PyXDezp907btLRTqpUP0vcHBIEynWlZ612sgX6GFXWXon7pjNZMtb2ZR8gb09kBQSh0vwXNtU3PWG2O4TweL7CfbUt6UzS8L8s-Dj-vmG2Of1K66KvMPdOiHm8qjVea1gZFwUGA"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">TechGestor</span><span class="font-label-sm text-label-sm text-secondary font-bold tracking-wider uppercase">TJRR</span></div><span class="font-body-sm text-body-sm text-on-surface-variant hidden lg:inline">Tribunal de Justiça do Estado de Roraima • Secretaria de Tecnologia da Informação</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container"><span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Status:</span><span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">Operacional 99.9%</span></div><button aria-label="Alternar modo escuro" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><div class="relative"><button aria-label="Notificações e alertas" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center relative" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface"></span></button></div><div class="flex items-center gap-space-sm pl-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi7Z-KIbZzM0jFBq_5aLJJjwlkf9ow-_fKLORyQm4RkkFRwvkR-W8TbEDi7BWdrzV5DC0m_KHHbhgU4UDgidWGLJ_hTw-lceT5lcvqkKOShPVMDZINrE17-DlajSnFNojJAm7lv1jx8iNLeH8luObaMSbDJawf8xHdQ_wxoP-JeU0ivWo7ET2iiUlqwgP6EQCUizDFeTj7WmthPKTW5U_B8SOAH_rokFM1re96qT8ZHsY0G3wl5s5O1g"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface"></span></div><div class="hidden xl:flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface font-semibold leading-tight">Carlos Mendonça</span><span class="font-label-sm text-label-sm text-on-surface-variant">Coord. Suporte N3</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 z-40 bg-surface-container-low flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex flex-col pt-space-md px-space-sm"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm rounded-lg"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio-dashboard" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-lg text-label-lg">Início / Dashboard</span></div><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-semibold">5 On</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="chamados" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">confirmation_number</span><span class="font-label-lg text-label-lg">Chamados</span></div><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-error-container text-on-error-container font-semibold">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="eventos" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">event</span><span class="font-label-lg text-label-lg">Eventos</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inventario" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-lg text-label-lg">Inventário</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="agenda" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">calendar_month</span><span class="font-label-lg text-label-lg">Agenda Forense</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="perfil" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">badge</span><span class="font-label-lg text-label-lg">Perfil</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="admin" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">manage_accounts</span><span class="font-label-lg text-label-lg">Administração</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="auditoria" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">security</span><span class="font-label-lg text-label-lg">Auditoria &amp; Logs</span></div></a></nav></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-[18px]">headset_mic</span><span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider">NOC / Plantão</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Ramal emergencial: 3198-4444 Central DTI TJRR</p></div></aside><div class="pl-64 flex flex-col min-h-screen"><main class="w-full flex-1 pt-16 px-gutter-desktop py-space-lg bg-surface"><div class="flex flex-col w-full gap-space-lg">
+<!-- Top Operational Header Bar -->
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="relative w-14 h-14 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-md overflow-hidden shrink-0">
+<span class="material-symbols-outlined text-[32px] text-secondary-fixed">gavel</span>
+<div class="absolute inset-0 bg-gradient-to-tr from-primary to-transparent opacity-60"></div>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tight">Centro Integrado de Operações (NOC)</h2>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm tracking-wide">PLANTÃO ATIVO</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-[16px] text-secondary">schedule</span>
+<span>Horário Oficial de Boa Vista/RR (UTC-4):</span>
+<span class="font-label-sm text-label-sm font-semibold text-primary" id="live-clock">--:--:--</span>
+<span class="text-outline-variant">•</span>
+<span>Expediente Judiciário Forense em Andamento</span>
+</p>
+</div>
+</div>
+<!-- Quick Action Triggers -->
+<div class="flex flex-wrap items-center gap-space-sm w-full lg:w-auto">
+<div class="relative inline-block text-left">
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all" id="filterDropdownBtn">
+<span class="material-symbols-outlined text-[18px] text-secondary">domain</span>
+<span>Todas Unidades / Varas</span>
+<span class="material-symbols-outlined text-[16px] text-outline">expand_more</span>
+</button>
+</div>
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-md text-label-md transition-all shadow-sm" onclick="exportReport()">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Exportar Boletim</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-error hover:bg-on-error-container text-on-error font-label-md text-label-md transition-all shadow-sm animate-pulse" onclick="openEmergencyModal()">
+<span class="material-symbols-outlined text-[18px]">emergency</span>
+<span>+ Chamado Emergencial</span>
+</button>
+</div>
+</div>
+<!-- Key Metrics & Incident Vitality Grid (5 Cards) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md">
+<!-- Card 1: Chamados Abertos -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Chamados Abertos</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">inbox</span>
+</div>
+</div>
+<div class="flex items-baseline justify-between mt-space-md">
+<span class="font-display-lg text-display-lg text-primary tracking-tight font-bold">42</span>
+<span class="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>+8% hoje
+        </span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 mt-space-sm overflow-hidden">
+<div class="bg-secondary h-1.5 rounded-full" style="width: 58%"></div>
+</div>
+</div>
+<!-- Card 2: Resolvidos Hoje -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Resolvidos Hoje</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-tertiary-container group-hover:bg-tertiary-container group-hover:text-tertiary-fixed transition-colors">
+<span class="material-symbols-outlined text-[18px]">task_alt</span>
+</div>
+</div>
+<div class="flex items-baseline justify-between mt-space-md">
+<span class="font-display-lg text-display-lg text-primary tracking-tight font-bold">128</span>
+<span class="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-surface-container text-on-tertiary-container font-label-sm text-label-sm font-semibold">
+          92.4% SLA
+        </span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 mt-space-sm overflow-hidden">
+<div class="bg-on-tertiary-container h-1.5 rounded-full" style="width: 92%"></div>
+</div>
+</div>
+<!-- Card 3: Críticos / Atraso SLA -->
+<div class="p-space-md rounded-xl bg-error-container text-on-error-container shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-error animate-ping"></span>
+<span class="font-label-sm text-label-sm font-semibold">Em Atraso / P1</span>
+</div>
+<span class="material-symbols-outlined text-[20px] text-error">warning</span>
+</div>
+<div class="flex items-baseline justify-between mt-space-md">
+<span class="font-display-lg text-display-lg text-error font-bold">07</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-on-error text-error font-semibold shadow-xs">
+          Ação Imediata
+        </span>
+</div>
+<div class="w-full bg-surface-container-lowest rounded-full h-1.5 mt-space-sm overflow-hidden">
+<div class="bg-error h-1.5 rounded-full" style="width: 65%"></div>
+</div>
+</div>
+<!-- Card 4: Técnicos Operacionais -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow group">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Técnicos Online</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">support_agent</span>
+</div>
+</div>
+<div class="flex items-baseline justify-between mt-space-md">
+<span class="font-display-lg text-display-lg text-primary tracking-tight font-bold">18<span class="font-headline-sm text-headline-sm text-on-surface-variant font-normal">/22</span></span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-semibold">
+          82% Lotação
+        </span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 mt-space-sm overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 82%"></div>
+</div>
+</div>
+<!-- Card 5: Cancelados / Invalidados -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow group">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Descartados / Duplicados</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-outline group-hover:bg-outline group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+</div>
+</div>
+<div class="flex items-baseline justify-between mt-space-md">
+<span class="font-display-lg text-display-lg text-on-surface-variant tracking-tight font-bold">05</span>
+<span class="font-label-sm text-label-sm text-outline">Normal (2.6%)</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 mt-space-sm overflow-hidden">
+<div class="bg-outline-variant h-1.5 rounded-full" style="width: 14%"></div>
+</div>
+</div>
+</div>
+<!-- Main Analytics Row: Hourly Influx Density & Service Domain Distribution -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Hourly Rush Heatmap & Influx Line/Bar Chart (8 cols) -->
+<div class="lg:col-span-8 p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm mb-space-md">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-secondary">show_chart</span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold">Fluxo Horário &amp; Picos de Sessão Forense</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Intensidade de incidentes concentrada nos ciclos de audiência (09:00 e 14:00)</p>
+</div>
+<div class="flex items-center bg-surface-container rounded-lg p-0.5">
+<button class="px-space-sm py-1 rounded font-label-sm text-label-sm bg-surface-container-lowest text-primary shadow-xs font-semibold">Hoje</button>
+<button class="px-space-sm py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors">Semana</button>
+<button class="px-space-sm py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors">Mês</button>
+</div>
+</div>
+<!-- Rich Visual SVG Chart Area -->
+<div class="w-full h-56 relative flex flex-col justify-end">
+<svg class="w-full h-44 overflow-visible" preserveaspectratio="none" viewbox="0 0 720 160">
+<defs>
+<lineargradient id="judicialGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#006398" stop-opacity="0.35"></stop>
+<stop offset="100%" stop-color="#006398" stop-opacity="0.0"></stop>
+</lineargradient>
+<lineargradient id="emergencyGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#ba1a1a" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#ba1a1a" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Horizontal Grid Guides -->
+<line stroke="#eaedff" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="720" y1="20" y2="20"></line>
+<line stroke="#eaedff" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="720" y1="60" y2="60"></line>
+<line stroke="#eaedff" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="720" y1="100" y2="100"></line>
+<line stroke="#eaedff" stroke-width="1" x1="0" x2="720" y1="140" y2="140"></line>
+<!-- High Volume Area Polygon -->
+<polygon fill="url(#judicialGradient)" points="
+            0,140
+            40,135
+            100,120
+            160,25
+            220,70
+            280,110
+            340,130
+            400,30
+            460,55
+            520,80
+            580,105
+            640,125
+            720,138
+            720,140
+          "></polygon>
+<!-- Main Stream Line -->
+<path d="
+            M 0,140
+            C 30,138 70,130 100,120
+            C 130,110 145,25 160,25
+            C 180,25 200,70 220,70
+            C 240,70 260,110 280,110
+            C 300,110 320,130 340,130
+            C 370,130 385,30 400,30
+            C 420,30 440,55 460,55
+            C 480,55 500,80 520,80
+            C 550,80 560,105 580,105
+            C 610,105 625,125 640,125
+            L 720,138
+          " fill="none" stroke="#006398" stroke-linecap="round" stroke-width="3"></path>
+<!-- Audiência Pico Manhã Marker (09h00) -->
+<circle cx="160" cy="25" fill="#002541" r="5"></circle>
+<circle cx="160" cy="25" fill="#5bb8fe" fill-opacity="0.4" r="8"></circle>
+<!-- Audiência Pico Tarde Marker (14h00) -->
+<circle cx="400" cy="30" fill="#002541" r="5"></circle>
+<circle cx="400" cy="30" fill="#5bb8fe" fill-opacity="0.4" r="8"></circle>
+</svg>
+<!-- Time Step Labels -->
+<div class="flex justify-between items-center text-outline font-label-sm text-label-sm pt-2">
+<span>07:00</span>
+<span>08:00</span>
+<span class="text-primary font-bold">09:00 (Pico)</span>
+<span>10:00</span>
+<span>11:00</span>
+<span>12:00</span>
+<span>13:00</span>
+<span class="text-primary font-bold">14:00 (Pico)</span>
+<span>15:00</span>
+<span>16:00</span>
+<span>17:00</span>
+<span>18:00</span>
+<span>19:00</span>
+</div>
+</div>
+<!-- Quick Metrics Summary below chart -->
+<div class="grid grid-cols-3 gap-space-sm pt-space-md mt-space-sm bg-surface-container-low rounded-lg p-space-sm">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Tempo Médio de Atendimento (TMA)</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">14 min 32s</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Tempo Médio Resposta (TMR)</span>
+<span class="font-headline-sm text-headline-sm text-secondary font-bold">3 min 40s</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Eficiência de Despacho Técnico</span>
+<span class="font-headline-sm text-headline-sm text-on-tertiary-container font-bold">98.2%</span>
+</div>
+</div>
+</div>
+<!-- Category / Unit Donut Breakdown (4 cols) -->
+<div class="lg:col-span-4 p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-space-sm">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold">Demandas por Categoria</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sistemas e infraestrutura judiciária</p>
+</div>
+<button class="p-1.5 rounded-lg text-outline hover:bg-surface-container transition-colors" title="Mais detalhes">
+<span class="material-symbols-outlined text-[20px]">info</span>
+</button>
+</div>
+<!-- SVG Donut Chart with Center Data -->
+<div class="flex items-center justify-center my-space-xs">
+<div class="relative w-44 h-44 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<!-- Circumference: 2 * pi * 38 ≈ 238.76 -->
+<!-- Background Ring -->
+<circle cx="50" cy="50" fill="none" r="38" stroke="#eaedff" stroke-width="12"></circle>
+<!-- Segment 1: Audiência Telepresencial / Zoom TJRR (35%) -> dasharray: 83.5 155.2 -->
+<circle cx="50" cy="50" fill="none" r="38" stroke="#002541" stroke-dasharray="83.56 155.2" stroke-dashoffset="0" stroke-width="12"></circle>
+<!-- Segment 2: PJe / Sistemas Processuais (28%) -> dasharray: 66.85 171.91 -->
+<circle cx="50" cy="50" fill="none" r="38" stroke="#006398" stroke-dasharray="66.85 171.91" stroke-dashoffset="-83.56" stroke-width="12"></circle>
+<!-- Segment 3: Rede e Conectividade Fóruns (18%) -> dasharray: 42.97 195.79 -->
+<circle cx="50" cy="50" fill="none" r="38" stroke="#5bb8fe" stroke-dasharray="42.97 195.79" stroke-dashoffset="-150.41" stroke-width="12"></circle>
+<!-- Segment 4: Hardware / Impressoras (14%) -> dasharray: 33.42 205.34 -->
+<circle cx="50" cy="50" fill="none" r="38" stroke="#a3caf6" stroke-dasharray="33.42 205.34" stroke-dashoffset="-193.38" stroke-width="12"></circle>
+<!-- Segment 5: Telefonia e VoIP (5%) -> dasharray: 11.93 226.83 -->
+<circle cx="50" cy="50" fill="none" r="38" stroke="#10b981" stroke-dasharray="11.93 226.83" stroke-dashoffset="-226.8" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-headline-xl text-headline-xl font-bold text-primary">175</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Hoje</span>
+</div>
+</div>
+</div>
+<!-- Segment Legend Indicators -->
+<div class="flex flex-col gap-1.5 mt-space-xs font-label-sm text-label-sm">
+<div class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary shrink-0"></span>
+<span class="text-on-surface font-medium truncate">Audiências Virtuais / Zoom</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-semibold">61</span>
+<span class="text-secondary font-bold">35%</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-secondary shrink-0"></span>
+<span class="text-on-surface font-medium truncate">PJe / Projudi / E-Proc</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-semibold">49</span>
+<span class="text-secondary font-bold">28%</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-secondary-container shrink-0"></span>
+<span class="text-on-surface font-medium truncate">Redes e Conectividade Fóruns</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-semibold">32</span>
+<span class="text-secondary font-bold">18%</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary-fixed-dim shrink-0"></span>
+<span class="text-on-surface font-medium truncate">Estações &amp; Impressoras Oficiais</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-semibold">24</span>
+<span class="text-secondary font-bold">14%</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-1.5 rounded hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-on-tertiary-container shrink-0"></span>
+<span class="text-on-surface font-medium truncate">Telefonia e Ramais VoIP</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-semibold">9</span>
+<span class="text-secondary font-bold">5%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Real-Time Field Technicians Matrix -->
+<div class="flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[24px] text-primary">groups</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold">Equipe Técnica em Campo &amp; Níveis Operacionais</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Rastreabilidade de atendimento presencial em prédios judiciais de Roraima</p>
+</div>
+</div>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm">
+<span class="flex items-center gap-1 text-on-tertiary-container font-semibold">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>Disponível
+        </span>
+<span class="text-outline-variant">•</span>
+<span class="flex items-center gap-1 text-secondary font-semibold">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>Em Sala / Vara
+        </span>
+<span class="text-outline-variant">•</span>
+<span class="flex items-center gap-1 text-outline font-semibold">
+<span class="w-2 h-2 rounded-full bg-outline"></span>Deslocamento
+        </span>
+</div>
+</div>
+<!-- Technicians Roster Grid (4 Columns) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Tech 1 -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col justify-between hover:bg-surface-container transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Close-up professional headshot of a young male Brazilian IT technician wearing a navy blue polo shirt and ID lanyard, lit by clean ambient office light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaAMxJrGOMZc5Ld1godbSE6AZaGbyJuNkj1AFRU1nPmsM3QsVHy9gknY9Q-GIh2S_B4MGfC115jwVECCjDPVfeSj5KD3X-JJTqkAB8qWEGEGKPghZuQp5XW1s0fCvW72ELBeynH23qvULHaofewkAl7UaUbOFBsFKvh4dyEf7A2y2_kouEWAtCKASnVtylpAqCO3ZB7Vmzy3cacieDR9zrIvI2a6QNu_YdXM1-eS-L_4eeglQ4yAmszw"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-secondary ring-2 ring-surface-container-low" title="Em atendimento presencial"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-primary font-semibold">Rafael Albuquerque</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Nível 2 • Redes &amp; Varas</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">Presencial</span>
+</div>
+<div class="mt-space-md p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>Fórum Sobral Pinto</span>
+<span class="text-secondary font-semibold">22 min</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface font-medium truncate">Chamado #4492: Falha Switch 2º Vara Cível</p>
+</div>
+</div>
+<!-- Tech 2 -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col justify-between hover:bg-surface-container transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Portrait of an experienced female IT systems specialist with glasses and professional judicial lanyard in front of computer monitors in an IT operations room" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-BQcIn5e9j5842U0t2gsjcatgSjFya5juU8D5VLPCIc2psW2TYrd3pbQWAOzdBGU89wLAXoKiKpuJKaBxYPY0wQn1vU12_2Z0ZYiPdZfFn1SrCZlEXJf3JlC0VAqON7ZMAf329fbkQopb_aCtKK-Pt_6QWYdNsImP7GNqllHkO3Y2O8NOsqnoMYfv5cnD15jN9RQP3a0fyxw4cwCgagrU9UWz7DgThi1SUGEAY0zB7HuZV0P2GYvidQ"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-secondary ring-2 ring-surface-container-low" title="Em atendimento presencial"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-primary font-semibold">Mariana Vasconcelos</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Nível 3 • Salas Telepresenciais</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">Presencial</span>
+</div>
+<div class="mt-space-md p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>Palácio da Justiça</span>
+<span class="text-error font-semibold">08 min (P1)</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface font-medium truncate">Chamado #4501: Áudio Plenário 1ª Turma</p>
+</div>
+</div>
+<!-- Tech 3 -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col justify-between hover:bg-surface-container transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Professional headshot of an indigenous Brazilian technical analyst working at an IT workstation in a judicial courthouse, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0uCJegt8G7lTOLV7sJcENO1gbn6iY4xJuk0Gkpi1Ry2vKD2ZJRa9gdw8SyIQb6mShmVn9fJJpEacDEuMdy9lCuawWdKGeooMqvFKRym34Pry6dMpnK4u_Tcuv_Dac-foM_vCBP_ANpgehOtf6KlxroUllQueWR8TqRzBADu1kUZtezZ4GtSCjdiqbOeB1_y3FRgauFW3kP4LNtoew26s9Nm3s12gHepJJtXhs8zrKMty1rIBHgvFTuw"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-on-tertiary-container ring-2 ring-surface-container-low" title="Disponível para despacho"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-primary font-semibold">Eduardo Yanomami</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Nível 1 • Suporte Desk &amp; Help</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold">Disponível</span>
+</div>
+<div class="mt-space-md p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span>Sede TJRR - NOC Central</span>
+<span class="text-on-tertiary-container font-semibold">Pronto</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Aguardando novo ticket de triagem</p>
+</div>
+</div>
+<!-- Tech 4 -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col justify-between hover:bg-surface-container transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Close up profile photo of a focused tech professional wearing formal smart-casual shirt with court badge in a server room corridor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNoDhHLyZ9ttjpr0vFD_Nr5UOCeybeIGSMZgn5u5rF9I6LD_e08fomgTWT1WMXpEDYGTsVajkXd4yODV8N_9PT5P87ku5BAxtcPe5gtGbklDmXAWJx-W5cSAVr73LpXbIT30rNLbYpW-ZrJEWHnXyPIbwwfieUXjMCyTNwvE9obJxN6SqOc0BzCGL8QZKImFAWWR0RkOqcPKYeTUxCsvgNr9v4GF43lijYYQNCDMVXtnTT2Ls9krU-pQ"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-outline ring-2 ring-surface-container-low" title="Em trânsito entre prédios"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-primary font-semibold">Lucas Brandão</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Laboratório • Hardware N2</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface font-label-sm text-label-sm font-semibold">Em Trânsito</span>
+</div>
+<div class="mt-space-md p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1">
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">directions_car</span>Em Trânsito: Sede → Caracaraí</span>
+<span class="text-outline font-semibold">ETA 40 min</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface font-medium truncate">Chamado #4480: Substituição Nobreak Comarca</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Priority Queue & Active Critical Incident Triage Section -->
+<div class="flex flex-col gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[24px] text-error">priority_high</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold">Fila de Chamados Críticos &amp; SLA em Risco</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Chamados judiciais que exigem resolução célere para evitar prejuízo a audiências</p>
+</div>
+</div>
+<a class="font-label-md text-label-md text-secondary hover:text-primary font-semibold flex items-center gap-1" href="#">
+<span>Ver todos os 42 chamados</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<!-- Ticket Cards Table / Dense View -->
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-3 px-space-md rounded-l-lg">ID / Protocolo</th>
+<th class="py-3 px-space-md">Unidade Judiciária / Local</th>
+<th class="py-3 px-space-md">Assunto do Incidente</th>
+<th class="py-3 px-space-md">SLA Limite</th>
+<th class="py-3 px-space-md">Técnico Responsável</th>
+<th class="py-3 px-space-md text-right rounded-r-lg">Ação de Resposta</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-transparent font-body-sm text-body-sm">
+<!-- Row 1: Urgent Audiência -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+<span class="font-label-md text-label-md font-bold text-primary">#4504</span>
+<span class="px-2 py-0.5 rounded-full bg-error-container text-error font-label-sm text-label-sm font-semibold">P1 - Crítica</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md font-medium text-on-surface">
+<div class="flex flex-col">
+<span>1ª Vara do Júri de Boa Vista</span>
+<span class="font-label-sm text-label-sm text-outline">Fórum Sobral Pinto - Sala 104</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-on-surface">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-secondary">videocam_off</span>
+<span class="font-medium text-primary">Interrupção no sinal de transmissão Zoom do Tribunal do Júri</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="px-2 py-1 rounded bg-error-container text-error font-label-sm text-label-sm font-bold flex items-center gap-1 w-max">
+<span class="material-symbols-outlined text-[14px]">timer</span>04 min restantes
+              </span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Mariana Vasconcelos</span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-sm text-label-sm font-semibold transition-all shadow-xs" onclick="handleQuickDispatch(4504)">
+                Reforçar N3
+              </button>
+</td>
+</tr>
+<!-- Row 2: PJe Assinador -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md font-bold text-primary">#4502</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">P2 - Alta</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md font-medium text-on-surface">
+<div class="flex flex-col">
+<span>Juizado Especial Cível de Rorainópolis</span>
+<span class="font-label-sm text-label-sm text-outline">Comarca do Interior • Remoto</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-on-surface">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">key</span>
+<span class="font-medium text-on-surface">Incompatibilidade token A3 / Assinador PJe versão 2.4.1</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="px-2 py-1 rounded bg-surface-container text-secondary font-label-sm text-label-sm font-bold flex items-center gap-1 w-max">
+<span class="material-symbols-outlined text-[14px]">schedule</span>26 min restantes
+              </span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Eduardo Yanomami</span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-sm text-label-sm font-semibold transition-all" onclick="handleQuickDispatch(4502)">
+                Acesso Remoto
+              </button>
+</td>
+</tr>
+<!-- Row 3: Falha de Impressão Mandados -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md font-bold text-primary">#4498</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">P2 - Alta</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md font-medium text-on-surface">
+<div class="flex flex-col">
+<span>Central de Mandados e Custódia</span>
+<span class="font-label-sm text-label-sm text-outline">Sede TJRR - Térreo</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md text-on-surface">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">print</span>
+<span class="font-medium text-on-surface">Travamento de spooler em lote de alvarás de soltura</span>
+</div>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="px-2 py-1 rounded bg-surface-container text-secondary font-label-sm text-label-sm font-bold flex items-center gap-1 w-max">
+<span class="material-symbols-outlined text-[14px]">schedule</span>35 min restantes
+              </span>
+</td>
+<td class="py-3.5 px-space-md">
+<span class="font-label-md text-label-md text-on-surface-variant">Aguardando Triagem</span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<button class="px-3 py-1.5 rounded-lg bg-secondary hover:bg-primary-container text-on-secondary font-label-sm text-label-sm font-semibold transition-all shadow-xs" onclick="handleQuickDispatch(4498)">
+                Assumir Fila
+              </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Judicial IT Emergency Modal Overlay (Controlled by script) -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/40 backdrop-blur-sm" id="emergencyModal">
+<div class="w-full max-w-lg rounded-xl bg-surface-container-lowest p-space-lg shadow-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-2 text-error">
+<span class="material-symbols-outlined text-[24px]">crisis_alert</span>
+<h3 class="font-headline-sm text-headline-sm font-bold">Abertura de Chamado Prioritário (P1)</h3>
+</div>
+<button class="text-outline hover:text-on-surface" onclick="closeEmergencyModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-sm font-body-sm text-body-sm">
+<div>
+<label class="font-label-sm text-label-sm text-on-surface font-semibold mb-1 block">Unidade Forense / Vara Afetada</label>
+<select class="w-full h-10 px-3 rounded-lg bg-surface-container text-on-surface font-body-md text-body-md outline-none focus:ring-2 focus:ring-secondary">
+<option>1ª Vara da Infância e Juventude - Boa Vista</option>
+<option>Plenário do Tribunal Pleno - TJRR Sede</option>
+<option>Comarca de Pacaraima - Vara Única</option>
+<option>Comarca de Mucajaí - Vara Única</option>
+<option>Gabinete dos Desembargadores</option>
+</select>
+</div>
+<div>
+<label class="font-label-sm text-label-sm text-on-surface font-semibold mb-1 block">Tipo de Incidente Crítico</label>
+<select class="w-full h-10 px-3 rounded-lg bg-surface-container text-on-surface font-body-md text-body-md outline-none focus:ring-2 focus:ring-secondary">
+<option>Audiência Interrompida (Zoom / Gravação Oficial)</option>
+<option>Queda de Link de Internet Forense (Embratel/Prodemge)</option>
+<option>Indisponibilidade Total do PJe / Projudi</option>
+<option>Superaquecimento de Rack / Sala Cofre</option>
+</select>
+</div>
+<div>
+<label class="font-label-sm text-label-sm text-on-surface font-semibold mb-1 block">Descrição do Impacto Imediato</label>
+<textarea class="w-full p-3 rounded-lg bg-surface-container text-on-surface font-body-md text-body-md outline-none focus:ring-2 focus:ring-secondary resize-none" placeholder="Descreva brevemente a audiência ou expediente afetado..." rows="3"></textarea>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-sm">
+<button class="px-space-md py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md" onclick="closeEmergencyModal()">
+          Cancelar
+        </button>
+<button class="px-space-md py-2 rounded-lg bg-error hover:bg-on-error-container text-on-error font-label-md text-label-md font-semibold shadow-sm flex items-center gap-1" onclick="submitEmergencyTicket()">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span>Despachar em Regime de Urgência</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Operational Toast Alert Container -->
+<div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none" id="toastContainer"></div>
+</div>
+<script>
+  // Dynamic Real-time Boa Vista Clock (GMT-4)
+  function updateBoaVistaTime() {
+    const clockEl = document.getElementById('live-clock');
+    if (!clockEl) return;
+    
+    // Boa Vista is America/Boa_Vista (UTC-4)
+    const options = {
+      timeZone: 'America/Boa_Vista',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    };
+    const formatter = new Intl.DateTimeFormat('pt-BR', options);
+    clockEl.innerText = formatter.format(new Date()) + ' (GMT-4)';
+  }
+  setInterval(updateBoaVistaTime, 1000);
+  updateBoaVistaTime();
+
+  // Emergency Modal Controls
+  function openEmergencyModal() {
+    const modal = document.getElementById('emergencyModal');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function closeEmergencyModal() {
+    const modal = document.getElementById('emergencyModal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `px-4 py-3 rounded-lg shadow-lg text-white font-label-md text-label-md flex items-center gap-2 pointer-events-auto transform transition-all duration-300 translate-y-4 opacity-0 ${
+      type === 'success' ? 'bg-[#002541]' : 'bg-[#ba1a1a]'
+    }`;
+    
+    toast.innerHTML = `
+      <span class="material-symbols-outlined text-[18px]">${type === 'success' ? 'check_circle' : 'warning'}</span>
+      <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+      toast.classList.remove('translate-y-4', 'opacity-0');
+    });
+
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'translate-y-2');
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+
+  function submitEmergencyTicket() {
+    closeEmergencyModal();
+    showToast('Chamado P1 registrado com sucesso! Equipe N3 acionada.', 'success');
+  }
+
+  function exportReport() {
+    showToast('Gerando Boletim Operacional Diário DTI (PDF)...', 'success');
+  }
+
+  function handleQuickDispatch(ticketId) {
+    showToast(`Chamado #${ticketId} atualizado! Notificação enviada ao técnico.`, 'success');
+  }
+</script></main><footer class="w-full bg-surface-container-low py-space-sm px-gutter-desktop shadow-[0_-1px_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-body-sm text-body-sm"><span>Tribunal de Justiça do Estado de Roraima • Diretoria de Tecnologia da Informação (DTI)</span><div class="flex items-center gap-space-md"><span>Versão <strong class="text-on-surface font-semibold">v2.4.1</strong></span><span>Suporte Técnico: cits@tjrr.jus.br</span></div></div></footer></div></body></html>

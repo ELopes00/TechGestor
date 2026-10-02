@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-tertiary-fixed-variant":"#005236","tertiary-fixed":"#6ffbbe","on-primary-fixed":"#001d35","secondary-container":"#5bb8fe","surface":"#faf8ff","on-error-container":"#93000a","surface-container-highest":"#dae2fd","primary":"#002541","outline":"#73777f","surface-bright":"#faf8ff","tertiary-container":"#00422b","on-tertiary":"#ffffff","surface-container":"#eaedff","surface-container-low":"#f2f3ff","error-container":"#ffdad6","secondary-fixed":"#cce5ff","on-secondary":"#ffffff","outline-variant":"#c2c7cf","on-primary":"#ffffff","on-primary-container":"#7fa6d0","secondary-fixed-dim":"#93ccff","surface-container-high":"#e2e7ff","on-error":"#ffffff","error":"#ba1a1a","primary-fixed-dim":"#a3caf6","on-surface-variant":"#42474e","on-surface":"#131b2e","surface-tint":"#3a6188","tertiary":"#002a1a","surface-variant":"#dae2fd","inverse-on-surface":"#eef0ff","on-tertiary-container":"#10b981","secondary":"#006398","background":"#faf8ff","on-tertiary-fixed":"#002113","on-secondary-container":"#00476e","surface-dim":"#d2d9f4","on-background":"#131b2e","tertiary-fixed-dim":"#4edea3","primary-fixed":"#d0e4ff","inverse-primary":"#a3caf6","inverse-surface":"#283044","on-primary-fixed-variant":"#1f496f","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#004b73","primary-container":"#0b3b60","on-secondary-fixed":"#001d31"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-md":"1rem","margin-mobile":"1rem","space-xl":"2rem","gutter-mobile":"0.75rem","gutter-desktop":"1.5rem","margin-desktop":"2rem",gutter:"1.25rem","space-lg":"1.5rem","space-xs":"0.25rem","space-sm":"0.5rem",margin:"1.5rem"},fontFamily:{"headline-xl":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-lg":["Inter"],"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-lg":["Inter"]},fontSize:{"headline-xl":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"700"}],"headline-sm":["16px",{lineHeight:"24px",letterSpacing:"-0.005em",fontWeight:"600"}],"display-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-lg":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}],"display-lg":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><img alt="Logo TechGestor TJRR" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCKdTwahu8_u9ttJtDBTy28WQVxHfhkkkdOiugHnKXttibgPX_IHgiSlffmGOunQpY5Y3fLgrrzd0hMLFmbO5RWZ2rbOSoVhqtCxvjblbttDh-we_PyXDezp907btLRTqpUP0vcHBIEynWlZ612sgX6GFXWXon7pjNZMtb2ZR8gb09kBQSh0vwXNtU3PWG2O4TweL7CfbUt6UzS8L8s-Dj-vmG2Of1K66KvMPdOiHm8qjVea1gZFwUGA"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">TechGestor</span><span class="font-label-sm text-label-sm text-secondary font-bold tracking-wider uppercase">TJRR</span></div><span class="font-body-sm text-body-sm text-on-surface-variant hidden lg:inline">Tribunal de Justiça do Estado de Roraima • Secretaria de Tecnologia da Informação</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container"><span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Status:</span><span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">Operacional 99.9%</span></div><button aria-label="Alternar modo escuro" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><div class="relative"><button aria-label="Notificações e alertas" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center relative" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface"></span></button></div><div class="flex items-center gap-space-sm pl-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi7Z-KIbZzM0jFBq_5aLJJjwlkf9ow-_fKLORyQm4RkkFRwvkR-W8TbEDi7BWdrzV5DC0m_KHHbhgU4UDgidWGLJ_hTw-lceT5lcvqkKOShPVMDZINrE17-DlajSnFNojJAm7lv1jx8iNLeH8luObaMSbDJawf8xHdQ_wxoP-JeU0ivWo7ET2iiUlqwgP6EQCUizDFeTj7WmthPKTW5U_B8SOAH_rokFM1re96qT8ZHsY0G3wl5s5O1g"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface"></span></div><div class="hidden xl:flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface font-semibold leading-tight">Carlos Mendonça</span><span class="font-label-sm text-label-sm text-on-surface-variant">Coord. Suporte N3</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 z-40 bg-surface-container-low flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex flex-col pt-space-md px-space-sm"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm rounded-lg"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio-dashboard" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-lg text-label-lg">Início / Dashboard</span></div><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-semibold">5 On</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="chamados" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">confirmation_number</span><span class="font-label-lg text-label-lg">Chamados</span></div><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-error-container text-on-error-container font-semibold">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="eventos" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">event</span><span class="font-label-lg text-label-lg">Eventos</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inventario" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-lg text-label-lg">Inventário</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="agenda" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">calendar_month</span><span class="font-label-lg text-label-lg">Agenda Forense</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="perfil" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">badge</span><span class="font-label-lg text-label-lg">Perfil</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="admin" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">manage_accounts</span><span class="font-label-lg text-label-lg">Administração</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="auditoria" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">security</span><span class="font-label-lg text-label-lg">Auditoria &amp; Logs</span></div></a></nav></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-[18px]">headset_mic</span><span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider">NOC / Plantão</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Ramal emergencial: 3198-4444 Central DTI TJRR</p></div></aside><div class="pl-64 flex flex-col min-h-screen"><main class="w-full flex-1 pt-16 px-gutter-desktop py-space-lg bg-surface"><div class="flex flex-col w-full gap-space-md">
+<!-- TOP EMERGENCY SLA & CALL CONTEXT STRIP -->
+<section class="w-full bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-md">
+<div class="flex flex-col md:flex-row items-start md:items-center gap-space-md min-w-0">
+<div class="flex items-center gap-space-xs shrink-0">
+<span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-error-container text-on-error-container">
+<span class="material-symbols-outlined text-[22px]">gavel</span>
+</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-sm text-headline-sm text-primary">#CH-2024-8841</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
+              P1 - CRÍTICA (RÉU PRESO)
+            </span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm">
+              Audiência de Custódia 14:30
+            </span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant line-clamp-1">
+            Falha no Ponto de Rede e Instabilidade no Sistema de Audiências • Fórum Sobral Pinto
+          </span>
+</div>
+</div>
+</div>
+<!-- METRICS & COMPLIANCE COUNTERS -->
+<div class="flex items-center gap-space-lg flex-wrap self-stretch xl:self-auto justify-between xl:justify-end shrink-0">
+<div class="flex items-center gap-space-sm px-space-md py-1.5 bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined text-secondary text-[20px]">timer</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">SLA Restante</span>
+<span class="font-headline-sm text-headline-sm text-secondary font-bold">24 min 18s</span>
+</div>
+</div>
+<div class="hidden lg:flex items-center gap-space-xs px-space-md py-1.5 bg-primary/5 rounded-lg text-primary">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Cadeia Probatória</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">Res. CNJ 370/2021 &amp; Portaria 204</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="flex items-center gap-1.5 h-9 px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px]">share_location</span>
+<span class="hidden sm:inline">Mapa do Fórum</span>
+</button>
+<button class="flex items-center gap-1.5 h-9 px-space-md rounded-lg bg-primary-container text-on-primary hover:bg-primary transition-colors font-label-md text-label-md shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">print</span>
+<span>Folha de Custódia</span>
+</button>
+</div>
+</div>
+</section>
+<!-- TWO-COLUMN WORKSPACE -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md items-start">
+<!-- LEFT PANEL: TICKET DOSSIER & LEGAL GOVERNANCE (xl:col-span-4) -->
+<aside class="xl:col-span-4 flex flex-col gap-space-md w-full">
+<!-- DOSSIER CARD -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+<span class="font-headline-sm text-headline-sm">Ficha Pericial do Incidente</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-on-tertiary-container/15 text-on-tertiary-container font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+            Em Atendimento Presencial
+          </span>
+</div>
+<!-- MAGISTRATE & GABINETE -->
+<div class="p-space-sm bg-surface-container-low rounded-lg flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0 font-headline-sm">
+            RA
+          </div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-primary truncate">Dr. Roberto Alencar</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Juiz Titular • 2ª Vara Criminal</span>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-secondary mt-0.5">
+<span class="material-symbols-outlined text-[14px]">call</span>
+<span>Ramal 3198-4421</span>
+<span>•</span>
+<span>Gabinete 102 (Fórum Sobral Pinto)</span>
+</div>
+</div>
+</div>
+<!-- ASSETS & TOPOLOGY -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Ativos de Rede Vinculados</span>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-xs">
+<div class="p-space-xs bg-surface-container rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">hub</span>
+                Cisco Catalyst 3850
+              </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tombo #4419 • Porta 14</span>
+<span class="font-label-sm text-label-sm text-on-tertiary-container font-medium mt-1">VLAN 40 (Audiências)</span>
+</div>
+<div class="p-space-xs bg-surface-container rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">videocam</span>
+                Terminal Poly G7500
+              </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tombo #5022 • Sala A</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium mt-1">IP 10.14.8.42</span>
+</div>
+</div>
+</div>
+<!-- ROUTING PIPELINE -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Trilha de Encaminhamentos</span>
+<div class="flex flex-col gap-space-xs p-space-sm bg-surface-container-low rounded-lg font-body-sm text-body-sm">
+<div class="flex items-center justify-between text-on-surface">
+<span class="flex items-center gap-1 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>
+                14:10:02 - Abertura Direta Magistrado
+              </span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">Triagem N1</span>
+</div>
+<div class="flex items-center justify-between text-on-surface">
+<span class="flex items-center gap-1 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>
+                14:12:30 - Escalação Imediata P1
+              </span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">NOC DTI</span>
+</div>
+<div class="flex items-center justify-between text-primary font-semibold">
+<span class="flex items-center gap-1 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container animate-pulse">radio_button_checked</span>
+                14:16:00 - Despacho Presencial N2
+              </span>
+<span class="font-label-sm text-label-sm text-on-tertiary-container">Em Execução</span>
+</div>
+</div>
+</div>
+<!-- CHAIN OF CUSTODY BANNER (ANTI-WHATSAPP/TELEGRAM MANDATE) -->
+<div class="p-space-md rounded-xl bg-primary-container text-on-primary flex flex-col gap-space-xs relative overflow-hidden">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary-container text-[22px]">policy</span>
+<span class="font-headline-sm text-headline-sm text-surface-container-lowest">Cadeia de Custódia Probatória</span>
+</div>
+<p class="font-body-sm text-body-sm text-surface-variant">
+            Conforme <strong>Portaria Presidência TJRR nº 204/2023</strong> e <strong>Resolução CNJ nº 370/2021</strong>, este ambiente substitui aplicativos informais de mensagens instantâneas.
+          </p>
+<div class="flex flex-col gap-1 mt-1 font-label-sm text-label-sm text-surface-container-high">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed-dim">lock_clock</span>
+<span>Carimbo do Tempo ICP-Brasil Oficial</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed-dim">history_edu</span>
+<span>Gravado em Mídia WORM Imutável</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-error-container">cancel</span>
+<span>Vedado uso de WhatsApp particular para tratativas</span>
+</div>
+</div>
+</div>
+<!-- QUICK INCIDENT ACTIONS -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Ações de Resolução Pericial</span>
+<div class="grid grid-cols-1 gap-space-xs">
+<button class="w-full flex items-center justify-between h-10 px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors font-label-md text-label-md" type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-secondary">sync_problem</span>
+                Escalar Incidente p/ Telecom Core
+              </span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_forward</span>
+</button>
+<button class="w-full flex items-center justify-between h-10 px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors font-label-md text-label-md" type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">swap_horiz</span>
+                Transferir Hardware p/ Laboratório
+              </span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_forward</span>
+</button>
+<button class="w-full flex items-center justify-center gap-2 h-11 px-space-md rounded-lg bg-on-tertiary-container text-surface-container-lowest hover:bg-tertiary-container transition-colors font-label-lg text-label-lg shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">draw</span>
+<span>Concluir c/ Assinatura ICP-Brasil</span>
+</button>
+</div>
+</div>
+</div>
+<!-- TECHNICIAN TEAM ASSIGNMENT CARD -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<span class="font-headline-sm text-headline-sm text-primary">Equipe DTI em Atendimento</span>
+<div class="flex items-center justify-between p-space-xs rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-label-sm">
+                CM
+              </div>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Carlos Mendonça</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Coord. Suporte N3 (Remoto)</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-medium">NOC DTI</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-on-secondary font-label-sm">
+                LP
+              </div>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary-container ring-2 ring-surface-container-lowest animate-pulse"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Lucas Pinheiro</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Técnico N2 (Presencial Sala A)</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">No Local</span>
+</div>
+</div>
+</aside>
+<!-- RIGHT PANEL: INSTITUTIONAL CHATOPS / OFFICIAL COMMUNICATION BOX (xl:col-span-8) -->
+<main class="xl:col-span-8 flex flex-col gap-space-md w-full">
+<!-- CHAT COMPONENT CARD -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm flex flex-col overflow-hidden">
+<!-- CHAT HEADER & PARTICIPANT AUDIT BAR -->
+<div class="p-space-md bg-surface-container-lowest flex flex-col gap-space-sm">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-9 h-9 rounded-lg bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">forum</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-sm text-headline-sm text-primary">Canal Institucional de Atendimento</h2>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px]">shield</span>
+                    Fé Pública Homologada
+                  </span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+                  Cadeia de Custódia Pericial DTI • Gravação Contínua com Hash SHA-256
+                </span>
+</div>
+</div>
+<!-- EXPORT ACTION -->
+<button class="flex items-center gap-1.5 h-9 px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md transition-colors self-start md:self-auto" type="button">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+<span>Exportar Laudo Pericial (.PDF/A)</span>
+</button>
+</div>
+<!-- AUDIT PARTICIPANTS PRESENCE STATUS -->
+<div class="flex flex-wrap items-center gap-space-md p-space-xs bg-surface-container-low rounded-lg text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>
+<span class="text-on-surface font-semibold">Dr. Roberto Alencar</span>
+<span class="text-on-surface-variant">(Gabinete 102 • Online)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>
+<span class="text-on-surface font-semibold">Carlos Mendonça</span>
+<span class="text-on-surface-variant">(NOC DTI • Online)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+<span class="text-on-surface font-semibold">Lucas Pinheiro</span>
+<span class="text-on-surface-variant">(Presencial • App Corporativo TJRR)</span>
+</div>
+</div>
+<!-- TABS: OFFICIAL CHAT vs INTERNAL DTI NOTES -->
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex items-center gap-2 px-space-md py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md shadow-sm transition-all" id="tab-official" type="button">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Chat Oficial c/ Solicitante</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container-lowest/20 font-label-sm text-label-sm">5</span>
+</button>
+<button class="flex items-center gap-2 px-space-md py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all" id="tab-internal" type="button">
+<span class="material-symbols-outlined text-[18px] text-on-secondary-container">lock</span>
+<span>Notas Técnicas Internas DTI</span>
+<span class="px-1.5 py-0.2 rounded-full bg-on-secondary-container/10 text-on-secondary-container font-label-sm text-label-sm font-semibold">Privativo</span>
+</button>
+<span class="ml-auto hidden sm:flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px] text-on-tertiary-container">sync</span>
+              Sync WORM Ativo
+            </span>
+</div>
+</div>
+<!-- CHAT TIMELINE / MESSAGE FEED -->
+<div class="p-space-md bg-surface-container-low/40 flex flex-col gap-space-md min-h-[520px] max-h-[640px] overflow-y-auto">
+<!-- NOTICE BANNER -->
+<div class="w-full flex items-center justify-center my-space-xs">
+<span class="px-space-md py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[15px]">event_available</span>
+              Sessão Aberta em 24/10/2024 às 14:10:02 VST • Carimbo do Tempo Autenticado #TJRR-WORM-8841-B
+            </span>
+</div>
+<!-- MESSAGE 1: MAGISTRATE (SOLICITANTE) -->
+<div class="flex items-start gap-space-sm max-w-[85%]">
+<div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-on-primary text-label-md font-semibold shrink-0 shadow-sm">
+              RA
+            </div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-md text-label-md text-primary font-bold">Dr. Roberto Alencar</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Juiz de Direito • Gabinete 102</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.2 rounded bg-primary-fixed text-on-primary-fixed">Portal do Magistrado</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-auto">14:10:02 VST</span>
+</div>
+<div class="p-space-md rounded-xl rounded-tl-none bg-surface-container-lowest text-on-surface shadow-sm">
+<p class="font-body-md text-body-md leading-relaxed">
+                  Boa tarde, equipe de TI. A audiência de custódia inicia impreterivelmente às <strong>14:30</strong> e a câmera da videoconferência perdeu sincronismo de rede. O sistema Projudi não carrega os vídeos. Precisamos de apoio presencial urgente para não suspender o ato judicial.
+                </p>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="font-mono text-[11px] text-on-surface-variant/80">Hash SHA-256: 7f8c14...e904b</span>
+<span class="flex items-center gap-0.5 text-secondary">
+<span class="material-symbols-outlined text-[15px]">done_all</span>
+                    Autenticado
+                  </span>
+</div>
+</div>
+</div>
+</div>
+<!-- MESSAGE 2: AUTOMATED SYSTEM / NOC BOT -->
+<div class="flex items-center justify-center my-space-xs">
+<div class="flex items-center gap-2 px-space-md py-1.5 rounded-lg bg-surface-container text-on-surface-variant font-label-sm text-label-sm shadow-sm max-w-xl text-center">
+<span class="material-symbols-outlined text-secondary text-[16px]">smart_toy</span>
+<span><strong>Despacho Automático NOC DTI:</strong> Incidente elevado para <strong>P1 Crítico</strong> às 14:12:00. Técnico em trânsito com kit de emergência.</span>
+</div>
+</div>
+<!-- MESSAGE 3: TECHNICIAN N3 (CARLOS MENDONÇA) -->
+<div class="flex items-start gap-space-sm max-w-[85%] ml-auto flex-row-reverse">
+<div class="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center text-on-primary text-label-md font-semibold shrink-0 shadow-sm">
+              CM
+            </div>
+<div class="flex flex-col gap-1 items-end">
+<div class="flex items-center gap-space-xs flex-wrap justify-end">
+<span class="font-label-sm text-label-sm text-on-surface-variant">14:15:32 VST</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-semibold">Coordenação N3</span>
+<span class="font-label-md text-label-md text-primary font-bold">Carlos Mendonça</span>
+</div>
+<div class="p-space-md rounded-xl rounded-tr-none bg-primary text-on-primary shadow-sm text-left">
+<p class="font-body-md text-body-md leading-relaxed text-surface-container-lowest">
+                  Dr. Roberto, boa tarde. Já identifiquei que houve uma oscilação na porta 14 do switch do gabinete. O técnico Lucas Pinheiro (N2) já está com o kit de reposição e cabo de fibra no elevador do fórum para conferência física no local.
+                </p>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-surface-variant font-label-sm text-label-sm">
+<span class="font-mono text-[11px] text-surface-container-high">Carimbo Certisign: #2024-8841-CM</span>
+<span class="flex items-center gap-0.5 text-secondary-container">
+<span class="material-symbols-outlined text-[15px]">done_all</span>
+                    Lido pelo Gabinete
+                  </span>
+</div>
+</div>
+</div>
+</div>
+<!-- MESSAGE 4: PRIVILEGED DTI INTERNAL NOTE (LUCAS PINHEIRO N2) -->
+<div class="flex items-start gap-space-sm w-full my-space-xs">
+<div class="w-9 h-9 rounded-full bg-on-secondary-fixed-variant flex items-center justify-center text-surface-container-lowest text-label-md font-bold shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div class="flex flex-col gap-1 w-full">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="px-2 py-0.5 rounded bg-on-secondary-fixed text-surface-container-lowest font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">shield_person</span>
+                  NOTA INTERNA PRIVATIVA DTI • RESTRITO TÉCNICO
+                </span>
+<span class="font-label-md text-label-md text-primary font-semibold">Lucas Pinheiro (N2 Campo)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-auto">14:18:44 VST</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container-high text-on-surface shadow-sm flex flex-col gap-space-sm">
+<p class="font-body-md text-body-md leading-relaxed text-on-surface">
+<strong>[DIAGNÓSTICO IN LOCO]</strong> Cheguei à sala de audiências A. O conector RJ-45 Cat6 do terminal Polycom foi rompido fisicamente durante a movimentação da mesa de audiência. Estou crimpando novo conector blindado homologado e solicitando flush de ARP na VLAN 40.
+                </p>
+<!-- PHOTO EVIDENCE CARD WITH SHA-256 GEOTAG -->
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col sm:flex-row items-center gap-space-md">
+<div class="relative w-full sm:w-36 h-24 rounded-lg overflow-hidden shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close-up forensic shot of a technician terminating a blue Cat6 Ethernet cable inside a modern court hearing room at Tribunal de Justiça de Roraima, clean workbench with RJ-45 crimping tool and labeled hardware tag, crisp lighting, judicial technology ITSM context" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBERWFOiJyCxm4lpCJWAIyiOxJByEDLavE9yqAdL57NsKiLCqPZ59RDzdpTBe2Ku50h532ZKQjAxkYoG4HxPLNESKTLfyxl1OcbSEz8UyZm0yU7LcUbWuJcNLwuiavbDOQoL5FY00m0n8Ww9v-_izZgSTV_woInVjIRazJd9H5RIsqIjxRWWNdX-UXbhtg3gijEjyPeQbN-aVoHhGsbKPcVTCmzsnmsUNfaUmMcUNqaH4xRAF6l4eNorQ"/>
+<span class="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-primary/80 text-surface-container-lowest font-label-sm text-[10px]">
+                      Evidência #01
+                    </span>
+</div>
+<div class="flex flex-col gap-1 w-full min-w-0">
+<div class="flex items-center gap-1.5 text-primary font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container">verified</span>
+<span>Registro Fotográfico da Crimpagem e Patch Panel</span>
+</div>
+<span class="font-mono text-[11px] text-on-surface-variant truncate">
+                      SHA-256: d91bf482e998a1290bb04419adfe0901e149cfa392
+                    </span>
+<div class="flex items-center gap-space-sm font-label-sm text-label-sm text-on-surface-variant mt-1 flex-wrap">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">location_on</span>
+                        Sala A • Fórum Sobral Pinto
+                      </span>
+<span>•</span>
+<span>Assinado via App TechGestor Mobile v2.4</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
+<span>Visibilidade: Carlos Mendonça (N3), NOC TJRR, Lucas Pinheiro (N2)</span>
+<span class="font-semibold text-primary">Gravação Pericial WORM Confidencial</span>
+</div>
+</div>
+</div>
+</div>
+<!-- MESSAGE 5: TECHNICIAN N2 (LUCAS PINHEIRO TO ALL) -->
+<div class="flex items-start gap-space-sm max-w-[85%] ml-auto flex-row-reverse">
+<div class="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-on-secondary text-label-md font-semibold shrink-0 shadow-sm">
+              LP
+            </div>
+<div class="flex flex-col gap-1 items-end">
+<div class="flex items-center gap-space-xs flex-wrap justify-end">
+<span class="font-label-sm text-label-sm text-on-surface-variant">14:22:15 VST</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.2 rounded bg-secondary-fixed text-on-secondary-fixed font-semibold">Suporte Presencial N2</span>
+<span class="font-label-md text-label-md text-primary font-bold">Lucas Pinheiro</span>
+</div>
+<div class="p-space-md rounded-xl rounded-tr-none bg-surface-container-high text-on-surface shadow-sm text-left">
+<p class="font-body-md text-body-md leading-relaxed">
+                  Dr. Roberto, cabeamento devidamente reparado e link reestabelecido. Realizei teste de chamada de vídeo com o Datacenter TJRR: a taxa de quadros (60fps) e o retorno de áudio dos microfones da mesa estão 100% estabilizados. O senhor pode verificar a recepção do Projudi em seu monitor?
+                </p>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="font-mono text-[11px]">Latência Datacenter: 1.8ms • Zero perda</span>
+<span class="flex items-center gap-0.5 text-secondary">
+<span class="material-symbols-outlined text-[15px]">done_all</span>
+                    Entregue ao Gabinete
+                  </span>
+</div>
+</div>
+</div>
+</div>
+<!-- MESSAGE 6: MAGISTRATE CONFIRMATION (DR. ROBERTO ALENCAR) -->
+<div class="flex items-start gap-space-sm max-w-[85%]">
+<div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-on-primary text-label-md font-semibold shrink-0 shadow-sm">
+              RA
+            </div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-md text-label-md text-primary font-bold">Dr. Roberto Alencar</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Gabinete 102</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-auto">14:24:08 VST</span>
+</div>
+<div class="p-space-md rounded-xl rounded-tl-none bg-surface-container-lowest text-on-surface shadow-sm">
+<p class="font-body-md text-body-md leading-relaxed">
+                  Excelente! Conexão reestabelecida perfeitamente no Projudi e na tela principal do plenário. Audiência de custódia pronta para início dentro do horário regulamentar. Podem homologar o chamado com a resolução técnica. Muito obrigado pela rapidez!
+                </p>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="font-mono text-[11px] text-on-surface-variant/80">Hash: aa380c...44901</span>
+<span class="flex items-center gap-1 text-on-tertiary-container font-semibold">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+                    Ato Judicial Garantido
+                  </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TYPING / IMMUTABILITY STATUS INDICATOR -->
+<div class="px-space-md py-1.5 bg-surface-container-low flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+<span>Cadeia de mensagens sincronizada com a mídia WORM do Datacenter TJRR.</span>
+</div>
+<span class="hidden sm:inline font-mono text-[11px]">Assinatura SHA-256 por cada envio</span>
+</div>
+<!-- COMPOSER TOOLBAR & RICH INPUT CONTAINER -->
+<div class="p-space-md bg-surface-container-lowest flex flex-col gap-space-sm">
+<!-- MODE SELECTOR TOGGLE (OFFICIAL vs INTERNAL CONFIDENTIAL) -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center p-1 rounded-lg bg-surface-container">
+<label class="flex items-center gap-1.5 px-space-md py-1 rounded-md text-primary font-label-sm text-label-sm cursor-pointer transition-all bg-surface-container-lowest shadow-sm" id="label-mode-official">
+<input checked="" class="hidden" id="radio-official" name="message-mode" type="radio" value="official"/>
+<span class="material-symbols-outlined text-[16px] text-primary">public</span>
+<span class="font-semibold">Mensagem Oficial (Visível ao Solicitante)</span>
+</label>
+<label class="flex items-center gap-1.5 px-space-md py-1 rounded-md text-on-surface-variant font-label-sm text-label-sm cursor-pointer transition-all" id="label-mode-internal">
+<input class="hidden" id="radio-internal" name="message-mode" type="radio" value="internal"/>
+<span class="material-symbols-outlined text-[16px] text-on-secondary-container">shield_person</span>
+<span class="font-semibold">Nota Interna DTI (Restrita N1/N2/N3)</span>
+</label>
+</div>
+<!-- SECURITY BADGE -->
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container">lock</span>
+<span>Criptografia Ponta a Ponta Homologada</span>
+</div>
+</div>
+<!-- TEXT INPUT AREA -->
+<div class="relative w-full">
+<textarea class="w-full p-space-md rounded-xl bg-surface-container-low font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:outline-none focus:bg-surface-container-lowest focus:shadow-md transition-all resize-none" id="composer-input" placeholder="Digite aqui o registro oficial do atendimento pericial ou orientação técnica ao magistrado (caracteres registrados na trilha de auditoria WORM)..." rows="3"></textarea>
+</div>
+<!-- COMPOSER FOOTER ACTIONS -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex items-center gap-1 flex-wrap">
+<button class="flex items-center gap-1.5 h-9 px-space-sm rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" title="Anexar arquivo ou foto probatória com cálculo automático de Hash SHA-256" type="button">
+<span class="material-symbols-outlined text-[18px]">attach_file</span>
+<span>Anexar Evidência / Foto</span>
+</button>
+<button class="flex items-center gap-1.5 h-9 px-space-sm rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" title="Inserir resposta pré-aprovada da Portaria TJRR" type="button">
+<span class="material-symbols-outlined text-[18px]">quickreply</span>
+<span>Templates TJRR</span>
+</button>
+<button class="flex items-center gap-1.5 h-9 px-space-sm rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" title="Gravação de áudio oficial com transcrição e carimbo do tempo" type="button">
+<span class="material-symbols-outlined text-[18px]">mic</span>
+<span>Gravar Áudio Pericial</span>
+</button>
+<button class="flex items-center gap-1.5 h-9 px-space-sm rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" title="Consultar base de conhecimento da infraestrutura judiciária" type="button">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+<span class="hidden sm:inline">Procedimento Padrão</span>
+</button>
+</div>
+<!-- SEND BUTTON -->
+<div class="flex items-center gap-space-xs">
+<button class="flex items-center gap-2 h-10 px-space-lg rounded-lg bg-primary-container text-on-primary hover:bg-primary transition-all font-label-md text-label-md shadow-sm" id="btn-send-message" type="button">
+<span>Registrar Mensagem Oficial</span>
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- LEGAL DISCLAIMER BANNER -->
+<footer class="w-full bg-surface-container-low rounded-xl p-space-md flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[24px] text-secondary shrink-0">gavel</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-primary font-bold">Substituto Oficial Obrigatório de Mensageiros Informais</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+              Qualquer suporte prestado por canais não auditados (WhatsApp, Telegram particular) constitui infração administrativa funcional conforme Provimento Geral de Justiça TJRR.
+            </span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0 self-end md:self-auto font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container">verified</span>
+<span>Ambiente Certificado ICP-Brasil</span>
+</div>
+</footer>
+</main>
+</div>
+</div>
+<script>
+  // CLIENT-SIDE MICRO-INTERACTIONS FOR CHATOPS
+  document.addEventListener('DOMContentLoaded', () => {
+    const radioOfficial = document.getElementById('radio-official');
+    const radioInternal = document.getElementById('radio-internal');
+    const labelOfficial = document.getElementById('label-mode-official');
+    const labelInternal = document.getElementById('label-mode-internal');
+    const composerInput = document.getElementById('composer-input');
+    const btnSend = document.getElementById('btn-send-message');
+
+    function updateComposerMode(mode) {
+      if (mode === 'internal') {
+        labelInternal.classList.add('bg-surface-container-lowest', 'text-on-secondary-container', 'shadow-sm');
+        labelInternal.classList.remove('text-on-surface-variant');
+        labelOfficial.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        labelOfficial.classList.add('text-on-surface-variant');
+
+        composerInput.classList.remove('bg-surface-container-low');
+        composerInput.classList.add('bg-surface-container-high');
+        composerInput.placeholder = "[CONFIDENCIAL DTI] Digite nota técnica privativa interna. Visível apenas para a equipe N1/N2/N3...";
+
+        btnSend.classList.remove('bg-primary-container', 'hover:bg-primary');
+        btnSend.classList.add('bg-on-secondary-fixed-variant', 'hover:bg-on-secondary-fixed');
+        btnSend.querySelector('span:first-child').textContent = 'Gravar Nota Interna Privativa';
+      } else {
+        labelOfficial.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        labelOfficial.classList.remove('text-on-surface-variant');
+        labelInternal.classList.remove('bg-surface-container-lowest', 'text-on-secondary-container', 'shadow-sm');
+        labelInternal.classList.add('text-on-surface-variant');
+
+        composerInput.classList.remove('bg-surface-container-high');
+        composerInput.classList.add('bg-surface-container-low');
+        composerInput.placeholder = "Digite aqui o registro oficial do atendimento pericial ou orientação técnica ao magistrado (caracteres registrados na trilha de auditoria WORM)...";
+
+        btnSend.classList.add('bg-primary-container', 'hover:bg-primary');
+        btnSend.classList.remove('bg-on-secondary-fixed-variant', 'hover:bg-on-secondary-fixed');
+        btnSend.querySelector('span:first-child').textContent = 'Registrar Mensagem Oficial';
+      }
+    }
+
+    if (radioOfficial && radioInternal) {
+      radioOfficial.addEventListener('change', () => updateComposerMode('official'));
+      radioInternal.addEventListener('change', () => updateComposerMode('internal'));
+    }
+
+    // TABS TOGGLE
+    const tabOfficial = document.getElementById('tab-official');
+    const tabInternal = document.getElementById('tab-internal');
+
+    if (tabOfficial && tabInternal) {
+      tabOfficial.addEventListener('click', () => {
+        tabOfficial.className = "flex items-center gap-2 px-space-md py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md shadow-sm transition-all";
+        tabInternal.className = "flex items-center gap-2 px-space-md py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all";
+        if (radioOfficial) {
+          radioOfficial.checked = true;
+          updateComposerMode('official');
+        }
+      });
+
+      tabInternal.addEventListener('click', () => {
+        tabInternal.className = "flex items-center gap-2 px-space-md py-2 rounded-lg bg-on-secondary-fixed-variant text-surface-container-lowest font-label-md text-label-md shadow-sm transition-all";
+        tabOfficial.className = "flex items-center gap-2 px-space-md py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-all";
+        if (radioInternal) {
+          radioInternal.checked = true;
+          updateComposerMode('internal');
+        }
+      });
+    }
+
+    // ENTER TO SEND LISTENER
+    if (composerInput && btnSend) {
+      composerInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          if (composerInput.value.trim().length > 0) {
+            composerInput.value = '';
+          }
+        }
+      });
+    }
+  });
+</script></main><footer class="w-full bg-surface-container-low py-space-sm px-gutter-desktop shadow-[0_-1px_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-body-sm text-body-sm"><span>Tribunal de Justiça do Estado de Roraima • Diretoria de Tecnologia da Informação (DTI)</span><div class="flex items-center gap-space-md"><span>Versão <strong class="text-on-surface font-semibold">v2.4.1</strong></span><span>Suporte Técnico: cits@tjrr.jus.br</span></div></div></footer></div></body></html>

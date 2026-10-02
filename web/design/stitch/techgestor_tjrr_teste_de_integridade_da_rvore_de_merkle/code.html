@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-tertiary-fixed-variant":"#005236","tertiary-fixed":"#6ffbbe","on-primary-fixed":"#001d35","secondary-container":"#5bb8fe","surface":"#faf8ff","on-error-container":"#93000a","surface-container-highest":"#dae2fd","primary":"#002541","outline":"#73777f","surface-bright":"#faf8ff","tertiary-container":"#00422b","on-tertiary":"#ffffff","surface-container":"#eaedff","surface-container-low":"#f2f3ff","error-container":"#ffdad6","secondary-fixed":"#cce5ff","on-secondary":"#ffffff","outline-variant":"#c2c7cf","on-primary":"#ffffff","on-primary-container":"#7fa6d0","secondary-fixed-dim":"#93ccff","surface-container-high":"#e2e7ff","on-error":"#ffffff","error":"#ba1a1a","primary-fixed-dim":"#a3caf6","on-surface-variant":"#42474e","on-surface":"#131b2e","surface-tint":"#3a6188","tertiary":"#002a1a","surface-variant":"#dae2fd","inverse-on-surface":"#eef0ff","on-tertiary-container":"#10b981","secondary":"#006398","background":"#faf8ff","on-tertiary-fixed":"#002113","on-secondary-container":"#00476e","surface-dim":"#d2d9f4","on-background":"#131b2e","tertiary-fixed-dim":"#4edea3","primary-fixed":"#d0e4ff","inverse-primary":"#a3caf6","inverse-surface":"#283044","on-primary-fixed-variant":"#1f496f","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#004b73","primary-container":"#0b3b60","on-secondary-fixed":"#001d31"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-md":"1rem","margin-mobile":"1rem","space-xl":"2rem","gutter-mobile":"0.75rem","gutter-desktop":"1.5rem","margin-desktop":"2rem",gutter:"1.25rem","space-lg":"1.5rem","space-xs":"0.25rem","space-sm":"0.5rem",margin:"1.5rem"},fontFamily:{"headline-xl":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-lg":["Inter"],"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-lg":["Inter"]},fontSize:{"headline-xl":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"700"}],"headline-sm":["16px",{lineHeight:"24px",letterSpacing:"-0.005em",fontWeight:"600"}],"display-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-lg":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}],"display-lg":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><img alt="Logo TechGestor TJRR" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCKdTwahu8_u9ttJtDBTy28WQVxHfhkkkdOiugHnKXttibgPX_IHgiSlffmGOunQpY5Y3fLgrrzd0hMLFmbO5RWZ2rbOSoVhqtCxvjblbttDh-we_PyXDezp907btLRTqpUP0vcHBIEynWlZ612sgX6GFXWXon7pjNZMtb2ZR8gb09kBQSh0vwXNtU3PWG2O4TweL7CfbUt6UzS8L8s-Dj-vmG2Of1K66KvMPdOiHm8qjVea1gZFwUGA"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">TechGestor</span><span class="font-label-sm text-label-sm text-secondary font-bold tracking-wider uppercase">TJRR</span></div><span class="font-body-sm text-body-sm text-on-surface-variant hidden lg:inline">Tribunal de Justiça do Estado de Roraima • Secretaria de Tecnologia da Informação</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container"><span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Status:</span><span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">Operacional 99.9%</span></div><button aria-label="Alternar modo escuro" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><div class="relative"><button aria-label="Notificações e alertas" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center relative" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface"></span></button></div><div class="flex items-center gap-space-sm pl-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi7Z-KIbZzM0jFBq_5aLJJjwlkf9ow-_fKLORyQm4RkkFRwvkR-W8TbEDi7BWdrzV5DC0m_KHHbhgU4UDgidWGLJ_hTw-lceT5lcvqkKOShPVMDZINrE17-DlajSnFNojJAm7lv1jx8iNLeH8luObaMSbDJawf8xHdQ_wxoP-JeU0ivWo7ET2iiUlqwgP6EQCUizDFeTj7WmthPKTW5U_B8SOAH_rokFM1re96qT8ZHsY0G3wl5s5O1g"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface"></span></div><div class="hidden xl:flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface font-semibold leading-tight">Carlos Mendonça</span><span class="font-label-sm text-label-sm text-on-surface-variant">Coord. Suporte N3</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 z-40 bg-surface-container-low flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex flex-col pt-space-md px-space-sm"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm rounded-lg"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio-dashboard" href="#"><span class="font-label-lg text-label-lg">Início / Dashboard</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-semibold">5 On</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="chamados" href="#"><span class="font-label-lg text-label-lg">Chamados</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-error-container text-on-error-container font-semibold">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="eventos" href="#"><span class="font-label-lg text-label-lg">Eventos</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inventario" href="#"><span class="font-label-lg text-label-lg">Inventário</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="agenda" href="#"><span class="font-label-lg text-label-lg">Agenda Forense</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="perfil" href="#"><span class="font-label-lg text-label-lg">Perfil</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="admin" href="#"><span class="font-label-lg text-label-lg">Administração</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="auditoria" href="#"><span class="font-label-lg text-label-lg">Auditoria &amp; Logs</span></a></nav></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-[18px]">headset_mic</span><span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider">NOC / Plantão</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Ramal emergencial: 3198-4444 Central DTI TJRR</p></div></aside><div class="pl-64 flex flex-col min-h-screen"><main class="w-full flex-1 pt-16 px-gutter-desktop py-space-lg bg-surface"><div class="flex flex-col w-full gap-space-lg pb-space-xl">
+<!-- Interactive Navigation Highlight State Sync -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const activeLink = document.querySelector('aside nav a[data-path="auditoria"]');
+      if (activeLink) {
+        activeLink.classList.remove("text-on-surface-variant", "hover:bg-surface-container-high");
+        activeLink.classList.add("bg-primary-container", "text-on-primary", "font-semibold", "shadow-sm", "rounded-lg");
+      }
+    });
+  </script>
+<!-- Top Breadcrumb & Institutional Header -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-secondary">verified_user</span>
+<span class="font-label-sm text-label-sm tracking-wider uppercase text-secondary font-bold">Segurança da Informação &amp; Governança</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm font-semibold text-on-surface-variant">DTI / TJRR</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm font-medium text-on-surface-variant">Cadeia de Custódia Digital</span>
+</div>
+<!-- Real-Time State Badge -->
+<div class="flex items-center gap-space-xs px-3 py-1 rounded-full bg-emerald-500/10 text-on-tertiary-container shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider">Integridade do Lote: 100% Íntegro (0 Violações)</span>
+</div>
+</div>
+<div class="flex flex-col xl:flex-row xl:items-end justify-between gap-space-md pt-space-xs">
+<div class="max-w-4xl flex flex-col gap-space-xs">
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight">
+          Teste de Integridade Criptográfica &amp; Árvore de Merkle
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          Auditoria algorítmica automatizada de validação de não-repúdio e detecção de adulteração conforme o 
+          <span class="font-semibold text-primary">Art. 18 da Resolução CNJ nº 370/2021</span> e conformidade com a 
+          <span class="font-semibold text-primary">Cadeia de Custódia Digital (Art. 158-A do Código de Processo Penal)</span>.
+        </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-wrap items-center gap-space-sm self-start xl:self-auto">
+<button class="h-10 px-space-md rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-primary transition-all flex items-center gap-space-xs shadow-sm font-label-lg text-label-lg font-semibold" id="btn-export-p7s" type="button">
+<span class="material-symbols-outlined text-[18px]">download_for_offline</span>
+<span>Exportar Laudo .P7S</span>
+</button>
+<button class="h-10 px-space-md rounded-lg bg-primary-container hover:bg-primary text-on-primary transition-all flex items-center gap-space-xs shadow-md font-label-lg text-label-lg font-semibold group" id="btn-run-scan" type="button">
+<span class="material-symbols-outlined text-[18px] group-hover:rotate-180 transition-transform duration-500">sync</span>
+<span>Executar Nova Varredura</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Live Validation Console / KPI Cards -->
+<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- Card 1: Total Blocks -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between gap-space-sm transition-all hover:shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Blocos Auditados</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-xl text-headline-xl text-primary font-bold tracking-tight">441.982</span>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">100% da cadeia gravada em WORM</span>
+</div>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-1.5 overflow-hidden">
+<div class="bg-emerald-500 h-full rounded-full w-full"></div>
+</div>
+</div>
+<!-- Card 2: Execution Time -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between gap-space-sm transition-all hover:shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Tempo de Varredura</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+</div>
+</div>
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-xl text-headline-xl text-primary font-bold tracking-tight">1.42</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant font-semibold">segundos</span>
+</div>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">memory</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Hardware HSM / Vault DTI Dedicado</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-1">
+<span>Throughput:</span>
+<span class="font-semibold text-primary">311.254 hashes/seg</span>
+</div>
+</div>
+<!-- Card 3: Merkle Root Hash -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between gap-space-sm transition-all hover:shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Raiz de Merkle (Root)</span>
+<div class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-label-sm font-semibold">Válido</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between bg-surface-container-low px-2.5 py-1.5 rounded-lg">
+<span class="font-mono text-label-md font-bold text-primary tracking-wider truncate">0x7f4b89a2...9d10e5</span>
+<button aria-label="Copiar Hash Raiz" class="p-1 text-on-surface-variant hover:text-primary transition-colors" id="btn-copy-root">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Algoritmo SHA-256 (RFC 6234)</span>
+</div>
+<div class="flex items-center gap-1 text-on-tertiary-container font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px]">check_circle</span>
+<span>Colisões detectadas: 0 (Zero)</span>
+</div>
+</div>
+<!-- Card 4: Official ICP-Brasil Timestamp -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col justify-between gap-space-sm transition-all hover:shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Carimbo do Tempo</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">history_edu</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-primary">14:32:08.192 VST</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Boa Vista/RR • UTC-4 (NTP.br Sincronizado)</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="truncate">AC SERPRO v10 • ICP-Brasil</span>
+</div>
+</div>
+</section>
+<!-- Interactive Merkle Tree Graph Visualizer -->
+<section class="rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-lg">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">account_tree</span>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Topologia Criptográfica da Árvore de Merkle (Lote Atual #2024-W38)</h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Visualização hierárquica de derivação binária e integridade de blocos forenses imutáveis.</p>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-low px-3 py-1.5 rounded-lg text-on-surface-variant font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span>Modo Auditoria: Derivação Exata SHA-256</span>
+</div>
+</div>
+<!-- Tree Architecture Canvas -->
+<div class="w-full overflow-x-auto py-space-sm px-space-xs">
+<div class="min-w-[900px] flex flex-col items-center">
+<!-- LEVEL 0: ROOT HASH NODE -->
+<div class="flex flex-col items-center relative z-20">
+<div class="w-96 rounded-xl bg-primary text-on-primary p-space-md shadow-lg flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 rounded bg-white/15 text-white font-label-sm text-label-sm uppercase tracking-wider font-semibold">Nível 0 • Merkle Root</span>
+<div class="flex items-center gap-1 text-emerald-300 font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span>Assinatura ECDSA Válida</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-white/70 font-label-sm text-label-sm">Master Root Hash (H_ROOT)</span>
+<span class="font-mono text-label-md font-bold tracking-tight text-white select-all break-all">
+                7f4b89a24de8110bceca0835f8b9e4a3c8e3b0c44298fc1c149afbf4c89d10e5
+              </span>
+</div>
+<div class="flex items-center justify-between text-white/60 font-body-sm text-body-sm pt-1">
+<span>H(L1-A + L1-B)</span>
+<span>Calculado em: 41ns</span>
+</div>
+</div>
+<!-- Tree Vertical Connector to Branch 1 -->
+<div class="w-0.5 h-8 bg-outline-variant"></div>
+</div>
+<!-- Tree Horizontal Splitter Level 0 -> Level 1 -->
+<div class="w-[50%] h-0.5 bg-outline-variant relative">
+<div class="absolute left-0 top-0 w-0.5 h-8 bg-outline-variant"></div>
+<div class="absolute right-0 top-0 w-0.5 h-8 bg-outline-variant"></div>
+</div>
+<!-- LEVEL 1: INTERMEDIATE HASH NODES -->
+<div class="w-full flex justify-around mt-8 relative z-10">
+<!-- Branch Node L1-A -->
+<div class="flex flex-col items-center w-80">
+<div class="w-full rounded-xl bg-surface-container p-space-md shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-label-sm text-label-sm font-semibold">Sub-Nó H(L1-A)</span>
+<span class="text-emerald-600 flex items-center gap-0.5 font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[15px]">check</span> Validado
+                </span>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface-variant font-label-sm text-label-sm">Hash(H0 + H1)</span>
+<span class="font-mono text-label-sm font-semibold text-primary truncate select-all">
+                  a3f91c98de4b009e51c8a14b58e721a9bc01a4...
+                </span>
+</div>
+<div class="text-on-surface-variant font-body-sm text-body-sm flex justify-between">
+<span>Pares: Folha 0 + Folha 1</span>
+<span>28ns</span>
+</div>
+</div>
+<!-- Vertical Drop to Splitter -->
+<div class="w-0.5 h-8 bg-outline-variant"></div>
+<!-- Horizontal Sub-splitter -->
+<div class="w-48 h-0.5 bg-outline-variant relative">
+<div class="absolute left-0 top-0 w-0.5 h-8 bg-outline-variant"></div>
+<div class="absolute right-0 top-0 w-0.5 h-8 bg-outline-variant"></div>
+</div>
+</div>
+<!-- Branch Node L1-B -->
+<div class="flex flex-col items-center w-80">
+<div class="w-full rounded-xl bg-surface-container p-space-md shadow-sm flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-label-sm text-label-sm font-semibold">Sub-Nó H(L1-B)</span>
+<span class="text-emerald-600 flex items-center gap-0.5 font-label-sm text-label-sm font-semibold">
+<span class="material-symbols-outlined text-[15px]">check</span> Validado
+                </span>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface-variant font-label-sm text-label-sm">Hash(H2 + H3)</span>
+<span class="font-mono text-label-sm font-semibold text-primary truncate select-all">
+                  9e81b672cb50af197cd14aa3b29c91f0812ed3...
+                </span>
+</div>
+<div class="text-on-surface-variant font-body-sm text-body-sm flex justify-between">
+<span>Pares: Folha 2 + Folha 3</span>
+<span>31ns</span>
+</div>
+</div>
+<!-- Vertical Drop to Splitter -->
+<div class="w-0.5 h-8 bg-outline-variant"></div>
+<!-- Horizontal Sub-splitter -->
+<div class="w-48 h-0.5 bg-outline-variant relative">
+<div class="absolute left-0 top-0 w-0.5 h-8 bg-outline-variant"></div>
+<div class="absolute right-0 top-0 w-0.5 h-8 bg-outline-variant"></div>
+</div>
+</div>
+</div>
+<!-- LEVEL 2: LEAF HASH NODES (Transactions) -->
+<div class="w-full grid grid-cols-4 gap-space-md mt-8">
+<!-- Leaf 0 -->
+<div class="rounded-xl bg-surface-container-low p-space-sm shadow-sm flex flex-col gap-2 transition-all hover:bg-surface-container">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-secondary">Folha H0</span>
+<span class="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">WORM OK</span>
+</div>
+<span class="font-mono text-label-sm font-medium text-primary truncate">1c8a14b58e721a9...</span>
+<div class="p-2 rounded bg-surface-container-lowest text-on-surface flex flex-col">
+<span class="font-label-sm text-label-sm font-semibold text-primary">#LOG-89211</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Reatribuição Chamado N2</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">14:31:55 • Boa Vista</span>
+</div>
+</div>
+<!-- Leaf 1 -->
+<div class="rounded-xl bg-surface-container-low p-space-sm shadow-sm flex flex-col gap-2 transition-all hover:bg-surface-container">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-secondary">Folha H1</span>
+<span class="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">WORM OK</span>
+</div>
+<span class="font-mono text-label-sm font-medium text-primary truncate">4b58e721a9bc01a...</span>
+<div class="p-2 rounded bg-surface-container-lowest text-on-surface flex flex-col">
+<span class="font-label-sm text-label-sm font-semibold text-primary">#LOG-89210</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Elevação Privilégio DTI</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">14:31:40 • Rorainópolis</span>
+</div>
+</div>
+<!-- Leaf 2 -->
+<div class="rounded-xl bg-surface-container-low p-space-sm shadow-sm flex flex-col gap-2 transition-all hover:bg-surface-container">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-secondary">Folha H2</span>
+<span class="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">WORM OK</span>
+</div>
+<span class="font-mono text-label-sm font-medium text-primary truncate">9e81b672cb50af1...</span>
+<div class="p-2 rounded bg-surface-container-lowest text-on-surface flex flex-col">
+<span class="font-label-sm text-label-sm font-semibold text-primary">#LOG-89209</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Movimentação Tombo #4419</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">14:30:12 • Caracaraí</span>
+</div>
+</div>
+<!-- Leaf 3 -->
+<div class="rounded-xl bg-surface-container-low p-space-sm shadow-sm flex flex-col gap-2 transition-all hover:bg-surface-container">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-secondary">Folha H3</span>
+<span class="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">WORM OK</span>
+</div>
+<span class="font-mono text-label-sm font-medium text-primary truncate">cd14aa3b29c91f0...</span>
+<div class="p-2 rounded bg-surface-container-lowest text-on-surface flex flex-col">
+<span class="font-label-sm text-label-sm font-semibold text-primary">#LOG-89208</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Bloqueio Auth Brute-Force</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">14:28:44 • NOC Gateway</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Proof of Inclusion & Tamper Simulation Lab -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Left Column: Simulation Controller -->
+<div class="lg:col-span-5 rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="material-symbols-outlined text-[22px]">science</span>
+<h3 class="font-headline-sm text-headline-sm font-bold">Laboratório de Não-Repúdio &amp; Detecção de Adulteração</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Simule a alteração forçada de 1 byte de dados em um registro da custódia para comprovar a quebra instantânea do nó irmão na árvore e a invalidação da Raiz de Merkle em juízo.
+        </p>
+<!-- Block Selection Form -->
+<div class="flex flex-col gap-1.5 mt-2">
+<label class="font-label-sm text-label-sm font-semibold text-on-surface" for="select-audit-target">Selecionar Registro para Prova de Inclusão:</label>
+<div class="relative">
+<select class="w-full h-10 px-3 pr-8 rounded-lg bg-surface-container-low text-primary font-body-md text-body-md focus:bg-surface-container-lowest transition-all appearance-none cursor-pointer" id="select-audit-target">
+<option value="89211">#LOG-89211 - Reatribuição Chamado Prioridade P1 (Carlos Mendonça)</option>
+<option value="89210">#LOG-89210 - Elevação de Privilégio DTI (Admin SecOps)</option>
+<option value="89209">#LOG-89209 - Movimentação de Tombo Patrimonial #4419</option>
+<option value="89208">#LOG-89208 - Tentativa de Login Bloqueada (Firewall Perimeter)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-on-surface-variant pointer-events-none text-[20px]">expand_more</span>
+</div>
+</div>
+<!-- Merkle Audit Path Visualization Steps -->
+<div class="flex flex-col gap-2 mt-2 p-space-sm rounded-xl bg-surface-container-low">
+<span class="font-label-sm text-label-sm font-bold text-primary uppercase tracking-wider">Caminho de Auditoria (Audit Path - O(log n))</span>
+<div class="flex flex-col gap-1.5 font-mono text-body-sm text-body-sm">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>Passo 1: Hash Folha H0</span>
+<span class="text-secondary font-semibold">Self</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>Passo 2: Hash Irmão H1</span>
+<span class="text-emerald-700 font-semibold truncate max-w-[150px]">4b58e721...bc01a</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>Passo 3: Hash Tio H(L1-B)</span>
+<span class="text-emerald-700 font-semibold truncate max-w-[150px]">9e81b672...812ed</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Tamper Action Simulator Button -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<button class="w-full h-11 rounded-lg bg-surface-container-highest hover:bg-error-container text-primary hover:text-on-error-container transition-all flex items-center justify-center gap-space-xs font-label-lg text-label-lg font-bold shadow-sm" id="btn-toggle-tamper" type="button">
+<span class="material-symbols-outlined text-[20px]">fingerprint</span>
+<span id="btn-tamper-text">Simular Adulteração de 1 Byte no Bloco</span>
+</button>
+<span class="text-center font-label-sm text-label-sm text-on-surface-variant">
+          O teste não compromete a mídia ótica original WORM preservada em cofre criptográfico.
+        </span>
+</div>
+</div>
+<!-- Right Column: Verification Result Matrix -->
+<div class="lg:col-span-7 rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Conferência Criptográfica de Validade Jurídica</span>
+<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-label-sm font-bold flex items-center gap-1" id="tamper-status-pill">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>INTEGRIDADE COMPROVADA</span>
+</span>
+</div>
+<!-- Hash Comparison Dual View -->
+<div class="grid grid-cols-1 gap-space-sm mt-1">
+<!-- Recorded Hash in WORM -->
+<div class="flex flex-col gap-1 p-space-sm rounded-xl bg-surface-container-low">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-on-surface-variant">Hash Original Gravado no Bloco WORM:</span>
+<span class="font-label-sm text-label-sm text-emerald-700 font-semibold">Fonte Primária TJRR</span>
+</div>
+<span class="font-mono text-label-sm font-semibold text-primary break-all select-all" id="hash-original">
+              e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+            </span>
+</div>
+<!-- Recalculated Hash -->
+<div class="flex flex-col gap-1 p-space-sm rounded-xl bg-surface-container-low transition-colors duration-300" id="recalc-box">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-on-surface-variant">Hash Recalculado da Árvore de Merkle:</span>
+<span class="font-label-sm text-label-sm text-emerald-700 font-semibold" id="recalc-source-label">Cálculo em Tempo Real</span>
+</div>
+<span class="font-mono text-label-sm font-semibold text-primary break-all select-all" id="hash-recalculated">
+              e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+            </span>
+</div>
+</div>
+<!-- Pericial Verdict Note -->
+<div class="p-space-md rounded-xl bg-emerald-500/10 flex items-start gap-space-sm" id="pericial-verdict-box">
+<span class="material-symbols-outlined text-emerald-700 text-[24px] shrink-0" id="verdict-icon">gavel</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-emerald-900" id="verdict-title">Consistência Forense Perfeita • Zero Divergência</span>
+<p class="font-body-sm text-body-sm text-emerald-800 leading-relaxed mt-0.5" id="verdict-description">
+              A árvore de Merkle calculada bate exatamente com o hash gravado no carimbo do tempo ICP-Brasil. Prova matemática de imutabilidade aceita plenamente perante os Tribunais e órgãos correcionais.
+            </p>
+</div>
+</div>
+</div>
+<!-- Legal Compliance References Strip -->
+<div class="pt-space-xs flex flex-wrap items-center justify-between gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span>Normas Auditadas: ICP-Brasil DOC-ICP-11 • FIPS 180-4 • ISO/IEC 27037</span>
+<span class="text-primary font-semibold">Certificado da Sessão: DTI-TJRR-2024-88A</span>
+</div>
+</div>
+</section>
+<!-- Detailed Forensic Execution Log Table -->
+<section class="rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex flex-col">
+<h3 class="font-headline-sm text-headline-sm font-bold text-primary">Console de Execução Forense &amp; Encadeamento de Blocos</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Últimos registros imutáveis auditados no barramento de logs forenses.</p>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary transition-colors" id="btn-refresh-table" title="Atualizar Tabela">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+</button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-3 px-4 rounded-l-lg">Bloco ID</th>
+<th class="py-3 px-4">Hash Anterior (Prev)</th>
+<th class="py-3 px-4">Hash do Bloco (SHA-256)</th>
+<th class="py-3 px-4">Transação Auditada</th>
+<th class="py-3 px-4">Operador / Comarca</th>
+<th class="py-3 px-4">Validação Cripto</th>
+<th class="py-3 px-4 rounded-r-lg text-right">Status</th>
+</tr>
+</thead>
+<tbody class="text-on-surface">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3.5 px-4 font-mono font-bold text-primary">#441982</td>
+<td class="py-3.5 px-4 font-mono text-label-sm text-on-surface-variant">0x6e28...bf10</td>
+<td class="py-3.5 px-4 font-mono text-label-sm text-primary font-medium">0x7f4b89a24de811...</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col">
+<span class="font-semibold text-primary">Fechamento do Lote Merkle</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Root Sync ICP-Brasil</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="font-label-sm text-label-sm font-semibold">Sistema Automático HSM</span>
+<span class="block text-on-surface-variant font-body-sm text-body-sm">Datacenter DTI TJRR</span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">verified</span>
+<span>ECDSA secp256r1</span>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-label-sm font-bold">Auditado</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3.5 px-4 font-mono font-bold text-primary">#441981</td>
+<td class="py-3.5 px-4 font-mono text-label-sm text-on-surface-variant">0x19a0...cc42</td>
+<td class="py-3.5 px-4 font-mono text-label-sm text-primary font-medium">0x1c8a14b58e721a...</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col">
+<span class="font-semibold text-primary">Reatribuição Chamado N2</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Incidente P1 #INC-89211</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="font-label-sm text-label-sm font-semibold">Carlos Mendonça</span>
+<span class="block text-on-surface-variant font-body-sm text-body-sm">Coord. Suporte N3</span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">verified</span>
+<span>RSA-4096 ICP</span>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-label-sm font-bold">Auditado</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3.5 px-4 font-mono font-bold text-primary">#441980</td>
+<td class="py-3.5 px-4 font-mono text-label-sm text-on-surface-variant">0x55d1...09eb</td>
+<td class="py-3.5 px-4 font-mono text-label-sm text-primary font-medium">0x4b58e721a9bc01...</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col">
+<span class="font-semibold text-primary">Elevação Privilégio DTI</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Acesso Cofre de Senhas</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="font-label-sm text-label-sm font-semibold">SecOps Eng. #02</span>
+<span class="block text-on-surface-variant font-body-sm text-body-sm">Comarca Rorainópolis</span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">verified</span>
+<span>MFA Token + Biometria</span>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-label-sm font-bold">Auditado</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3.5 px-4 font-mono font-bold text-primary">#441979</td>
+<td class="py-3.5 px-4 font-mono text-label-sm text-on-surface-variant">0x88ac...2174</td>
+<td class="py-3.5 px-4 font-mono text-label-sm text-primary font-medium">0x9e81b672cb50af...</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col">
+<span class="font-semibold text-primary">Movimentação Tombo #4419</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Switch Core Juniper EX</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="font-label-sm text-label-sm font-semibold">Patrimônio / DTI</span>
+<span class="block text-on-surface-variant font-body-sm text-body-sm">Comarca Caracaraí</span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">verified</span>
+<span>RSA-4096 ICP</span>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-label-sm font-bold">Auditado</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination / Summary Note -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span>Exibindo 4 de 441.982 blocos encadeados sequencialmente.</span>
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="font-medium">Armazenamento WORM Físico: 3 Réplicas Geodistribuídas (Boa Vista, Caracaraí, Nuvem Soberana JusBR)</span>
+</div>
+</div>
+</section>
+<!-- Interactive JavaScript Behavior -->
+<script>
+    (function () {
+      const btnTamper = document.getElementById("btn-toggle-tamper");
+      const btnTamperText = document.getElementById("btn-tamper-text");
+      const statusPill = document.getElementById("tamper-status-pill");
+      const recalcBox = document.getElementById("recalc-box");
+      const recalcHash = document.getElementById("hash-recalculated");
+      const recalcLabel = document.getElementById("recalc-source-label");
+      const verdictBox = document.getElementById("pericial-verdict-box");
+      const verdictIcon = document.getElementById("verdict-icon");
+      const verdictTitle = document.getElementById("verdict-title");
+      const verdictDesc = document.getElementById("verdict-description");
+      const btnCopyRoot = document.getElementById("btn-copy-root");
+      const btnRunScan = document.getElementById("btn-run-scan");
+      const btnExportP7s = document.getElementById("btn-export-p7s");
+
+      let isTampered = false;
+      const originalHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+      const tamperedHash = "fa881b22e119ca8890dfbb31014e09871144ac98b18203efbc901a182749a910";
+
+      // Simulation of 1-byte data tampering
+      btnTamper.addEventListener("click", () => {
+        isTampered = !isTampered;
+
+        if (isTampered) {
+          btnTamperText.textContent = "Reverter Simulação para Estado Real";
+          btnTamper.classList.remove("bg-surface-container-highest", "text-primary");
+          btnTamper.classList.add("bg-error", "text-on-error");
+
+          statusPill.className = "px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-bold flex items-center gap-1";
+          statusPill.innerHTML = '<span class="w-2 h-2 rounded-full bg-error"></span><span>ADULTERAÇÃO DETECTADA</span>';
+
+          recalcBox.classList.add("bg-error-container/40");
+          recalcLabel.textContent = "DIVERGÊNCIA CRÍTICA (Quebra da Árvore)";
+          recalcLabel.className = "font-label-sm text-label-sm text-error font-bold";
+          recalcHash.textContent = tamperedHash;
+          recalcHash.className = "font-mono text-label-sm font-bold text-error break-all select-all";
+
+          verdictBox.className = "p-space-md rounded-xl bg-error-container/30 flex items-start gap-space-sm";
+          verdictIcon.textContent = "report_problem";
+          verdictIcon.className = "material-symbols-outlined text-error text-[24px] shrink-0";
+          verdictTitle.textContent = "ALERTA PERICIAL: Invalidação Imediata da Raiz de Merkle";
+          verdictTitle.className = "font-label-lg text-label-lg font-bold text-on-error-container";
+          verdictDesc.textContent = "A alteração de apenas 1 byte na Folha H0 desestruturou recursivamente o Sub-Nó H(L1-A) e a Raiz Mestre. A prova algorítmica comprova categoricamente a tentativa de falsificação de log, gerando contra-notificação correcional automática.";
+          verdictDesc.className = "font-body-sm text-body-sm text-on-error-container leading-relaxed mt-0.5";
+        } else {
+          btnTamperText.textContent = "Simular Adulteração de 1 Byte no Bloco";
+          btnTamper.classList.remove("bg-error", "text-on-error");
+          btnTamper.classList.add("bg-surface-container-highest", "text-primary");
+
+          statusPill.className = "px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-label-sm text-label-sm font-bold flex items-center gap-1";
+          statusPill.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-600"></span><span>INTEGRIDADE COMPROVADA</span>';
+
+          recalcBox.classList.remove("bg-error-container/40");
+          recalcLabel.textContent = "Cálculo em Tempo Real";
+          recalcLabel.className = "font-label-sm text-label-sm text-emerald-700 font-semibold";
+          recalcHash.textContent = originalHash;
+          recalcHash.className = "font-mono text-label-sm font-semibold text-primary break-all select-all";
+
+          verdictBox.className = "p-space-md rounded-xl bg-emerald-500/10 flex items-start gap-space-sm";
+          verdictIcon.textContent = "gavel";
+          verdictIcon.className = "material-symbols-outlined text-emerald-700 text-[24px] shrink-0";
+          verdictTitle.textContent = "Consistência Forense Perfeita • Zero Divergência";
+          verdictTitle.className = "font-label-lg text-label-lg font-bold text-emerald-900";
+          verdictDesc.textContent = "A árvore de Merkle calculada bate exatamente com o hash gravado no carimbo do tempo ICP-Brasil. Prova matemática de imutabilidade aceita plenamente perante os Tribunais e órgãos correcionais.";
+          verdictDesc.className = "font-body-sm text-body-sm text-emerald-800 leading-relaxed mt-0.5";
+        }
+      });
+
+      // Quick Hash Copy
+      btnCopyRoot.addEventListener("click", () => {
+        const fullHash = "7f4b89a24de8110bceca0835f8b9e4a3c8e3b0c44298fc1c149afbf4c89d10e5";
+        navigator.clipboard.writeText(fullHash).then(() => {
+          btnCopyRoot.innerHTML = '<span class="material-symbols-outlined text-[16px] text-emerald-600">check</span>';
+          setTimeout(() => {
+            btnCopyRoot.innerHTML = '<span class="material-symbols-outlined text-[16px]">content_copy</span>';
+          }, 2000);
+        });
+      });
+
+      // Interactive Scan Button Feedback
+      btnRunScan.addEventListener("click", () => {
+        const originalText = btnRunScan.innerHTML;
+        btnRunScan.disabled = true;
+        btnRunScan.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Varrendo 441.982 blocos...</span>';
+        setTimeout(() => {
+          btnRunScan.disabled = false;
+          btnRunScan.innerHTML = originalText;
+          if (isTampered) {
+            btnTamper.click(); // Reset simulation if triggered
+          }
+        }, 1200);
+      });
+
+      // Interactive Export P7S Feedback
+      btnExportP7s.addEventListener("click", () => {
+        const oldContent = btnExportP7s.innerHTML;
+        btnExportP7s.innerHTML = '<span class="material-symbols-outlined text-[18px] text-emerald-600">check_circle</span><span>Laudo Gerado (P7S Assinado)</span>';
+        setTimeout(() => {
+          btnExportP7s.innerHTML = oldContent;
+        }, 2200);
+      });
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low py-space-sm px-gutter-desktop shadow-[0_-1px_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-body-sm text-body-sm"><span>Tribunal de Justiça do Estado de Roraima • Diretoria de Tecnologia da Informação (DTI)</span><div class="flex items-center gap-space-md"><span>Versão <strong class="text-on-surface font-semibold">v2.4.1</strong></span><span>Suporte Técnico: cits@tjrr.jus.br</span></div></div></footer></div></body></html>

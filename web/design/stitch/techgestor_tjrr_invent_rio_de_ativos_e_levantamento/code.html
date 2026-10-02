@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-tertiary-fixed-variant":"#005236","tertiary-fixed":"#6ffbbe","on-primary-fixed":"#001d35","secondary-container":"#5bb8fe","surface":"#faf8ff","on-error-container":"#93000a","surface-container-highest":"#dae2fd","primary":"#002541","outline":"#73777f","surface-bright":"#faf8ff","tertiary-container":"#00422b","on-tertiary":"#ffffff","surface-container":"#eaedff","surface-container-low":"#f2f3ff","error-container":"#ffdad6","secondary-fixed":"#cce5ff","on-secondary":"#ffffff","outline-variant":"#c2c7cf","on-primary":"#ffffff","on-primary-container":"#7fa6d0","secondary-fixed-dim":"#93ccff","surface-container-high":"#e2e7ff","on-error":"#ffffff","error":"#ba1a1a","primary-fixed-dim":"#a3caf6","on-surface-variant":"#42474e","on-surface":"#131b2e","surface-tint":"#3a6188","tertiary":"#002a1a","surface-variant":"#dae2fd","inverse-on-surface":"#eef0ff","on-tertiary-container":"#10b981","secondary":"#006398","background":"#faf8ff","on-tertiary-fixed":"#002113","on-secondary-container":"#00476e","surface-dim":"#d2d9f4","on-background":"#131b2e","tertiary-fixed-dim":"#4edea3","primary-fixed":"#d0e4ff","inverse-primary":"#a3caf6","inverse-surface":"#283044","on-primary-fixed-variant":"#1f496f","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#004b73","primary-container":"#0b3b60","on-secondary-fixed":"#001d31"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-md":"1rem","margin-mobile":"1rem","space-xl":"2rem","gutter-mobile":"0.75rem","gutter-desktop":"1.5rem","margin-desktop":"2rem",gutter:"1.25rem","space-lg":"1.5rem","space-xs":"0.25rem","space-sm":"0.5rem",margin:"1.5rem"},fontFamily:{"headline-xl":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-lg":["Inter"],"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-lg":["Inter"]},fontSize:{"headline-xl":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"700"}],"headline-sm":["16px",{lineHeight:"24px",letterSpacing:"-0.005em",fontWeight:"600"}],"display-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-lg":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}],"display-lg":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><img alt="Logo TechGestor TJRR" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCKdTwahu8_u9ttJtDBTy28WQVxHfhkkkdOiugHnKXttibgPX_IHgiSlffmGOunQpY5Y3fLgrrzd0hMLFmbO5RWZ2rbOSoVhqtCxvjblbttDh-we_PyXDezp907btLRTqpUP0vcHBIEynWlZ612sgX6GFXWXon7pjNZMtb2ZR8gb09kBQSh0vwXNtU3PWG2O4TweL7CfbUt6UzS8L8s-Dj-vmG2Of1K66KvMPdOiHm8qjVea1gZFwUGA"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">TechGestor</span><span class="font-label-sm text-label-sm text-secondary font-bold tracking-wider uppercase">TJRR</span></div><span class="font-body-sm text-body-sm text-on-surface-variant hidden lg:inline">Tribunal de Justiça do Estado de Roraima • Secretaria de Tecnologia da Informação</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container"><span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Status:</span><span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">Operacional 99.9%</span></div><button aria-label="Alternar modo escuro" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><div class="relative"><button aria-label="Notificações e alertas" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center relative" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface"></span></button></div><div class="flex items-center gap-space-sm pl-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi7Z-KIbZzM0jFBq_5aLJJjwlkf9ow-_fKLORyQm4RkkFRwvkR-W8TbEDi7BWdrzV5DC0m_KHHbhgU4UDgidWGLJ_hTw-lceT5lcvqkKOShPVMDZINrE17-DlajSnFNojJAm7lv1jx8iNLeH8luObaMSbDJawf8xHdQ_wxoP-JeU0ivWo7ET2iiUlqwgP6EQCUizDFeTj7WmthPKTW5U_B8SOAH_rokFM1re96qT8ZHsY0G3wl5s5O1g"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface"></span></div><div class="hidden xl:flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface font-semibold leading-tight">Carlos Mendonça</span><span class="font-label-sm text-label-sm text-on-surface-variant">Coord. Suporte N3</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 z-40 bg-surface-container-low flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex flex-col pt-space-md px-space-sm"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm rounded-lg"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio-dashboard" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-lg text-label-lg">Início / Dashboard</span></div><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-semibold">5 On</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="chamados" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">confirmation_number</span><span class="font-label-lg text-label-lg">Chamados</span></div><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-error-container text-on-error-container font-semibold">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="eventos" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">event</span><span class="font-label-lg text-label-lg">Eventos</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inventario" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-lg text-label-lg">Inventário</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="agenda" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">calendar_month</span><span class="font-label-lg text-label-lg">Agenda Forense</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="perfil" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">badge</span><span class="font-label-lg text-label-lg">Perfil</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="admin" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">manage_accounts</span><span class="font-label-lg text-label-lg">Administração</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="auditoria" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">security</span><span class="font-label-lg text-label-lg">Auditoria &amp; Logs</span></div></a></nav></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-[18px]">headset_mic</span><span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider">NOC / Plantão</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Ramal emergencial: 3198-4444 Central DTI TJRR</p></div></aside><div class="pl-64 flex flex-col min-h-screen"><main class="w-full flex-1 pt-16 px-gutter-desktop py-space-lg bg-surface"><div class="flex flex-col w-full gap-space-lg">
+<!-- Sub-header & Action Ribbon -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="p-space-xs rounded-lg bg-surface-container text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">inventory_2</span>
+</span>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Inventário de Ativos Tecnológicos e Parque Computacional TJRR</h1>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+        Gestão patrimonial automatizada, auditoria de ciclo de vida e fiscalização patrimonial da Diretoria de Tecnologia da Informação.
+      </p>
+</div>
+<!-- Quick Action Hub -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<button class="h-10 px-space-md rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-lg text-label-lg flex items-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+<span>Importar (.xlsx / .csv)</span>
+</button>
+<button class="h-10 px-space-md rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-lg text-label-lg flex items-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+<span>Exportar PDF</span>
+</button>
+<button class="h-10 px-space-md rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-lg text-label-lg flex items-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">table_view</span>
+<span>Exportar Excel</span>
+</button>
+<button class="h-10 px-space-lg rounded-lg bg-primary-container text-on-primary hover:bg-primary font-label-lg text-label-lg flex items-center gap-space-xs shadow-md relative group transition-all" onclick="openAuditModal()" type="button">
+<span class="material-symbols-outlined text-[20px] text-tertiary-fixed">add_circle</span>
+<span>+ Iniciar Novo Levantamento</span>
+<span class="absolute -top-1 -right-1 flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
+</span>
+</button>
+</div>
+</div>
+<!-- Key Metrics Row (4 Bento KPI Cards) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- KPI 1 -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Total de Bens Cadastrados</span>
+<span class="p-1.5 rounded-lg bg-surface-container text-primary">
+<span class="material-symbols-outlined text-[18px]">devices</span>
+</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-primary tracking-tight">6.420</span>
+<span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> +3.8%
+        </span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 100%"></div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-2">12 comarcas ativas no estado</span>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Verificados em 2024</span>
+<span class="p-1.5 rounded-lg bg-surface-container text-secondary">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-secondary tracking-tight">84%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">5.392 conferidos</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-1000" style="width: 84%"></div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-2">Meta anual: 95% até Dez/24</span>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Em Manutenção (N3)</span>
+<span class="p-1.5 rounded-lg bg-surface-container-high text-primary">
+<span class="material-symbols-outlined text-[18px]">build</span>
+</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-primary tracking-tight">48</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-container-highest text-primary font-semibold">Técnica DTI</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary-container h-full rounded-full" style="width: 28%"></div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-2">Tempo médio de reparo: 4.2 dias</span>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold uppercase tracking-wider">Descarte / Leilão</span>
+<span class="p-1.5 rounded-lg bg-surface-container-highest text-error">
+<span class="material-symbols-outlined text-[18px]">inventory</span>
+</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-on-surface tracking-tight">112</span>
+<span class="font-label-sm text-label-sm text-error font-semibold flex items-center">
+<span class="material-symbols-outlined text-[14px]">warning</span> Lote Ativo
+        </span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 42%"></div>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-2">Aguardando parecer da Comissão</span>
+</div>
+</div>
+<!-- Search & Multi-filter Control Bar -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col md:flex-row gap-space-md items-center justify-between">
+<!-- Realtime Full-text Search -->
+<div class="relative w-full md:w-2/5">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full h-10 pl-10 pr-4 rounded-lg bg-surface text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/70 focus:outline-none focus:ring-2 focus:ring-secondary/40 shadow-inner" id="searchInput" onkeyup="filterAssets()" placeholder="Buscar por tombo, série, modelo, processador, prédio, setor ou responsável..." type="text"/>
+</div>
+<!-- Dimensional Filters -->
+<div class="flex flex-wrap items-center gap-space-sm w-full md:w-auto">
+<div class="flex items-center gap-1 bg-surface px-space-sm py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">apartment</span>
+<select class="bg-transparent text-on-surface font-label-sm text-label-sm focus:outline-none">
+<option>Todos os Prédios (Boa Vista &amp; Interior)</option>
+<option>Palácio da Justiça - Sede</option>
+<option>Fórum Advogado Sobral Pinto</option>
+<option>Fórum Criminal Min. Evandro Lins</option>
+<option>Comarca de Rorainópolis</option>
+<option>Comarca de Caracaraí</option>
+<option>Comarca de Alto Alegre</option>
+</select>
+</div>
+<div class="flex items-center gap-1 bg-surface px-space-sm py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">category</span>
+<select class="bg-transparent text-on-surface font-label-sm text-label-sm focus:outline-none">
+<option>Todas as Categorias</option>
+<option>Estações de Trabalho (Desktops)</option>
+<option>Notebooks / Laptops TJRR</option>
+<option>Monitores Ultrawide / 4K</option>
+<option>Servidores de Rack &amp; Blade</option>
+<option>Nobreaks e Energia Crítica</option>
+<option>Switches e Roteadores Core</option>
+</select>
+</div>
+<div class="flex items-center gap-1 bg-surface px-space-sm py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">check_circle</span>
+<select class="bg-transparent text-on-surface font-label-sm text-label-sm focus:outline-none">
+<option>Status: Todos</option>
+<option>Operacional Ativo</option>
+<option>Em Manutenção N3</option>
+<option>Em Trânsito / Remanejamento</option>
+<option>Baixa Patrimonial</option>
+</select>
+</div>
+<button class="h-9 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface flex items-center gap-1 font-label-sm text-label-sm" title="Limpar Filtros" type="button">
+<span class="material-symbols-outlined text-[16px]">filter_alt_off</span>
+</button>
+</div>
+</div>
+<!-- Dynamic Asset Inventory Table -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-md text-body-md" id="assetsTable">
+<thead class="bg-surface-container-low text-on-surface font-label-sm text-label-sm uppercase tracking-wider">
+<tr>
+<th class="py-3 px-4">Tombo TJRR / QR</th>
+<th class="py-3 px-4">Equipamento &amp; Especificações</th>
+<th class="py-3 px-4">Prédio / Lotação</th>
+<th class="py-3 px-4">Posição Física</th>
+<th class="py-3 px-4">Responsável pelo Bem</th>
+<th class="py-3 px-4">Última Auditoria</th>
+<th class="py-3 px-4">Técnico N3</th>
+<th class="py-3 px-4 text-center">Status</th>
+<th class="py-3 px-4 text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="p-1 rounded bg-surface text-primary">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-primary font-bold">TJRR-PAT-094182</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">SN: 8CC9213V9L</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Dell OptiPlex 7090 Micro</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Core i7-11700 • 32GB RAM • SSD NVMe 1TB</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Fórum Sobral Pinto</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">1ª Vara Cível de Boa Vista</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="px-2 py-1 rounded bg-surface-container font-label-sm text-label-sm text-on-surface">Mesa 03 • Assessor</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-bold text-[11px]">
+                  AS
+                </div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Dra. Alana Sales</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mat. 39420</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface">14/10/2024</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">10:42 • Conferido</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Marcio Prado (DTI)</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-tertiary-container font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+                Operacional
+              </span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Visualizar Detalhes" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Imprimir Etiqueta Térmica" type="button">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Histórico de Manutenções" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="p-1 rounded bg-surface text-primary">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-primary font-bold">TJRR-PAT-081029</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">SN: U2722DE-994</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Monitor UltraSharp Dell 27" 4K</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Hub USB-C 90W • IPS Black • sRGB 100%</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Palácio da Justiça - Sede</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Gabinete Des. Presidente</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="px-2 py-1 rounded bg-surface-container font-label-sm text-label-sm text-on-surface">Mesa Principal Gabinete</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-secondary-container flex items-center justify-center text-primary font-bold text-[11px]">
+                  GA
+                </div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Des. G. Albuquerque</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mat. 10294</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface">22/10/2024</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">09:15 • Conferido</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Carlos Mendonça</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-tertiary-container font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+                Operacional
+              </span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="p-1 rounded bg-surface text-primary">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-primary font-bold">TJRR-PAT-077421</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">SN: APC-SMX3000-01</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Nobreak APC Smart-UPS 3000VA</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Rack 2U • Senoidal Pura • Módulo Bateria Ext.</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Data Center DTI / Sede</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Sala de Redes &amp; Conectividade</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="px-2 py-1 rounded bg-surface-container font-label-sm text-label-sm text-on-surface">Rack R-04 • U12</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center text-primary font-bold text-[11px]">
+                  TI
+                </div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Coord. Infraestrutura</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Setor DTI-REDES</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface">02/11/2024</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">16:30 • Substituição</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Rafael Cavalcante</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-fixed-dim text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                Em Manutenção
+              </span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="p-1 rounded bg-surface text-primary">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-primary font-bold">TJRR-PAT-091804</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">SN: PF3K9LX0</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Notebook Lenovo ThinkPad T14</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Ryzen 7 PRO • 16GB RAM • SSD 512GB • 4G LTE</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Comarca de Rorainópolis</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Juizado Especial Cível e Criminal</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="px-2 py-1 rounded bg-surface-container font-label-sm text-label-sm text-on-surface">Uso Remoto / Híbrido</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-bold text-[11px]">
+                  JM
+                </div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Dr. João Marcelo</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Juiz Substituto • Mat. 44102</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface">29/10/2024</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">11:00 • Presencial</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Marcio Prado (DTI)</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-tertiary-container font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+                Operacional
+              </span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="p-1 rounded bg-surface text-primary">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-primary font-bold">TJRR-PAT-052188</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">SN: HP-402DN-881</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Impressora Laser HP LaserJet M402dn</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Monocromática • Duplex • Rede Gigabit</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Depósito Central TJRR</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Almoxarifado Geral de Informática</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="px-2 py-1 rounded bg-surface-container font-label-sm text-label-sm text-on-surface">Prateleira D - Lote 02</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant font-bold text-[11px]">
+                  AL
+                </div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Almoxarifado Central</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">TJRR-LOG</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface">18/09/2024</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">14:00 • Inoperante</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Equipe Suporte N2</span>
+</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-highest text-error font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                Leilão / Descarte
+              </span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination Footer -->
+<div class="p-space-md bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-space-sm">
+<span>Mostrando <strong class="text-on-surface font-semibold">1-5</strong> de <strong class="text-on-surface font-semibold">6.420</strong> ativos cadastrados</span>
+<span class="hidden sm:inline">•</span>
+<span class="hidden sm:inline">Exibir:</span>
+<select class="bg-surface text-on-surface px-2 py-1 rounded font-label-sm text-label-sm">
+<option>25 itens</option>
+<option>50 itens</option>
+<option>100 itens</option>
+</select>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2.5 py-1 rounded bg-surface text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50" disabled="" type="button">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+</button>
+<button class="px-3 py-1 rounded bg-primary text-on-primary font-semibold" type="button">1</button>
+<button class="px-3 py-1 rounded bg-surface text-on-surface hover:bg-surface-container transition-colors" type="button">2</button>
+<button class="px-3 py-1 rounded bg-surface text-on-surface hover:bg-surface-container transition-colors" type="button">3</button>
+<span class="px-1 text-on-surface-variant">...</span>
+<button class="px-3 py-1 rounded bg-surface text-on-surface hover:bg-surface-container transition-colors" type="button">129</button>
+<button class="px-2.5 py-1 rounded bg-surface text-on-surface-variant hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- MODAL / ASSISTENTE INTERATIVO DE 'NOVO LEVANTAMENTO PATRIMONIAL' -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-space-md sm:p-space-lg bg-inverse-surface/60 backdrop-blur-sm" id="surveyModal">
+<div class="w-full max-w-4xl bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+<!-- Modal Header -->
+<div class="px-space-lg py-space-md bg-primary-container text-on-primary flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="p-2 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px] text-tertiary-fixed">rule_folder</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold tracking-tight">Assistente de Novo Levantamento Patrimonial TJRR</h2>
+<p class="font-body-sm text-body-sm text-on-primary-container">Auditoria presencial de bens, leitura óptica de tombo e validação de termo de guarda</p>
+</div>
+</div>
+<button class="p-1.5 rounded-lg hover:bg-primary text-on-primary-container hover:text-on-primary transition-colors" onclick="closeAuditModal()" type="button">
+<span class="material-symbols-outlined text-[22px]">close</span>
+</button>
+</div>
+<!-- Stepper Indicator -->
+<div class="px-space-lg py-space-sm bg-surface-container-low">
+<div class="flex items-center justify-between relative">
+<!-- Step 1 Tab -->
+<div class="flex items-center gap-2 z-10 cursor-pointer" id="stepTab-1" onclick="setStep(1)">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary font-bold flex items-center justify-center font-label-md text-label-md shadow-sm" id="stepBubble-1">
+              1
+            </div>
+<div class="hidden sm:flex flex-col">
+<span class="font-label-sm text-label-sm font-bold text-primary">Localização e Prédio</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Lotação física</span>
+</div>
+</div>
+<div class="flex-1 h-0.5 mx-2 bg-surface-container" id="bar-1"></div>
+<!-- Step 2 Tab -->
+<div class="flex items-center gap-2 z-10 cursor-pointer" id="stepTab-2" onclick="setStep(2)">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant font-bold flex items-center justify-center font-label-md text-label-md" id="stepBubble-2">
+              2
+            </div>
+<div class="hidden sm:flex flex-col">
+<span class="font-label-sm text-label-sm font-semibold text-on-surface-variant">Equipamentos &amp; Tombos</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Scanner &amp; modelo</span>
+</div>
+</div>
+<div class="flex-1 h-0.5 mx-2 bg-surface-container" id="bar-2"></div>
+<!-- Step 3 Tab -->
+<div class="flex items-center gap-2 z-10 cursor-pointer" id="stepTab-3" onclick="setStep(3)">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant font-bold flex items-center justify-center font-label-md text-label-md" id="stepBubble-3">
+              3
+            </div>
+<div class="hidden sm:flex flex-col">
+<span class="font-label-sm text-label-sm font-semibold text-on-surface-variant">Responsável pelo Bem</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Servidor / Magistrado</span>
+</div>
+</div>
+<div class="flex-1 h-0.5 mx-2 bg-surface-container" id="bar-3"></div>
+<!-- Step 4 Tab -->
+<div class="flex items-center gap-2 z-10 cursor-pointer" id="stepTab-4" onclick="setStep(4)">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant font-bold flex items-center justify-center font-label-md text-label-md" id="stepBubble-4">
+              4
+            </div>
+<div class="hidden sm:flex flex-col">
+<span class="font-label-sm text-label-sm font-semibold text-on-surface-variant">Técnico Inventariante</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Carimbo &amp; Fotos</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Body (Dynamic Step Panels) -->
+<div class="p-space-lg overflow-y-auto flex-1 bg-surface">
+<!-- STEP 1 CONTENT -->
+<div class="flex flex-col gap-space-md" id="stepContent-1">
+<div class="p-space-md bg-secondary-fixed/30 rounded-lg flex items-center gap-space-sm text-on-secondary-fixed-variant">
+<span class="material-symbols-outlined text-[20px] text-secondary">domain</span>
+<span class="font-body-md text-body-md font-medium">Defina com exatidão onde o equipamento está alocado para mapeamento no SIGPA TJRR.</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Prédio / Comarca TJRR <span class="text-error">*</span></label>
+<select class="w-full h-11 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm">
+<option selected="">Palácio da Justiça - Edifício Sede (Boa Vista)</option>
+<option>Fórum Advogado Sobral Pinto (Boa Vista)</option>
+<option>Fórum Criminal Ministro Evandro Lins e Silva</option>
+<option>Juizados Especiais da Fazenda Pública</option>
+<option>Comarca de Rorainópolis</option>
+<option>Comarca de Caracaraí</option>
+<option>Comarca de Alto Alegre</option>
+<option>Comarca de Pacaraima</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Departamento / Gabinete / Vara <span class="text-error">*</span></label>
+<select class="w-full h-11 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm">
+<option>Secretaria de Tecnologia da Informação (DTI)</option>
+<option selected="">Gabinete da Presidência - Sala de Reuniões</option>
+<option>1ª Vara da Fazenda Pública</option>
+<option>2ª Vara Cível da Comarca de Boa Vista</option>
+<option>Tribunal do Júri</option>
+<option>Assessoria Jurídica da Diretoria Geral</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Andar / Bloco</label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm" type="text" value="3º Andar - Bloco Norte"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Número da Sala</label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm" type="text" value="Sala 308 - Gabinete Principal"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Posição Física / Mesa <span class="text-error">*</span></label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm" type="text" value="Estação de Trabalho 02 (Assessor Chefe)"/>
+</div>
+</div>
+<div class="p-space-md bg-surface-container-lowest rounded-lg shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[22px] text-secondary">share_location</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-on-surface">Captura Automática de Coordenadas GPS</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Latitude: 2.8235° N, Longitude: 60.6758° W (Comarca de Boa Vista)</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded bg-surface-container text-on-tertiary-container font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check</span> GPS Ativo
+            </span>
+</div>
+</div>
+<!-- STEP 2 CONTENT -->
+<div class="hidden flex-col gap-space-md" id="stepContent-2">
+<div class="p-space-md bg-surface-container-lowest rounded-xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md w-full md:w-auto">
+<div class="w-14 h-14 rounded-lg bg-primary-container text-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px]">barcode_scanner</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-primary font-bold">Leitura Óptica / Leitor USB</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Conecte o leitor ou aponte a câmera do tablet TJRR</span>
+</div>
+</div>
+<button class="h-10 px-space-md rounded-lg bg-secondary text-on-secondary hover:bg-secondary/90 font-label-sm text-label-sm font-semibold flex items-center gap-1.5 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+              Ativar Câmera Scanner
+            </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Tombo Patrimonial TJRR (PAT) <span class="text-error">*</span></label>
+<div class="relative">
+<input class="w-full h-11 pl-3 pr-10 rounded-lg bg-surface-container-lowest text-on-surface font-headline-sm text-headline-sm font-bold focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm text-primary" type="text" value="TJRR-PAT-094182"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-tertiary-container text-[20px]">verified</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Número de Série (Fabricante) <span class="text-error">*</span></label>
+<input class="w-full h-11 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md uppercase font-semibold focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm" type="text" value="8CC9213V9L"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Tipo do Equipamento</label>
+<select class="w-full h-10 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm">
+<option selected="">Computador Desktop / Micro</option>
+<option>Notebook Corporativo</option>
+<option>Monitor Ultrawide / LED</option>
+<option>Nobreak / Módulo Energia</option>
+<option>Switch / Roteador / Access Point</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Marca &amp; Modelo Exato</label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm" type="text" value="Dell OptiPlex 7090 Micro Form Factor"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Estado de Conservação Física</label>
+<select class="w-full h-10 px-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm">
+<option selected="">Excelente (Sem avarias ou marcas)</option>
+<option>Bom (Sinais leves de uso)</option>
+<option>Regular (Requer manutenção preventiva)</option>
+<option>Danificado / Sucateado</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Especificações Técnicas &amp; Periféricos Agregados</label>
+<textarea class="w-full p-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm" rows="2">Processador Intel Core i7-11700 (11ª Geração), 32GB DDR4 3200MHz, SSD NVMe 1TB M.2, Fonte de alimentação original Dell 130W, Teclado Dell KB216 e Mouse MS116 inclusos.</textarea>
+</div>
+</div>
+<!-- STEP 3 CONTENT -->
+<div class="hidden flex-col gap-space-md" id="stepContent-3">
+<div class="p-space-md bg-secondary-fixed/30 rounded-lg flex items-center gap-space-sm text-on-secondary-fixed-variant">
+<span class="material-symbols-outlined text-[20px] text-secondary">badge</span>
+<span class="font-body-md text-body-md font-medium">Vinculação formal da guarda do bem. O servidor receberá notificação pelo e-mail institucional @tjrr.jus.br.</span>
+</div>
+<div class="relative w-full">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold mb-1 block">Pesquisar Servidor TJRR por Matrícula ou Nome Completo</label>
+<span class="material-symbols-outlined absolute left-3 top-9 text-on-surface-variant text-[20px]">person_search</span>
+<input class="w-full h-11 pl-10 pr-4 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md font-semibold focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm" type="text" value="Alana Sales de Menezes (Matrícula: 39420)"/>
+</div>
+<!-- Selected Responsible Person Card -->
+<div class="p-space-md bg-surface-container-lowest rounded-xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-headline-sm">
+                AS
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm font-bold text-primary">Dra. Alana Sales de Menezes</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary font-label-sm text-label-sm font-semibold">Ativo</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Cargo: Assessora Jurídica de Gabinete • Lotação: 1ª Vara Cível</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">E-mail: alana.menezes@tjrr.jus.br • Ramal: (95) 3198-4122</span>
+</div>
+</div>
+<button class="h-9 px-space-md rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-label-sm text-label-sm font-semibold" type="button">
+              Alterar Servidor
+            </button>
+</div>
+<div class="p-space-md bg-surface-container-lowest rounded-xl shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md font-bold text-on-surface">Termo de Responsabilidade &amp; Guarda Provisória</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              O responsável declara receber em perfeitas condições o bem patrimoniado descrito neste levantamento, comprometendo-se a zelar pela sua conservação e integridade, de acordo com as normas da Portaria Conjunta TJRR nº 14/2021 sobre o uso de recursos de TIC no âmbito do Poder Judiciário de Roraima.
+            </p>
+<div class="flex items-center gap-2 mt-2">
+<input checked="" class="w-4 h-4 rounded text-secondary focus:ring-secondary" id="termConfirm" type="checkbox"/>
+<label class="font-label-sm text-label-sm font-semibold text-primary" for="termConfirm">Confirmar ciência e termo de entrega em conformidade legal</label>
+</div>
+</div>
+</div>
+<!-- STEP 4 CONTENT -->
+<div class="hidden flex-col gap-space-md" id="stepContent-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="p-space-md bg-surface-container-lowest rounded-xl shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md font-bold text-primary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+                Técnico Inventariante Responsável
+              </span>
+<div class="flex items-center gap-space-sm my-1">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-bold flex items-center justify-center">
+                  CM
+                </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Carlos Mendonça</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Coord. Suporte N3 • Mat. 28410</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm pt-2 bg-surface p-2 rounded-lg">
+<span>Carimbo Data/Hora:</span>
+<strong class="text-on-surface font-semibold" id="auditTimestamp">08/11/2024 - 15:42:19</strong>
+</div>
+</div>
+<!-- Visual Evidence / Photo Upload Section -->
+<div class="p-space-md bg-surface-container-lowest rounded-xl shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md font-bold text-primary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">add_a_photo</span>
+                Fotos de Conferência do Patrimônio (Até 4 fotos)
+              </span>
+<div class="grid grid-cols-3 gap-2">
+<div class="h-20 rounded-lg bg-surface-container flex flex-col items-center justify-center text-primary relative overflow-hidden group">
+<img class="w-full h-full object-cover" data-alt="Close-up photograph showing the barcode asset sticker affixed to the side of a compact black Dell corporate desktop computer in a modern Brazilian court office." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn8zDMippi606ZPGbWAptlsbC6u0HjKohJ1Ob43fvWf9LyD1uM5b49QaH8XgTkYQGVGa-lNPUXipf9LU-pt2rWkmIKotD4cUUZISj0XVEAcyMxzrcyy6H3tx5L3XiQcxrGSyvvYk5Y2Dtq2Uj4XCMaHLgC7zRIkXpqg9re1i1OJppLTN_pPZ044IKBz-io2TcbO9_SQEM4tYuIs6AnVqUOOjFmZp-Y4uv_OXvxnNuOfruz8j3ppGg-3g"/>
+<span class="absolute bottom-0 inset-x-0 bg-primary/75 text-[10px] text-on-primary text-center py-0.5">Etiqueta</span>
+</div>
+<div class="h-20 rounded-lg bg-surface-container flex flex-col items-center justify-center text-primary relative overflow-hidden group">
+<img class="w-full h-full object-cover" data-alt="Photograph showing the full view of an organized judicial workstation desk with two monitors and a compact computer tower in the Court of Justice." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGmZ6b2UL8vA1bNMY4haRsCyHkjILIi305w2ocZczUye66Ehc10gihNebHa5mMTEVGUf2btBtYHU36eeUC9kTPWHIILH-o8ARu3AnoxvBSFj1CC_6dMKbhdUOF3sgizqOyJ5MI-In7WFIgnSkm6ei07rt8rf9Ek9Gj_07mnZM_PX_jziUEVC-b0PitJVKlMlicMYEeZw7OrSvZTjj0cpAo_9MZ67vM6yfIz1aIYZp6lLLNmGQD84AUYQ"/>
+<span class="absolute bottom-0 inset-x-0 bg-primary/75 text-[10px] text-on-primary text-center py-0.5">Estação</span>
+</div>
+<button class="h-20 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex flex-col items-center justify-center text-on-surface-variant gap-1" type="button">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+<span class="font-label-sm text-[11px] font-semibold">+ Adicionar</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Observações Gerais -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Observações Finais do Levantamento N3</label>
+<textarea class="w-full p-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/50 shadow-sm" placeholder="Observações adicionais sobre o estado do cabo de rede, ponto elétrico ou pendências de software..." rows="2"></textarea>
+</div>
+</div>
+</div>
+<!-- Modal Action Navigation Footer -->
+<div class="px-space-lg py-space-md bg-surface-container-low flex items-center justify-between">
+<button class="h-10 px-space-md rounded-lg bg-surface text-on-surface hover:bg-surface-container-high font-label-lg text-label-lg flex items-center gap-1.5 opacity-50 cursor-not-allowed transition-all" disabled="" id="prevBtn" onclick="prevStep()" type="button">
+<span class="material-symbols-outlined text-[18px]">west</span>
+          Voltar
+        </button>
+<div class="flex items-center gap-space-sm">
+<button class="h-10 px-space-md rounded-lg bg-transparent text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg transition-colors" onclick="closeAuditModal()" type="button">
+            Cancelar
+          </button>
+<button class="h-10 px-space-lg rounded-lg bg-primary-container text-on-primary hover:bg-primary font-label-lg text-label-lg font-semibold flex items-center gap-1.5 shadow transition-all" id="nextBtn" onclick="nextStep()" type="button">
+<span>Avançar Passo</span>
+<span class="material-symbols-outlined text-[18px]">east</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Client-side Script for Stepper & Filtering -->
+<script>
+  let currentStep = 1;
+  const totalSteps = 4;
+
+  function setStep(step) {
+    if (step < 1 || step > totalSteps) return;
+    currentStep = step;
+
+    // Hide all contents
+    for (let i = 1; i <= totalSteps; i++) {
+      const content = document.getElementById(`stepContent-${i}`);
+      const bubble = document.getElementById(`stepBubble-${i}`);
+      const tab = document.getElementById(`stepTab-${i}`);
+      
+      if (content) {
+        if (i === currentStep) {
+          content.classList.remove('hidden');
+          content.classList.add('flex');
+        } else {
+          content.classList.add('hidden');
+          content.classList.remove('flex');
+        }
+      }
+
+      if (bubble) {
+        if (i === currentStep) {
+          bubble.className = "w-8 h-8 rounded-full bg-primary text-on-primary font-bold flex items-center justify-center font-label-md text-label-md shadow-sm";
+        } else if (i < currentStep) {
+          bubble.className = "w-8 h-8 rounded-full bg-on-tertiary-container text-on-primary font-bold flex items-center justify-center font-label-md text-label-md shadow-sm";
+          bubble.innerHTML = '<span class="material-symbols-outlined text-[18px]">done</span>';
+        } else {
+          bubble.className = "w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant font-bold flex items-center justify-center font-label-md text-label-md";
+          bubble.innerText = i;
+        }
+      }
+    }
+
+    // Prev button state
+    const prevBtn = document.getElementById('prevBtn');
+    if (currentStep === 1) {
+      prevBtn.disabled = true;
+      prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+      prevBtn.disabled = false;
+      prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    // Next button state & text
+    const nextBtn = document.getElementById('nextBtn');
+    if (currentStep === totalSteps) {
+      nextBtn.className = "h-10 px-space-lg rounded-lg bg-on-tertiary-container text-on-primary hover:bg-tertiary font-label-lg text-label-lg font-semibold flex items-center gap-1.5 shadow transition-all";
+      nextBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">verified</span> <span>Concluir Levantamento e Gerar Termo PDF</span>';
+    } else {
+      nextBtn.className = "h-10 px-space-lg rounded-lg bg-primary-container text-on-primary hover:bg-primary font-label-lg text-label-lg font-semibold flex items-center gap-1.5 shadow transition-all";
+      nextBtn.innerHTML = '<span>Avançar Passo</span> <span class="material-symbols-outlined text-[18px]">east</span>';
+    }
+  }
+
+  function nextStep() {
+    if (currentStep < totalSteps) {
+      setStep(currentStep + 1);
+    } else {
+      // Completed action
+      alert("Levantamento patrimonial homologado com sucesso! Termo de guarda digital gerado e enviado para validação pelo magistrado/servidor.");
+      closeAuditModal();
+    }
+  }
+
+  function prevStep() {
+    if (currentStep > 1) {
+      setStep(currentStep - 1);
+    }
+  }
+
+  function openAuditModal() {
+    const modal = document.getElementById('surveyModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setStep(1);
+  }
+
+  function closeAuditModal() {
+    const modal = document.getElementById('surveyModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  function filterAssets() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('assetsTable');
+    const tr = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < tr.length; i++) {
+      const text = tr[i].textContent || tr[i].innerText;
+      if (text.toLowerCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+
+  // Set real-time timestamp on load
+  const timeElem = document.getElementById('auditTimestamp');
+  if (timeElem) {
+    const now = new Date();
+    timeElem.innerText = now.toLocaleDateString('pt-BR') + ' - ' + now.toLocaleTimeString('pt-BR');
+  }
+</script></main><footer class="w-full bg-surface-container-low py-space-sm px-gutter-desktop shadow-[0_-1px_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-body-sm text-body-sm"><span>Tribunal de Justiça do Estado de Roraima • Diretoria de Tecnologia da Informação (DTI)</span><div class="flex items-center gap-space-md"><span>Versão <strong class="text-on-surface font-semibold">v2.4.1</strong></span><span>Suporte Técnico: cits@tjrr.jus.br</span></div></div></footer></div></body></html>

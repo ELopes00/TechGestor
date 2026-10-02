@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-tertiary-fixed-variant":"#005236","tertiary-fixed":"#6ffbbe","on-primary-fixed":"#001d35","secondary-container":"#5bb8fe","surface":"#faf8ff","on-error-container":"#93000a","surface-container-highest":"#dae2fd","primary":"#002541","outline":"#73777f","surface-bright":"#faf8ff","tertiary-container":"#00422b","on-tertiary":"#ffffff","surface-container":"#eaedff","surface-container-low":"#f2f3ff","error-container":"#ffdad6","secondary-fixed":"#cce5ff","on-secondary":"#ffffff","outline-variant":"#c2c7cf","on-primary":"#ffffff","on-primary-container":"#7fa6d0","secondary-fixed-dim":"#93ccff","surface-container-high":"#e2e7ff","on-error":"#ffffff","error":"#ba1a1a","primary-fixed-dim":"#a3caf6","on-surface-variant":"#42474e","on-surface":"#131b2e","surface-tint":"#3a6188","tertiary":"#002a1a","surface-variant":"#dae2fd","inverse-on-surface":"#eef0ff","on-tertiary-container":"#10b981","secondary":"#006398","background":"#faf8ff","on-tertiary-fixed":"#002113","on-secondary-container":"#00476e","surface-dim":"#d2d9f4","on-background":"#131b2e","tertiary-fixed-dim":"#4edea3","primary-fixed":"#d0e4ff","inverse-primary":"#a3caf6","inverse-surface":"#283044","on-primary-fixed-variant":"#1f496f","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#004b73","primary-container":"#0b3b60","on-secondary-fixed":"#001d31"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-md":"1rem","margin-mobile":"1rem","space-xl":"2rem","gutter-mobile":"0.75rem","gutter-desktop":"1.5rem","margin-desktop":"2rem",gutter:"1.25rem","space-lg":"1.5rem","space-xs":"0.25rem","space-sm":"0.5rem",margin:"1.5rem"},fontFamily:{"headline-xl":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-lg":["Inter"],"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-lg":["Inter"]},fontSize:{"headline-xl":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"700"}],"headline-sm":["16px",{lineHeight:"24px",letterSpacing:"-0.005em",fontWeight:"600"}],"display-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-lg":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}],"display-lg":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><img alt="Logo TechGestor TJRR" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCKdTwahu8_u9ttJtDBTy28WQVxHfhkkkdOiugHnKXttibgPX_IHgiSlffmGOunQpY5Y3fLgrrzd0hMLFmbO5RWZ2rbOSoVhqtCxvjblbttDh-we_PyXDezp907btLRTqpUP0vcHBIEynWlZ612sgX6GFXWXon7pjNZMtb2ZR8gb09kBQSh0vwXNtU3PWG2O4TweL7CfbUt6UzS8L8s-Dj-vmG2Of1K66KvMPdOiHm8qjVea1gZFwUGA"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">TechGestor</span><span class="font-label-sm text-label-sm text-secondary font-bold tracking-wider uppercase">TJRR</span></div><span class="font-body-sm text-body-sm text-on-surface-variant hidden lg:inline">Tribunal de Justiça do Estado de Roraima • Secretaria de Tecnologia da Informação</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container"><span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Status:</span><span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">Operacional 99.9%</span></div><button aria-label="Alternar modo escuro" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><div class="relative"><button aria-label="Notificações e alertas" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center relative" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface"></span></button></div><div class="flex items-center gap-space-sm pl-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi7Z-KIbZzM0jFBq_5aLJJjwlkf9ow-_fKLORyQm4RkkFRwvkR-W8TbEDi7BWdrzV5DC0m_KHHbhgU4UDgidWGLJ_hTw-lceT5lcvqkKOShPVMDZINrE17-DlajSnFNojJAm7lv1jx8iNLeH8luObaMSbDJawf8xHdQ_wxoP-JeU0ivWo7ET2iiUlqwgP6EQCUizDFeTj7WmthPKTW5U_B8SOAH_rokFM1re96qT8ZHsY0G3wl5s5O1g"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface"></span></div><div class="hidden xl:flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface font-semibold leading-tight">Carlos Mendonça</span><span class="font-label-sm text-label-sm text-on-surface-variant">Coord. Suporte N3</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 z-40 bg-surface-container-low flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex flex-col pt-space-md px-space-sm"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm rounded-lg"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio-dashboard" href="#"><span class="font-label-lg text-label-lg">Início / Dashboard</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-semibold">5 On</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="chamados" href="#"><span class="font-label-lg text-label-lg">Chamados</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-error-container text-on-error-container font-semibold">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="eventos" href="#"><span class="font-label-lg text-label-lg">Eventos</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inventario" href="#"><span class="font-label-lg text-label-lg">Inventário</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="agenda" href="#"><span class="font-label-lg text-label-lg">Agenda Forense</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="perfil" href="#"><span class="font-label-lg text-label-lg">Perfil</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="admin" href="#"><span class="font-label-lg text-label-lg">Administração</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="auditoria" href="#"><span class="font-label-lg text-label-lg">Auditoria &amp; Logs</span></a></nav></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-[18px]">headset_mic</span><span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider">NOC / Plantão</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Ramal emergencial: 3198-4444 Central DTI TJRR</p></div></aside><div class="pl-64 flex flex-col min-h-screen"><main class="w-full flex-1 pt-16 px-gutter-desktop py-space-lg bg-surface"><div class="flex flex-col w-full gap-space-lg">
+<!-- PAGE HEADER & BREADCRUMB -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-secondary font-label-sm">
+<span class="material-symbols-outlined text-[15px]">verified_user</span>
+<span class="uppercase font-semibold tracking-wider">Gestão de Acessos e Pessoal • DTI TJRR</span>
+<span class="text-outline-variant">•</span>
+<span class="text-on-surface-variant font-medium">Controle de Privilégios &amp; Escalas</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-primary tracking-tight">
+        Administração de Usuários, Perfis e Lotações de TI
+      </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-4xl">
+        Controle centralizado de credenciais, matriz RBAC (Administrador, Gestor, Técnico Operacional), níveis técnicos (N1 Desk, N2 Campo, N3 Especialista, Laboratório) e alocação dinâmica nos prédios e comarcas do Tribunal de Justiça de Roraima.
+      </p>
+</div>
+<!-- ACTIONS -->
+<div class="flex flex-wrap items-center gap-space-sm self-start xl:self-center">
+<button class="h-10 px-space-md rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md flex items-center gap-space-xs transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">cloud_sync</span>
+<span>Sincronizar AD / TJRR</span>
+</button>
+<button class="h-10 px-space-md rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md flex items-center gap-space-xs transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">file_download</span>
+<span>Exportar Relação</span>
+</button>
+<button class="h-10 px-space-md rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-md flex items-center gap-space-xs transition-all shadow-md" onclick="document.getElementById('modal-cadastro').classList.remove('hidden')" type="button">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span>+ Cadastrar Novo Operador</span>
+</button>
+</div>
+</div>
+<!-- OPERATIONAL KPIS / METRIC TILES -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-space-md">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest rounded-lg p-space-md flex flex-col justify-between shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Ativos</span>
+<span class="p-1.5 rounded-full bg-surface-container text-primary">
+<span class="material-symbols-outlined text-[16px]">groups</span>
+</span>
+</div>
+<div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-primary tracking-tight">38</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">operadores</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">32 Técnicos • 6 Administradores</p>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 100%"></div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-lg p-space-md flex flex-col justify-between shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nível 1 Service Desk</span>
+<span class="p-1.5 rounded-full bg-secondary-fixed text-secondary">
+<span class="material-symbols-outlined text-[16px]">support_agent</span>
+</span>
+</div>
+<div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-secondary tracking-tight">12</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">atendentes</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Fórum Sobral Pinto &amp; DTI Central</p>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 32%"></div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-lg p-space-md flex flex-col justify-between shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nível 2 Campo / AV</span>
+<span class="p-1.5 rounded-full bg-surface-container-high text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-[16px]">videocam</span>
+</span>
+</div>
+<div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-on-primary-fixed-variant tracking-tight">14</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">técnicos</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Palácio da Justiça &amp; Comarcas</p>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-on-primary-fixed-variant h-full rounded-full" style="width: 37%"></div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest rounded-lg p-space-md flex flex-col justify-between shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nível 3 NOC &amp; Redes</span>
+<span class="p-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined text-[16px]">lan</span>
+</span>
+</div>
+<div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-primary tracking-tight">06</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">engenheiros</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">NOC 24/7 &amp; Datacenter Sede</p>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-on-tertiary-fixed-variant h-full rounded-full" style="width: 16%"></div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="bg-surface-container-lowest rounded-lg p-space-md flex flex-col justify-between shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Laboratório &amp; HW</span>
+<span class="p-1.5 rounded-full bg-surface-container text-secondary">
+<span class="material-symbols-outlined text-[16px]">memory</span>
+</span>
+</div>
+<div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg text-secondary tracking-tight">06</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">bancada</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Manutenção e Tombamento</p>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-secondary-container h-full rounded-full" style="width: 15%"></div>
+</div>
+</div>
+</div>
+<!-- FILTERS AND SEARCH COMPONENT -->
+<div class="bg-surface-container-lowest rounded-lg p-space-md shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md">
+<!-- Search Input -->
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-[20px] text-outline">search</span>
+<input class="w-full h-10 pl-10 pr-4 rounded-lg bg-surface-container-low text-on-surface font-body-md placeholder:text-outline focus:outline-none focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] transition-all" placeholder="Pesquisar por nome, matrícula funcional (004xxxx), e-mail @tjrr.jus.br ou tombo..." type="text"/>
+</div>
+<!-- Quick filters -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<select class="h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-label-md focus:outline-none cursor-pointer">
+<option value="">Todos os Níveis Técnicos</option>
+<option value="N1">N1 - Service Desk &amp; Triagem</option>
+<option value="N2">N2 - Suporte Presencial / Audiovisual</option>
+<option value="N3">N3 - Infraestrutura &amp; NOC</option>
+<option value="LAB">Laboratório de Hardware</option>
+</select>
+<select class="h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-label-md focus:outline-none cursor-pointer">
+<option value="">Todos os Perfis de Acesso</option>
+<option value="ADM">Administrador DTI</option>
+<option value="GES">Gestor / Coordenador</option>
+<option value="TEC">Técnico Operacional</option>
+</select>
+<select class="h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-label-md focus:outline-none cursor-pointer">
+<option value="">Todas as Unidades / Prédios</option>
+<option value="PALACIO">Palácio da Justiça (Boa Vista)</option>
+<option value="SOBRAL">Fórum Cível Adv. Sobral Pinto</option>
+<option value="EVANDRO">Fórum Criminal Min. Evandro Lins</option>
+<option value="INTERIOR">Comarcas do Interior (Rorainópolis / Caracaraí)</option>
+</select>
+<select class="h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-label-md focus:outline-none cursor-pointer">
+<option value="">Status da Conta</option>
+<option selected="" value="ATIVO">Apenas Ativos</option>
+<option value="FERIAS">Em Férias / Licença</option>
+<option value="BLOQ">Bloqueados / Desligados</option>
+</select>
+<button class="h-10 px-3 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface font-label-md flex items-center gap-1 transition-colors" title="Limpar Filtros" type="button">
+<span class="material-symbols-outlined text-[18px]">filter_alt_off</span>
+<span class="hidden sm:inline">Limpar</span>
+</button>
+</div>
+</div>
+<!-- Active Filter Tags / Chips -->
+<div class="flex items-center gap-space-xs flex-wrap pt-space-xs text-on-surface-variant">
+<span class="font-label-sm uppercase tracking-wider text-outline">Filtros aplicados:</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container font-label-sm text-primary">
+        Status: Ativos
+        <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
+</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container font-label-sm text-secondary">
+        Lotação: Todos os Prédios TJRR
+        <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
+</span>
+<span class="text-body-sm text-outline ml-auto hidden md:inline">Mostrando 6 de 38 operadores cadastrados</span>
+</div>
+</div>
+<!-- DATA TABLE: USUÁRIOS E TÉCNICOS DTI -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label-md uppercase text-[11px] tracking-wider">
+<th class="py-space-sm px-space-md font-semibold">Operador &amp; Matrícula</th>
+<th class="py-space-sm px-space-md font-semibold">Perfil RBAC</th>
+<th class="py-space-sm px-space-md font-semibold">Nível Operacional</th>
+<th class="py-space-sm px-space-md font-semibold">Lotação Física &amp; Base</th>
+<th class="py-space-sm px-space-md font-semibold">Turno Forense</th>
+<th class="py-space-sm px-space-md font-semibold">Carga de Atendimento</th>
+<th class="py-space-sm px-space-md font-semibold">Status</th>
+<th class="py-space-sm px-space-md font-semibold text-right">Ações Rápidas</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface font-body-md">
+<!-- ROW 1: Carlos Mendonça -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="relative w-10 h-10 rounded-full overflow-hidden bg-primary-container flex items-center justify-center text-on-primary font-headline-sm flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Retrato corporativo em plano médio de um analista sênior de infraestrutura de TI judiciária com olhar focado, vestindo terno discreto sem gravata em ambiente de centro de operações de tecnologia com iluminação fria e elegante nos tons azul-marinho e cinza." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4gVaHZxvePWK317VS3d-4BsGG7p-T2sWTCmiz64CqP6yGuK4qMjDhg-zksWOtBZcfgIkTAYLL52zcPkeje4mAjwwXtgxBFkfarhRDnzOD4loc8tQrhHI8Vxqx8-GXYKDe7WwptdmcMJaSLc4MQnmT1xwieToLjoJo1p6QC9WIc7UP7XGyDitfLB4KNm6jd4L_M7BoNNGZlcmuMoonhp85ht9YSel-xuw1BGtQkuXjtiK4je4evK9Dhw"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg font-semibold text-primary truncate">Carlos Mendonça da Silva</span>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm">
+<span class="font-mono text-[11px] text-secondary font-medium">0048291-TJRR</span>
+<span>•</span>
+<span class="truncate">carlos.mendonca@tjrr.jus.br</span>
+</div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-container text-on-primary font-label-sm">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+                Administrador DTI
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary text-on-primary font-label-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed"></span>
+                N3 Infraestrutura
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-on-surface">Palácio da Justiça (Boa Vista)</span>
+<span class="font-body-sm text-on-surface-variant">Gabinete DTI / Switch Core</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container font-label-sm text-on-surface">
+                Integral (08h - 17h)
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-on-surface-variant">Supervisão Geral N3</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                Ativo
+              </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Editar Perfil" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-secondary transition-colors" title="Reatribuir Lotação / Escala" type="button">
+<span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-error transition-colors" title="Redefinir MFA / Senha" type="button">
+<span class="material-symbols-outlined text-[18px]">lock_reset</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Logs de Auditoria" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 2: Lucas Pinheiro -->
+<tr class="hover:bg-surface-container-low transition-colors group bg-surface-container-lowest">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="relative w-10 h-10 rounded-full overflow-hidden bg-surface-container flex items-center justify-center text-primary font-headline-sm flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Fotografia de perfil profissional de um jovem técnico de suporte audiovisual forense com camisa polo corporativa azul-marinho crachá institucional do TJRR em ambiente de tribunal plenário ao fundo com iluminação suave." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxlEvOcRTA3e6ME0WOGJP-8t2AC7ikcztZ-M1061de7jib4nukzolAAmuMPf23TTK2fdX5J8bLFz2F50U57Nk1NNh1701d7cVQSWbZiWvPWVqrDxydYwrNp9alGV6q64oGKBP1UxJt8FBOk1WoNCNu15vai1Llos0QbYpj40f-GEEg31iqiV1fv4VHEDeX-oDg2AaIkLp2ldhL6-D4bmY90GvHhpt2sbqKdcilAhL3xveRNShmtr6gow"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary ring-2 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg font-semibold text-primary truncate">Lucas Pinheiro de Alencar</span>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm">
+<span class="font-mono text-[11px] text-secondary font-medium">0051204-TJRR</span>
+<span>•</span>
+<span class="truncate">lucas.pinheiro@tjrr.jus.br</span>
+</div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-on-surface font-label-sm">
+<span class="material-symbols-outlined text-[14px]">engineering</span>
+                Técnico Operador
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-on-primary-fixed-variant font-label-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+                N2 Audiovisual / Plenário
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-on-surface">Fórum Sobral Pinto</span>
+<span class="font-body-sm text-on-surface-variant">Tribunal do Júri / Varas Criminais</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container font-label-sm text-on-surface">
+                Matutino (07h - 13h)
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-secondary font-label-sm font-semibold">1 chamado</span>
+<span class="font-body-sm text-on-surface-variant text-[11px]">Plenário 2</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                Ativo
+              </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Editar Perfil" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-secondary transition-colors" title="Reatribuir Lotação / Escala" type="button">
+<span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-error transition-colors" title="Redefinir MFA / Senha" type="button">
+<span class="material-symbols-outlined text-[18px]">lock_reset</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Logs de Auditoria" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 3: Mariana Vasconcelos -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="relative w-10 h-10 rounded-full overflow-hidden bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-headline-sm flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Retrato de estúdio corporativo de uma engenheira de telecomunicações e redes judiciais de cabelo preso e óculos modernos, expressão confiante, fundo tecnológico de sala de servidores com leds azuis estilizados." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcSrdR6xltUptnpSMhKer1Adr9ZQuz-e-RP3eSx__n_CyUKP_15gTE0D138_hc5j01whAsuuR9ttKEtk8zUxF1GyBbiOkPZoBD0sbtlJrwypuECNeMzyhJoFOE9VIpDQbwhe5Y-NMDp2wkz1nkAnq3fieWgW4xO1KeJ5Fw5BPnz6vi8qflJ4ovppXRCvfg0FgB4mzSR4OkFa-vual2FjB3FaItci7gA_6DEejDmkVprV7jLxyH_sBriA"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg font-semibold text-primary truncate">Mariana Vasconcelos Rios</span>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm">
+<span class="font-mono text-[11px] text-secondary font-medium">0052890-TJRR</span>
+<span>•</span>
+<span class="truncate">mariana.rios@tjrr.jus.br</span>
+</div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-on-surface font-label-sm">
+<span class="material-symbols-outlined text-[14px]">engineering</span>
+                Técnico Operador
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary text-on-primary font-label-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+                N3 Redes &amp; Conectividade
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-on-surface">Datacenter TJRR - Sede</span>
+<span class="font-body-sm text-on-surface-variant">NOC / Backbones Interior</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container font-label-sm text-on-surface">
+                Integral (08h - 17h)
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>
+<span class="font-label-sm text-on-surface font-medium">Monitoramento NOC</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                Ativo
+              </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Editar Perfil" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-secondary transition-colors" title="Reatribuir Lotação / Escala" type="button">
+<span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-error transition-colors" title="Redefinir MFA / Senha" type="button">
+<span class="material-symbols-outlined text-[18px]">lock_reset</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Logs de Auditoria" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 4: Eduardo Yanomami -->
+<tr class="hover:bg-surface-container-low transition-colors group bg-surface-container-lowest">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="relative w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest flex items-center justify-center text-primary font-headline-sm flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Foto profissional de atendente de helpdesk técnico com headset leve em escritório judicial moderno, postura profissional com sorriso amigável, iluminação natural suave e monitor com gráficos do tribunal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUS4Zl5TcU3kFaALZudQXSuAsWSNClB03ehtC0_7sFW9VpumZARPdwv_jqhPgIhBNU_Jz9T9bRwnDetQBrEXjuIx7PB1VOfTuAgudmN8Qdk7muPcED_ZmAlrt4YMgiYg8Mnh7_LvVB9YQDohJnhnZ1gqS_LZeIfhTifvExTUY2Hfujps-Wvtoktx77fXqi0oCm_nbHNj__uNUKMVP4ceDUSunooC_vc3AA8UfPxAtPjTU-juOpVbRUhA"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg font-semibold text-primary truncate">Eduardo Yanomami Prado</span>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm">
+<span class="font-mono text-[11px] text-secondary font-medium">0053112-TJRR</span>
+<span>•</span>
+<span class="truncate">eduardo.prado@tjrr.jus.br</span>
+</div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-on-surface font-label-sm">
+<span class="material-symbols-outlined text-[14px]">engineering</span>
+                Técnico Operador
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                N1 Service Desk &amp; Triagem
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-on-surface">Central DTI / Remoto</span>
+<span class="font-body-sm text-on-surface-variant">Atendimento Central TJRR 3198</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container font-label-sm text-on-surface">
+                Vespertino (12h - 18h)
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm font-semibold">3 chamados</span>
+<span class="font-body-sm text-on-surface-variant text-[11px]">Fila N1</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                Ativo
+              </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Editar Perfil" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-secondary transition-colors" title="Reatribuir Lotação / Escala" type="button">
+<span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-error transition-colors" title="Redefinir MFA / Senha" type="button">
+<span class="material-symbols-outlined text-[18px]">lock_reset</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Logs de Auditoria" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 5: Rafael Albuquerque -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="relative w-10 h-10 rounded-full overflow-hidden bg-surface-container flex items-center justify-center text-primary font-headline-sm flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Fotografia de técnico especialista em reparo e montagem de microcomputadores e placas mãe de computadores de gabinete governamental, vestindo avental antiestático escuro com insígnia institucional do TJRR." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXgDFKbP4IyE5hCYcQSnwwVFyAZj4WsE8f444R8P-kx-qtWiXk_lzOmUlhxdMTFkaavkj3QLe6IiBnCRlpsgp1XY0Vq4EI4fsWw8Fqk0f_vRI7hnzKKg1Vp3AAeGbDnSsBUDZdn6RMCngLrdBm2yevz8j5WdidR81gW5GVu67SCveLbOTP5Bxbsbi36ts61SBT8XJywABGrr6O2vfXfVawPjPxAX7-SayA8quVmOzN-0hZR9x6EtYYmA"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg font-semibold text-primary truncate">Rafael Albuquerque Lima</span>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm">
+<span class="font-mono text-[11px] text-secondary font-medium">0049921-TJRR</span>
+<span>•</span>
+<span class="truncate">rafael.lima@tjrr.jus.br</span>
+</div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-on-surface font-label-sm">
+<span class="material-symbols-outlined text-[14px]">engineering</span>
+                Técnico Operador
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-label-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                Laboratório de Hardware
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-on-surface">Almoxarifado Central TJRR</span>
+<span class="font-body-sm text-on-surface-variant">Bancada de Manutenção / Tombos</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container font-label-sm text-on-surface">
+                Integral (08h - 17h)
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm font-semibold">5 em bancada</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                Ativo
+              </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Editar Perfil" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-secondary transition-colors" title="Reatribuir Lotação / Escala" type="button">
+<span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-error transition-colors" title="Redefinir MFA / Senha" type="button">
+<span class="material-symbols-outlined text-[18px]">lock_reset</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Logs de Auditoria" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 6: Beatriz Montenegro -->
+<tr class="hover:bg-surface-container-low transition-colors group bg-surface-container-lowest">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="relative w-10 h-10 rounded-full overflow-hidden bg-secondary-fixed-dim flex items-center justify-center text-primary font-headline-sm flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Fotografia executiva de diretora judiciária de tecnologia da informação em ambiente formal do Tribunal de Justiça, blazer corporativo sóbrio, postura executiva de liderança e olhar assertivo com iluminação institucional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwLCbVBPZKyttfWMM4Hl9w86R3yucFVg2yhTYpkfHHB1AlRbXYsGRDLuT9IHpKZvm4YKCSH-sZMgP9QYZFiDzci7JEORpIfF_ixJk5OC6zEkx3T4YOU5gQTK4uA0LnWZ8DmghWdRP1tV-kqCcMNIjE-hSaSaSYN_2oRJWaRri5to-sc1zV0zGNCN58jOza8za_mPvZWd6rm75--IuZCmOnFhgkFn2X_zblTzNqmZXmEUD1_239u0IXhw"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg font-semibold text-primary truncate">Dra. Beatriz Montenegro</span>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm">
+<span class="font-mono text-[11px] text-secondary font-medium">0045100-TJRR</span>
+<span>•</span>
+<span class="truncate">beatriz.montenegro@tjrr.jus.br</span>
+</div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary text-on-secondary font-label-sm">
+<span class="material-symbols-outlined text-[14px]">manage_accounts</span>
+                Gestor / Coordenador
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary text-on-primary font-label-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed"></span>
+                N3 Governança TI &amp; SLA
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-on-surface">Diretoria DTI TJRR</span>
+<span class="font-body-sm text-on-surface-variant">Gestão Estratégica &amp; CNJ</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container font-label-sm text-on-surface">
+                Integral (08h - 17h)
+              </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-on-surface">Gestão de Projetos &amp; SLA</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                Ativo
+              </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Editar Perfil" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-secondary transition-colors" title="Reatribuir Lotação / Escala" type="button">
+<span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-error transition-colors" title="Redefinir MFA / Senha" type="button">
+<span class="material-symbols-outlined text-[18px]">lock_reset</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Logs de Auditoria" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- TABLE PAGINATION FOOTER -->
+<div class="p-space-md bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant font-label-md">
+<div class="flex items-center gap-space-sm">
+<span>Exibindo <strong>1 - 6</strong> de <strong>38</strong> operadores</span>
+<span class="text-outline-variant">•</span>
+<div class="flex items-center gap-1">
+<span>Linhas por página:</span>
+<select class="h-8 px-2 rounded bg-surface-container text-on-surface font-label-sm focus:outline-none">
+<option>10</option>
+<option>25</option>
+<option>50</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-1 rounded bg-surface-container-high opacity-50 cursor-not-allowed text-on-surface flex items-center justify-center" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary-container text-on-primary font-semibold flex items-center justify-center" type="button">1</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container text-on-surface font-semibold flex items-center justify-center" type="button">2</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container text-on-surface font-semibold flex items-center justify-center" type="button">3</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container text-on-surface font-semibold flex items-center justify-center" type="button">4</button>
+<button class="p-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- COMPLIANCE & LEGAL NOTICE CARD -->
+<div class="bg-surface-container rounded-lg p-space-md flex flex-col md:flex-row items-start md:items-center gap-space-md shadow-sm">
+<div class="w-12 h-12 rounded-lg bg-primary-container text-on-primary flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[26px]">gavel</span>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-1">
+        Diretrizes de Governança, Matriz de Responsabilidade (RBAC) e Resoluções CNJ
+      </h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+        Em conformidade estrita com a <strong>Resolução CNJ nº 370/2021</strong> (Estratégia Nacional de TIC do Poder Judiciário) e a <strong>Lei Geral de Proteção de Dados (LGPD)</strong>, os acessos com perfil de Administrador e N3 requerem dupla autenticação (MFA), assinatura digital ICP-Brasil e origem homologada no perímetro de rede do Tribunal de Justiça de Roraima.
+      </p>
+</div>
+<button class="h-9 px-space-md rounded-lg bg-surface-container-highest hover:bg-surface-dim text-on-surface font-label-md flex items-center gap-1 transition-colors whitespace-nowrap self-stretch md:self-auto justify-center" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">policy</span>
+<span>Ver Matriz RBAC</span>
+</button>
+</div>
+<!-- MODAL / GAVETA FLUTUANTE DE CADASTRO (INTERATIVO) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-primary/40 backdrop-blur-sm p-space-md overflow-y-auto" id="modal-cadastro">
+<div class="bg-surface-container-lowest rounded-xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+<!-- MODAL HEADER -->
+<div class="p-space-lg bg-primary-container text-on-primary flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-on-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">person_add</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm uppercase tracking-wider text-secondary-fixed">Diretoria de Tecnologia da Informação TJRR</span>
+<h2 class="font-headline-lg text-headline-lg font-bold tracking-tight">Cadastro de Novo Operador DTI / TJRR</h2>
+</div>
+</div>
+<button class="p-2 rounded-lg text-on-primary hover:bg-on-primary/15 transition-colors" onclick="document.getElementById('modal-cadastro').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[22px]">close</span>
+</button>
+</div>
+<!-- MODAL BODY -->
+<div class="p-space-lg overflow-y-auto flex flex-col gap-space-lg">
+<!-- SEÇÃO 1: DADOS FUNCIONAIS E AUTENTICAÇÃO -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-primary font-headline-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary">badge</span>
+<span>1. Dados Funcionais &amp; Identificação Institucional</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div>
+<label class="block font-label-sm text-on-surface mb-1">Matrícula TJRR *</label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] focus:outline-none" placeholder="Ex: 0054210-TJRR" type="text"/>
+</div>
+<div class="md:col-span-2">
+<label class="block font-label-sm text-on-surface mb-1">Nome Completo do Servidor / Terceirizado *</label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] focus:outline-none" placeholder="Nome completo oficial" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-on-surface mb-1">CPF *</label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] focus:outline-none" placeholder="000.000.000-00" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-on-surface mb-1">E-mail Corporativo TJRR *</label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] focus:outline-none" placeholder="nome.sobrenome@tjrr.jus.br" type="email"/>
+</div>
+<div>
+<label class="block font-label-sm text-on-surface mb-1">Ramal Telefônico Oficial</label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] focus:outline-none" placeholder="Ex: 3198-4420" type="text"/>
+</div>
+</div>
+</div>
+<!-- SEÇÃO 2: PERFIL DE ACESSO & HIERARQUIA (RADIO CARDS) -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-primary font-headline-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary">admin_panel_settings</span>
+<span>2. Perfil de Acesso &amp; Privilégios Hierárquicos (RBAC)</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Option 1: Administrador -->
+<label class="p-space-md rounded-lg bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all flex flex-col gap-2 relative">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-primary font-label-lg font-semibold">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+<span>Administrador DTI</span>
+</div>
+<input class="accent-primary" name="perfil" type="radio" value="ADM"/>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Acesso pleno a auditorias, configurações globais, exclusão de registros e gerenciamento de permissões críticas.
+              </p>
+</label>
+<!-- Option 2: Gestor -->
+<label class="p-space-md rounded-lg bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all flex flex-col gap-2 relative">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-secondary font-label-lg font-semibold">
+<span class="material-symbols-outlined text-[20px]">manage_accounts</span>
+<span>Gestor / Coord.</span>
+</div>
+<input class="accent-secondary" name="perfil" type="radio" value="GES"/>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Distribuição de filas, reatribuição de chamados, relatórios de produtividade, controle de escalas e SLA.
+              </p>
+</label>
+<!-- Option 3: Técnico Operador (Marcado) -->
+<label class="p-space-md rounded-lg bg-surface-container hover:bg-surface-container-high cursor-pointer transition-all flex flex-col gap-2 relative shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-on-surface font-label-lg font-semibold">
+<span class="material-symbols-outlined text-[20px]">engineering</span>
+<span>Técnico Operacional</span>
+</div>
+<input checked="" class="accent-primary" name="perfil" type="radio" value="TEC"/>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Atendimento presencial/remoto de chamados, execução de check-lists forenses, rondas e movimentação de inventário.
+              </p>
+</label>
+</div>
+</div>
+<!-- SEÇÃO 3: NÍVEL OPERACIONAL & ESPECIALIDADE -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-primary font-headline-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary">layers</span>
+<span>3. Nível Operacional &amp; Especialidade Técnica</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div>
+<label class="block font-label-sm text-on-surface mb-1">Nível Técnico de Atuação *</label>
+<select class="w-full h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] focus:outline-none cursor-pointer">
+<option value="N1">N1 - Suporte Remoto / Service Desk (Telefonia, Senhas, PJe Básico)</option>
+<option selected="" value="N2">N2 - Suporte Presencial / Audiovisual (Plenário, Varas, Microfonia, Zoom)</option>
+<option value="N3">N3 - Infraestrutura Crítica / NOC (Fibra, Roteadores Core, SAN, Projudi)</option>
+<option value="LAB">Laboratório - Manutenção Preventiva/Corretiva &amp; Tombos</option>
+</select>
+</div>
+<div>
+<label class="block font-label-sm text-on-surface mb-1">Especialidade / Certificação</label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] focus:outline-none" placeholder="Ex: Audiovisual Judiciário / Certificação Dante / CCNA" type="text"/>
+</div>
+</div>
+</div>
+<!-- SEÇÃO 4: LOTAÇÃO FÍSICA E ESCALA FORENSE -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-primary font-headline-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary">pin_drop</span>
+<span>4. Lotação Física Primária &amp; Escala de Horário</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div>
+<label class="block font-label-sm text-on-surface mb-1">Prédio / Comarca de Lotação *</label>
+<select class="w-full h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] focus:outline-none cursor-pointer">
+<option>Palácio da Justiça (Boa Vista - Sede)</option>
+<option selected="">Fórum Cível Adv. Sobral Pinto</option>
+<option>Fórum Criminal Min. Evandro Lins</option>
+<option>Juizado Especial da Fazenda Pública</option>
+<option>Comarca de Rorainópolis</option>
+<option>Comarca de Caracaraí</option>
+<option>Comarca de Mucajaí</option>
+<option>Comarca de Pacaraima</option>
+<option>Comarca de Bonfim</option>
+</select>
+</div>
+<div>
+<label class="block font-label-sm text-on-surface mb-1">Setor / Base Interna *</label>
+<input class="w-full h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] focus:outline-none" placeholder="Ex: Base N2 - Sala 104 Térreo" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-on-surface mb-1">Turno Forense Homologado *</label>
+<select class="w-full h-10 px-3 rounded-lg bg-surface-container-low text-on-surface font-body-md focus:bg-surface focus:shadow-[0_0_0_2px_rgba(0,37,65,0.25)] focus:outline-none cursor-pointer">
+<option selected="">Matutino Forense (07:00 às 13:00)</option>
+<option>Vespertino Forense (12:00 às 18:00)</option>
+<option>Integral DTI (08:00 às 17:00 com intervalo)</option>
+<option>Regime de Plantão Noturno / Fim de Semana (Sobreaviso)</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- MODAL ACTIONS FOOTER -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm">
+<span class="material-symbols-outlined text-[18px] text-secondary">security</span>
+<span>Será disparado e-mail com instrução de primeiro login e MFA.</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="h-10 px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md transition-colors" onclick="document.getElementById('modal-cadastro').classList.add('hidden')" type="button">
+            Cancelar
+          </button>
+<button class="h-10 px-space-lg rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-md flex items-center gap-space-xs transition-all shadow-md" onclick="document.getElementById('modal-cadastro').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[18px]">key</span>
+<span>Salvar e Emitir Credenciais</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-low py-space-sm px-gutter-desktop shadow-[0_-1px_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-body-sm text-body-sm"><span>Tribunal de Justiça do Estado de Roraima • Diretoria de Tecnologia da Informação (DTI)</span><div class="flex items-center gap-space-md"><span>Versão <strong class="text-on-surface font-semibold">v2.4.1</strong></span><span>Suporte Técnico: cits@tjrr.jus.br</span></div></div></footer></div></body></html>

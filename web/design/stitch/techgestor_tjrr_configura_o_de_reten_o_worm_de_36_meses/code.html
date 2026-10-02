@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-tertiary-fixed-variant":"#005236","tertiary-fixed":"#6ffbbe","on-primary-fixed":"#001d35","secondary-container":"#5bb8fe","surface":"#faf8ff","on-error-container":"#93000a","surface-container-highest":"#dae2fd","primary":"#002541","outline":"#73777f","surface-bright":"#faf8ff","tertiary-container":"#00422b","on-tertiary":"#ffffff","surface-container":"#eaedff","surface-container-low":"#f2f3ff","error-container":"#ffdad6","secondary-fixed":"#cce5ff","on-secondary":"#ffffff","outline-variant":"#c2c7cf","on-primary":"#ffffff","on-primary-container":"#7fa6d0","secondary-fixed-dim":"#93ccff","surface-container-high":"#e2e7ff","on-error":"#ffffff","error":"#ba1a1a","primary-fixed-dim":"#a3caf6","on-surface-variant":"#42474e","on-surface":"#131b2e","surface-tint":"#3a6188","tertiary":"#002a1a","surface-variant":"#dae2fd","inverse-on-surface":"#eef0ff","on-tertiary-container":"#10b981","secondary":"#006398","background":"#faf8ff","on-tertiary-fixed":"#002113","on-secondary-container":"#00476e","surface-dim":"#d2d9f4","on-background":"#131b2e","tertiary-fixed-dim":"#4edea3","primary-fixed":"#d0e4ff","inverse-primary":"#a3caf6","inverse-surface":"#283044","on-primary-fixed-variant":"#1f496f","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#004b73","primary-container":"#0b3b60","on-secondary-fixed":"#001d31"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-md":"1rem","margin-mobile":"1rem","space-xl":"2rem","gutter-mobile":"0.75rem","gutter-desktop":"1.5rem","margin-desktop":"2rem",gutter:"1.25rem","space-lg":"1.5rem","space-xs":"0.25rem","space-sm":"0.5rem",margin:"1.5rem"},fontFamily:{"headline-xl":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-lg":["Inter"],"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-lg":["Inter"]},fontSize:{"headline-xl":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"700"}],"headline-sm":["16px",{lineHeight:"24px",letterSpacing:"-0.005em",fontWeight:"600"}],"display-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-lg":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}],"display-lg":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><img alt="Logo TechGestor TJRR" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCKdTwahu8_u9ttJtDBTy28WQVxHfhkkkdOiugHnKXttibgPX_IHgiSlffmGOunQpY5Y3fLgrrzd0hMLFmbO5RWZ2rbOSoVhqtCxvjblbttDh-we_PyXDezp907btLRTqpUP0vcHBIEynWlZ612sgX6GFXWXon7pjNZMtb2ZR8gb09kBQSh0vwXNtU3PWG2O4TweL7CfbUt6UzS8L8s-Dj-vmG2Of1K66KvMPdOiHm8qjVea1gZFwUGA"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">TechGestor</span><span class="font-label-sm text-label-sm text-secondary font-bold tracking-wider uppercase">TJRR</span></div><span class="font-body-sm text-body-sm text-on-surface-variant hidden lg:inline">Tribunal de Justiça do Estado de Roraima • Secretaria de Tecnologia da Informação</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container"><span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Status:</span><span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">Operacional 99.9%</span></div><button aria-label="Alternar modo escuro" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><div class="relative"><button aria-label="Notificações e alertas" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center relative" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface"></span></button></div><div class="flex items-center gap-space-sm pl-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi7Z-KIbZzM0jFBq_5aLJJjwlkf9ow-_fKLORyQm4RkkFRwvkR-W8TbEDi7BWdrzV5DC0m_KHHbhgU4UDgidWGLJ_hTw-lceT5lcvqkKOShPVMDZINrE17-DlajSnFNojJAm7lv1jx8iNLeH8luObaMSbDJawf8xHdQ_wxoP-JeU0ivWo7ET2iiUlqwgP6EQCUizDFeTj7WmthPKTW5U_B8SOAH_rokFM1re96qT8ZHsY0G3wl5s5O1g"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface"></span></div><div class="hidden xl:flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface font-semibold leading-tight">Carlos Mendonça</span><span class="font-label-sm text-label-sm text-on-surface-variant">Coord. Suporte N3</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 z-40 bg-surface-container-low flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex flex-col pt-space-md px-space-sm"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm rounded-lg"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio-dashboard" href="#"><span class="font-label-lg text-label-lg">Início / Dashboard</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-semibold">5 On</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="chamados" href="#"><span class="font-label-lg text-label-lg">Chamados</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-error-container text-on-error-container font-semibold">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="eventos" href="#"><span class="font-label-lg text-label-lg">Eventos</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inventario" href="#"><span class="font-label-lg text-label-lg">Inventário</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="agenda" href="#"><span class="font-label-lg text-label-lg">Agenda Forense</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="perfil" href="#"><span class="font-label-lg text-label-lg">Perfil</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="admin" href="#"><span class="font-label-lg text-label-lg">Administração</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="auditoria" href="#"><span class="font-label-lg text-label-lg">Auditoria &amp; Logs</span></a></nav></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-[18px]">headset_mic</span><span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider">NOC / Plantão</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Ramal emergencial: 3198-4444 Central DTI TJRR</p></div></aside><div class="pl-64 flex flex-col min-h-screen"><main class="w-full flex-1 pt-16 px-gutter-desktop py-space-lg bg-surface"><div class="flex flex-col w-full relative">
+<!-- Underlay Dashboard Preview (Contextual Background Behind Modal) -->
+<div aria-hidden="true" class="w-full filter blur-[3px] opacity-40 pointer-events-none select-none">
+<div class="flex flex-col gap-space-md">
+<!-- Breadcrumb & Underlay Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs font-label-md text-label-md text-on-surface-variant">
+<span>Início</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span>Auditoria &amp; Logs</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary font-semibold">Custódia Forense &amp; WORM</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="px-space-sm py-space-xs rounded-lg bg-surface-container-high font-label-sm text-label-sm text-on-surface">
+            Nó Ativo: <span class="font-bold">ceph-osd-tjrr-04</span>
+</div>
+</div>
+</div>
+<!-- Underlay KPI Row -->
+<div class="grid grid-cols-4 gap-space-md">
+<div class="p-space-md rounded-xl bg-surface-container shadow-sm flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Total Registros Auditados</span>
+<span class="font-headline-xl text-headline-xl text-primary font-bold">14.284.102</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container shadow-sm flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Armazenamento WORM</span>
+<span class="font-headline-xl text-headline-xl text-primary font-bold">842.1 GB</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container shadow-sm flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Integridade SHA-256</span>
+<span class="font-headline-xl text-headline-xl text-on-tertiary-container font-bold">100.0%</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container shadow-sm flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Legal Holds Ativos</span>
+<span class="font-headline-xl text-headline-xl text-secondary font-bold">37 Casos</span>
+</div>
+</div>
+<!-- Underlay Mock Table Preview -->
+<div class="rounded-xl bg-surface-container p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="h-6 w-48 rounded bg-surface-container-high"></div>
+<div class="h-10 w-full rounded bg-surface-container-low"></div>
+<div class="h-10 w-full rounded bg-surface-container-low"></div>
+<div class="h-10 w-full rounded bg-surface-container-low"></div>
+<div class="h-10 w-full rounded bg-surface-container-low"></div>
+</div>
+</div>
+</div>
+<!-- Modal Backdrop Layer -->
+<div class="fixed inset-0 z-50 bg-primary/60 backdrop-blur-md flex items-center justify-center p-space-sm md:p-space-md overflow-y-auto" id="worm-modal-backdrop">
+<!-- Modal Window Container -->
+<div aria-labelledby="modal-title" aria-modal="true" class="relative w-full max-w-5xl my-auto rounded-xl bg-surface-container-lowest shadow-2xl flex flex-col overflow-hidden max-h-[92vh]" role="dialog">
+<!-- Modal Top Header Band (TJRR Security Anchor) -->
+<div class="w-full bg-primary-container px-space-lg py-space-md text-on-primary flex flex-col gap-space-xs relative">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<!-- Shield Lock Judicial Emblem -->
+<div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-md shrink-0">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div class="flex flex-col">
+<div class="flex flex-wrap items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg font-bold tracking-tight text-on-primary" id="modal-title">
+                  Política de Retenção WORM &amp; Governança de Logs
+                </span>
+<span class="font-label-sm text-label-sm px-space-xs py-0.5 rounded-full bg-on-tertiary-container text-surface-container-lowest font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-container-lowest animate-pulse"></span>
+                  Storage WORM Ativo
+                </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-primary-container mt-0.5">
+                Parametrização de ciclo de vida e imutabilidade pericial em conformidade com o Art. 18 da Resolução CNJ nº 370/2021, Lei 13.709/2018 (LGPD) e Cadeia de Custódia Pericial (Art. 158-A do CPP).
+              </p>
+</div>
+</div>
+<!-- Close Window Action -->
+<button aria-label="Fechar janela de parametrização" class="p-space-xs rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center shrink-0" id="close-modal-btn">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+<!-- Legislative Legal Meta Strip -->
+<div class="flex flex-wrap items-center justify-between gap-space-xs pt-space-xs text-on-primary-container font-label-sm text-label-sm">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="inline-flex items-center gap-1 bg-primary/40 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">policy</span>
+              Portaria Presidência TJRR nº 204/2023
+            </span>
+<span class="inline-flex items-center gap-1 bg-primary/40 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">gavel</span>
+              Resolução CNJ nº 370/2021
+            </span>
+<span class="inline-flex items-center gap-1 bg-primary/40 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">verified_user</span>
+              Art. 158-A CPP (Custódia)
+            </span>
+</div>
+<div class="inline-flex items-center gap-1 text-tertiary-fixed font-semibold">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+            Bloqueio de Deleção em Nível de Hardware Habilitado
+          </div>
+</div>
+</div>
+<!-- Modal Body (Scrollable Pane) -->
+<div class="flex-1 overflow-y-auto p-space-lg flex flex-col gap-space-lg bg-surface">
+<!-- SECTION 1: Janela de Retenção Imutável (WORM) -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm font-bold">1</span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold">
+                Janela de Retenção Imutável (WORM - Write Once, Read Many)
+              </h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Seleção Obrigatória de Diretiva Forense</span>
+</div>
+<!-- Retention Period Cards Selection Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Option A: 36 Meses (Active Selected Tier) -->
+<label class="cursor-pointer relative p-space-md rounded-xl bg-surface-container-lowest shadow-md flex flex-col justify-between transition-all group">
+<input checked="" class="sr-only peer" name="worm_retention_window" type="radio" value="36"/>
+<div class="absolute inset-0 rounded-xl pointer-events-none ring-2 ring-on-tertiary-container bg-on-tertiary-container/5 peer-checked:block hidden"></div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-primary font-bold group-hover:text-secondary transition-colors">
+                    36 Meses (3 Anos)
+                  </span>
+<span class="w-5 h-5 rounded-full bg-on-tertiary-container text-surface-container-lowest flex items-center justify-center text-[14px] material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">
+                    check
+                  </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">
+                  Padrão Obrigatório CNJ / TJRR
+                </span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-snug">
+                  Cobre integralmente o ciclo pericial de chamados, auditoria de acesso à base judicial e trilha do PJe.
+                </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-on-tertiary-container/10 text-on-tertiary-fixed-variant font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+                  Imutabilidade por Hardware
+                </span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">RECOMENDADO</span>
+</div>
+</label>
+<!-- Option B: 60 Meses -->
+<label class="cursor-pointer relative p-space-md rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md flex flex-col justify-between transition-all group">
+<input class="sr-only peer" name="worm_retention_window" type="radio" value="60"/>
+<div class="absolute inset-0 rounded-xl pointer-events-none ring-2 ring-secondary bg-secondary/5 peer-checked:block hidden"></div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-primary font-bold group-hover:text-secondary transition-colors">
+                    60 Meses (5 Anos)
+                  </span>
+<span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-[14px] material-symbols-outlined peer-checked:bg-secondary peer-checked:text-on-secondary">
+                    radio_button_unchecked
+                  </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">
+                  Casos Especiais &amp; Menores
+                </span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-snug">
+                  Ações Cíveis Complexas, Varas da Infância e Juventude e logs de infraestrutura sensível de rede.
+                </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">
+                  Modo Retenção Estendida
+                </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">+67% Espaço</span>
+</div>
+</label>
+<!-- Option C: 120 Meses -->
+<label class="cursor-pointer relative p-space-md rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md flex flex-col justify-between transition-all group">
+<input class="sr-only peer" name="worm_retention_window" type="radio" value="120"/>
+<div class="absolute inset-0 rounded-xl pointer-events-none ring-2 ring-secondary bg-secondary/5 peer-checked:block hidden"></div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-primary font-bold group-hover:text-secondary transition-colors">
+                    120 Meses (10 Anos)
+                  </span>
+<span class="w-5 h-5 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center text-[14px] material-symbols-outlined peer-checked:bg-secondary peer-checked:text-on-secondary">
+                    radio_button_unchecked
+                  </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">
+                  Pauta Histórica Institucional
+                </span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-snug">
+                  Atos de posse de Magistrados, trilhas de votação do Pleno e inventário judicial imprescritível.
+                </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-medium">
+                  Arquivamento Permanente
+                </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Alto Custo</span>
+</div>
+</label>
+</div>
+<!-- Hardware Policy Enforcement Banner -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex items-start gap-space-md">
+<div class="p-2 rounded-lg bg-primary text-on-primary shrink-0">
+<span class="material-symbols-outlined text-[22px]">developer_board</span>
+</div>
+<div class="flex flex-col gap-space-xs text-on-surface">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-label-lg text-label-lg font-bold text-primary">Diretiva de Hardware Rigoroso (WORM SAN/Ceph Cluster DTI)</span>
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-sm text-label-sm font-bold">NÃO SUPORTA ROLLBACK</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Durante a janela ativa de <strong>36 meses</strong>, a exclusão, sobrescrita, truncação ou edição física dos blocos de log é bloqueada no nível do microcódigo do storage SAN/Ceph cluster da DTI, <strong class="text-on-surface">inclusive para superusuários root e administradores de banco de dados</strong>.
+              </p>
+<div class="flex flex-wrap items-center gap-space-lg text-label-sm font-label-sm pt-1 text-on-surface-variant">
+<div>Início da Política Atual: <strong class="text-on-surface font-semibold">01/01/2024 às 00:00:00 UTC-4</strong></div>
+<div>Expiração do Lote Mais Antigo: <strong class="text-on-surface font-semibold">01/01/2027 às 23:59:59 UTC-4</strong></div>
+<div>Hash de Verificação: <code class="font-mono text-primary font-semibold">sha256:8f92c10b...3d9a</code></div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Tiering e Arquivamento em Camadas (Storage Lifecycle) -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm font-bold">2</span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold">
+                Tiering e Arquivamento Automático em Camadas (Storage Lifecycle)
+              </h3>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">Fluxo de Transição Automatizado</span>
+</div>
+<!-- Visual Tiering Pipeline Flow -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md relative">
+<!-- Tier 1: Quente -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="w-full h-1.5 bg-secondary-container absolute top-0 left-0"></div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between pt-1">
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">
+                    Tier 1 • Quente (Hot)
+                  </span>
+<span class="material-symbols-outlined text-secondary text-[20px]">bolt</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-primary font-bold mt-1">
+                  0 a 90 dias
+                </div>
+<div class="font-label-sm text-label-sm text-on-surface-variant font-semibold">
+                  NVMe Enterprise SSD Arrays
+                </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Acesso instantâneo em tempo real via dashboard do TechGestor TJRR, consultas full-text e diff pericial imediato para a equipe N3 e NOC.
+                </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Latência: <strong>&lt; 50ms</strong></span>
+<span class="text-on-tertiary-container font-semibold">Leitura/Escrita</span>
+</div>
+</div>
+<!-- Tier 2: Morno -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="w-full h-1.5 bg-secondary absolute top-0 left-0"></div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between pt-1">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold">
+                    Tier 2 • Morno (Warm)
+                  </span>
+<span class="material-symbols-outlined text-secondary text-[20px]">database</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-primary font-bold mt-1">
+                  91 a 365 dias
+                </div>
+<div class="font-label-sm text-label-sm text-on-surface-variant font-semibold">
+                  SAS SAN DTI Array • Partição Segregada
+                </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Indexado para relatórios mensais da Corregedoria Geral de Justiça e auditorias pontuais com latência controlada.
+                </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Latência: <strong>&lt; 2.0s</strong></span>
+<span class="text-secondary font-semibold">Consultas Indexadas</span>
+</div>
+</div>
+<!-- Tier 3: Frio / WORM Vault -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="w-full h-1.5 bg-primary absolute top-0 left-0"></div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between pt-1">
+<span class="px-2 py-0.5 rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">lock</span>
+                    Tier 3 • WORM Vault
+                  </span>
+<span class="material-symbols-outlined text-primary text-[20px]">lock_clock</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-primary font-bold mt-1">
+                  366 a 1.095 dias
+                </div>
+<div class="font-label-sm text-label-sm text-on-surface-variant font-semibold">
+                  Ceph Erasure Coded • WORM Imutável
+                </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Comprimido com integridade SHA-256 e árvore de Merkle, carimbo do tempo ICP-Brasil, armazenamento imutável no Datacenter TJRR.
+                </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Latência: <strong>Batch / Assíncrona</strong></span>
+<span class="text-on-tertiary-container font-semibold">100% Imutável</span>
+</div>
+</div>
+</div>
+<!-- Storage Statistics Metric Bar -->
+<div class="p-space-md rounded-xl bg-surface-container-high shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[24px]">verified</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Volume Atual sob Custódia Forense</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+<strong>842,4 GB</strong> alocados • <strong>14.284.102</strong> registros assinados • Clustered across 12 OSD nodes
+                </span>
+</div>
+</div>
+<div class="flex items-center gap-space-lg shrink-0">
+<div class="flex flex-col text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Integridade Criptográfica</span>
+<span class="font-headline-sm text-headline-sm text-on-tertiary-container font-bold flex items-center gap-1 justify-end">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>
+                  100% (Zero Corrupções)
+                </span>
+</div>
+<button class="px-space-md py-space-xs rounded-lg bg-surface-container-lowest text-primary hover:bg-surface-container transition-colors font-label-sm text-label-sm font-semibold flex items-center gap-1 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">fingerprint</span>
+                Validar Hashes
+              </button>
+</div>
+</div>
+</section>
+<!-- SECTION 3: Regras de Descarte Forense & Expurgo Seguro -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm font-bold">3</span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold">
+                Regras de Descarte Forense &amp; Expurgo Seguro (Pós-36 Meses)
+              </h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Segurança da Informação DTI</span>
+</div>
+<!-- Toggle Options Container -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-space-md">
+<!-- Toggle Rule 1 -->
+<label class="flex items-start justify-between gap-space-md cursor-pointer group">
+<div class="flex items-start gap-space-sm">
+<div class="p-1.5 rounded-lg bg-surface-container text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">delete_sweep</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">
+                    Expurgo Seguro Automatizado com Emissão de Certificado de Destruição
+                  </span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Ao atingir 36 meses sem retenção legal vinculada, os blocos de dados recebem sobreposição criptográfica conforme padrão <strong>DoD 5220.22-M / NIST SP 800-88 Rev 1</strong> com geração automática de laudo forense assinado digitalmente.
+                  </p>
+</div>
+</div>
+<div class="relative inline-flex items-center shrink-0 mt-1">
+<input checked="" class="sr-only peer" id="toggle-expurgo" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</div>
+</label>
+<!-- Toggle Rule 2 -->
+<label class="flex items-start justify-between gap-space-md cursor-pointer group">
+<div class="flex items-start gap-space-sm">
+<div class="p-1.5 rounded-lg bg-surface-container text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">notification_important</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">
+                    Notificação Prévia de 30 Dias à Diretoria de Governança e Corregedoria
+                  </span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Disparo de boletim oficial assinado via SEI aos Comitês de TI e CGJ antes de qualquer liberação de espaço ou arquivamento permanente fora de linha.
+                  </p>
+</div>
+</div>
+<div class="relative inline-flex items-center shrink-0 mt-1">
+<input checked="" class="sr-only peer" id="toggle-notificacao" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</div>
+</label>
+<!-- Toggle Rule 3 -->
+<label class="flex items-start justify-between gap-space-md cursor-pointer group">
+<div class="flex items-start gap-space-sm">
+<div class="p-1.5 rounded-lg bg-surface-container text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-colors shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">gavel</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">
+                      Preservação de Hold Judicial (Legal Hold Automático)
+                    </span>
+<span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold uppercase">
+                      Imunidade Ativa
+                    </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Logs correlacionados a chamados de incidentes com vinculação formal a <strong>Processos SEI, Sindicâncias Administrativas ou Notificações de Auditoria Externa (TCU / CNJ)</strong> são congelados permanentemente, impedindo expurgo independente da idade.
+                  </p>
+</div>
+</div>
+<div class="relative inline-flex items-center shrink-0 mt-1">
+<input checked="" class="sr-only peer" id="toggle-legalhold" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</div>
+</label>
+</div>
+</section>
+<!-- SECTION 4: Assinatura da Política pelo Responsável Técnico & ICP-Brasil -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm font-bold">4</span>
+<h3 class="font-headline-sm text-headline-sm text-primary font-bold">
+                Homologação e Assinatura Digital ICP-Brasil
+              </h3>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-semibold">
+              Validade Jurídica Plena
+            </span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-md">
+<!-- Officer Digital Identity -->
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Foto institucional nítida do Coordenador de Infraestrutura de TI Carlos Mendonça do TJRR, vestindo camisa social azul escura em ambiente corporativo moderno com iluminação neutra de tribunal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAd-LVdHcWrYunS0O0Um-wZE6NH_y_vgmSG_rZItaGJU8uqWuyiDsGwM0LvZz9U8DoVl8SVWuaBucQiDTjmEf4jAVdVCI9hJ0WZ9dzA79FXsLXerf9GSopbR4WwIFRrBfIZ4XbviZYNmJmK-xy-c3FKlglIA95Zo3Q4oZIjuYlw1sJa517pHxLrCKPzq_VGSxsxKT8jGFbDxxMwdY9oUyWB8BB5Hd29stqgyeUFS2-BWSFp1i4k4Jyww"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-on-tertiary-container ring-2 ring-surface-container-lowest" title="Certificado Conectado"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Carlos Mendonça da Silva</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+                  Coordenador N3 &amp; Infraestrutura • Matrícula <strong>0048291-TJRR</strong>
+</span>
+<div class="flex items-center gap-space-xs text-label-sm font-label-sm text-primary font-medium mt-0.5">
+<span class="material-symbols-outlined text-[14px]">badge</span>
+                  AC SERPRO A3 NeoID • Token Serial: <code>77B9-9941-C04A-F02E</code> (Válido até 18/11/2025)
+                </div>
+</div>
+</div>
+<!-- Judicial Audit Badge -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col items-end text-right shrink-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Status da Política</span>
+<span class="font-label-lg text-label-lg text-primary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]">verified</span>
+                VIGENTE E AUDITADA PELO CNJ
+              </span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Última Revisão: 14/03/2024 às 11:22</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Modal Footer Action Bar -->
+<div class="w-full bg-surface-container-low px-space-lg py-space-md shadow-inner flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]">lock_clock</span>
+<span>Alterações nesta política geram evento WORM de auditoria irreversível.</span>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap justify-end w-full sm:w-auto">
+<!-- Secondary Action: Close -->
+<button class="px-space-md py-2 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container-high transition-colors font-label-lg text-label-lg font-semibold shadow-sm" id="cancel-action-btn" type="button">
+            Fechar / Cancelar
+          </button>
+<!-- Secondary Action: Download Cert -->
+<button class="px-space-md py-2 rounded-lg bg-surface-container-lowest text-secondary hover:bg-surface-container transition-colors font-label-lg text-label-lg font-semibold flex items-center gap-1.5 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+            Certificado WORM (.PDF)
+          </button>
+<!-- Primary Institutional Action -->
+<button class="px-space-lg py-2 rounded-lg bg-primary-container hover:bg-primary text-on-primary transition-all font-label-lg text-label-lg font-semibold flex items-center gap-2 shadow-md hover:shadow-lg" id="sign-policy-btn" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+            Salvar e Assinar Política WORM via ICP-Brasil
+          </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Interactive micro-behavior for the modal controls
+  (function initWormRetentionModal() {
+    const backdrop = document.getElementById('worm-modal-backdrop');
+    const closeBtn = document.getElementById('close-modal-btn');
+    const cancelBtn = document.getElementById('cancel-action-btn');
+    const signBtn = document.getElementById('sign-policy-btn');
+
+    function closeModal() {
+      if (backdrop) {
+        backdrop.style.opacity = '0';
+        backdrop.style.transition = 'opacity 0.2s ease-out';
+        setTimeout(() => {
+          backdrop.classList.add('hidden');
+        }, 200);
+      }
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+    // Escape key closes modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && backdrop && !backdrop.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
+
+    // ICP-Brasil Signing Simulation
+    if (signBtn) {
+      signBtn.addEventListener('click', () => {
+        const originalHTML = signBtn.innerHTML;
+        signBtn.disabled = true;
+        signBtn.innerHTML = `
+          <span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
+          Conectando ao Token NeoID ICP-Brasil...
+        `;
+
+        setTimeout(() => {
+          signBtn.innerHTML = `
+            <span class="material-symbols-outlined text-[20px] text-tertiary-fixed">verified</span>
+            Política Assinada & Bloqueio WORM Confirmado!
+          `;
+          signBtn.classList.remove('bg-primary-container');
+          signBtn.classList.add('bg-tertiary-container');
+
+          setTimeout(() => {
+            closeModal();
+            signBtn.innerHTML = originalHTML;
+            signBtn.disabled = false;
+            signBtn.classList.add('bg-primary-container');
+            signBtn.classList.remove('bg-tertiary-container');
+          }, 1500);
+        }, 1200);
+      });
+    }
+  })();
+</script></main><footer class="w-full bg-surface-container-low py-space-sm px-gutter-desktop shadow-[0_-1px_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-body-sm text-body-sm"><span>Tribunal de Justiça do Estado de Roraima • Diretoria de Tecnologia da Informação (DTI)</span><div class="flex items-center gap-space-md"><span>Versão <strong class="text-on-surface font-semibold">v2.4.1</strong></span><span>Suporte Técnico: cits@tjrr.jus.br</span></div></div></footer></div></body></html>

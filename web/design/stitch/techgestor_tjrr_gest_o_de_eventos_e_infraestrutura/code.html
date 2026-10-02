@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-tertiary-fixed-variant":"#005236","tertiary-fixed":"#6ffbbe","on-primary-fixed":"#001d35","secondary-container":"#5bb8fe","surface":"#faf8ff","on-error-container":"#93000a","surface-container-highest":"#dae2fd","primary":"#002541","outline":"#73777f","surface-bright":"#faf8ff","tertiary-container":"#00422b","on-tertiary":"#ffffff","surface-container":"#eaedff","surface-container-low":"#f2f3ff","error-container":"#ffdad6","secondary-fixed":"#cce5ff","on-secondary":"#ffffff","outline-variant":"#c2c7cf","on-primary":"#ffffff","on-primary-container":"#7fa6d0","secondary-fixed-dim":"#93ccff","surface-container-high":"#e2e7ff","on-error":"#ffffff","error":"#ba1a1a","primary-fixed-dim":"#a3caf6","on-surface-variant":"#42474e","on-surface":"#131b2e","surface-tint":"#3a6188","tertiary":"#002a1a","surface-variant":"#dae2fd","inverse-on-surface":"#eef0ff","on-tertiary-container":"#10b981","secondary":"#006398","background":"#faf8ff","on-tertiary-fixed":"#002113","on-secondary-container":"#00476e","surface-dim":"#d2d9f4","on-background":"#131b2e","tertiary-fixed-dim":"#4edea3","primary-fixed":"#d0e4ff","inverse-primary":"#a3caf6","inverse-surface":"#283044","on-primary-fixed-variant":"#1f496f","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#004b73","primary-container":"#0b3b60","on-secondary-fixed":"#001d31"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-md":"1rem","margin-mobile":"1rem","space-xl":"2rem","gutter-mobile":"0.75rem","gutter-desktop":"1.5rem","margin-desktop":"2rem",gutter:"1.25rem","space-lg":"1.5rem","space-xs":"0.25rem","space-sm":"0.5rem",margin:"1.5rem"},fontFamily:{"headline-xl":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"display-lg-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"label-lg":["Inter"],"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"display-lg":["Plus Jakarta Sans"],"body-lg":["Inter"]},fontSize:{"headline-xl":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"700"}],"headline-sm":["16px",{lineHeight:"24px",letterSpacing:"-0.005em",fontWeight:"600"}],"display-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-lg":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}],"display-lg":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><img alt="Logo TechGestor TJRR" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCKdTwahu8_u9ttJtDBTy28WQVxHfhkkkdOiugHnKXttibgPX_IHgiSlffmGOunQpY5Y3fLgrrzd0hMLFmbO5RWZ2rbOSoVhqtCxvjblbttDh-we_PyXDezp907btLRTqpUP0vcHBIEynWlZ612sgX6GFXWXon7pjNZMtb2ZR8gb09kBQSh0vwXNtU3PWG2O4TweL7CfbUt6UzS8L8s-Dj-vmG2Of1K66KvMPdOiHm8qjVea1gZFwUGA"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">TechGestor</span><span class="font-label-sm text-label-sm text-secondary font-bold tracking-wider uppercase">TJRR</span></div><span class="font-body-sm text-body-sm text-on-surface-variant hidden lg:inline">Tribunal de Justiça do Estado de Roraima • Secretaria de Tecnologia da Informação</span></div></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container"><span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Status:</span><span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">Operacional 99.9%</span></div><button aria-label="Alternar modo escuro" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><div class="relative"><button aria-label="Notificações e alertas" class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center justify-center relative" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-error ring-2 ring-surface"></span></button></div><div class="flex items-center gap-space-sm pl-space-sm"><div class="relative"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi7Z-KIbZzM0jFBq_5aLJJjwlkf9ow-_fKLORyQm4RkkFRwvkR-W8TbEDi7BWdrzV5DC0m_KHHbhgU4UDgidWGLJ_hTw-lceT5lcvqkKOShPVMDZINrE17-DlajSnFNojJAm7lv1jx8iNLeH8luObaMSbDJawf8xHdQ_wxoP-JeU0ivWo7ET2iiUlqwgP6EQCUizDFeTj7WmthPKTW5U_B8SOAH_rokFM1re96qT8ZHsY0G3wl5s5O1g"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-on-tertiary-container ring-2 ring-surface"></span></div><div class="hidden xl:flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface font-semibold leading-tight">Carlos Mendonça</span><span class="font-label-sm text-label-sm text-on-surface-variant">Coord. Suporte N3</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 z-40 bg-surface-container-low flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex flex-col pt-space-md px-space-sm"><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm rounded-lg"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio-dashboard" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-lg text-label-lg">Início / Dashboard</span></div><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-semibold">5 On</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="chamados" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">confirmation_number</span><span class="font-label-lg text-label-lg">Chamados</span></div><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-error-container text-on-error-container font-semibold">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="eventos" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">event</span><span class="font-label-lg text-label-lg">Eventos</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inventario" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-lg text-label-lg">Inventário</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="agenda" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">calendar_month</span><span class="font-label-lg text-label-lg">Agenda Forense</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="perfil" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">badge</span><span class="font-label-lg text-label-lg">Perfil</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="admin" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">manage_accounts</span><span class="font-label-lg text-label-lg">Administração</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="auditoria" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">security</span><span class="font-label-lg text-label-lg">Auditoria &amp; Logs</span></div></a></nav></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary"><span class="material-symbols-outlined text-[18px]">headset_mic</span><span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider">NOC / Plantão</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Ramal emergencial: 3198-4444 Central DTI TJRR</p></div></aside><div class="pl-64 flex flex-col min-h-screen"><main class="w-full flex-1 pt-16 px-gutter-desktop py-space-lg bg-surface"><div class="flex flex-col w-full gap-space-lg">
+<!-- Top Header Section with Meta Details & Primary Controls -->
+<div class="flex flex-col gap-space-md">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container-high text-primary font-label-sm uppercase tracking-wider">
+            Módulo Operacional ITSM
+          </span>
+<span class="text-outline text-label-sm">•</span>
+<span class="text-on-surface-variant font-label-sm">Diretoria de Tecnologia da Informação - DTI / TJRR</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-primary tracking-tight">
+          Gestão Operacional de Eventos Institucionais e Suporte de TI
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-4xl">
+          Acompanhamento, logística de infraestrutura tecnológica, agendamento de montagem/desmontagem e suporte presencial no TJRR.
+        </p>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap self-start lg:self-center">
+<button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-surface-container-lowest text-secondary shadow-sm hover:bg-surface-container transition-colors font-label-lg text-label-lg" type="button">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+          Exportar Escala e Cronograma (PDF/Excel)
+        </button>
+<button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:bg-primary transition-all" id="btnOpenNewEventModal" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+          + Novo Agendamento de Evento
+        </button>
+</div>
+</div>
+<!-- Segmented Navigation Views -->
+<div class="flex items-center justify-between gap-space-md flex-wrap pt-space-xs">
+<div class="inline-flex p-1 rounded-xl bg-surface-container shadow-inner">
+<button class="tab-filter-btn px-space-md py-1.5 rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm transition-all" data-target="all" type="button">
+          Todos os Eventos (24)
+        </button>
+<button class="tab-filter-btn px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-target="internal" type="button">
+          Eventos Internos (Palácio / Fóruns)
+        </button>
+<button class="tab-filter-btn px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-target="external" type="button">
+          Eventos Externos (Comarcas / Itinerantes)
+        </button>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+        Sincronizado com PJe / SEI às 09:42 (Tempo Real)
+      </div>
+</div>
+</div>
+<!-- KPI Metric Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- KPI 1 -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Eventos Confirmados no Mês</span>
+<span class="p-2 rounded-lg bg-surface-container-low text-primary">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+</span>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-primary">24</span>
+<span class="px-space-xs py-0.5 rounded-full bg-surface-container text-secondary font-label-sm text-label-sm">
+          +6 vs. mês anterior
+        </span>
+</div>
+<div class="mt-space-sm flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span>18 Internos • 6 Externos</span>
+<span class="text-on-tertiary-container font-label-sm font-semibold">100% Cobertura TI</span>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Demandas Externas / Itinerante</span>
+<span class="p-2 rounded-lg bg-secondary-fixed text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[20px]">commute</span>
+</span>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-secondary">8</span>
+<span class="px-space-xs py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm">
+          Logística Ativa
+        </span>
+</div>
+<div class="mt-space-sm flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span>Kits Móveis em Campo</span>
+<span class="font-semibold text-primary">Rorainópolis &amp; Caracaraí</span>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Equipamentos Alocados em Eventos</span>
+<span class="p-2 rounded-lg bg-surface-container-high text-primary">
+<span class="material-symbols-outlined text-[20px]">devices_other</span>
+</span>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-primary">94</span>
+<span class="font-label-md text-label-md text-on-surface-variant">itens patrimoniados</span>
+</div>
+<div class="mt-space-sm text-on-surface-variant font-body-sm text-body-sm truncate">
+        Áudio Shure, Telões Laser, Starlink, OBS Dell
+      </div>
+</div>
+<!-- KPI 4 -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Instalações Pendentes para Hoje</span>
+<span class="p-2 rounded-lg bg-error-container text-on-error-container">
+<span class="material-symbols-outlined text-[20px]">checklist_rtl</span>
+</span>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-sm">
+<span class="font-display-lg text-display-lg text-error">3</span>
+<span class="px-space-xs py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-bold animate-pulse">
+          Ação Imediata
+        </span>
+</div>
+<div class="mt-space-sm flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span>Tribunal Pleno &amp; Polo Sul</span>
+<span class="text-error font-semibold font-label-sm">Checklist Aberto</span>
+</div>
+</div>
+</div>
+<!-- Operational Filter Strip -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col lg:flex-row gap-space-md items-stretch lg:items-center justify-between">
+<div class="flex-1 relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full pl-10 pr-space-md py-2.5 rounded-lg bg-surface font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest shadow-inner" id="eventSearchInput" placeholder="Buscar por ID Chamado, Nome do Evento, Solicitante ou Local..." type="text"/>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap">
+<div class="flex items-center gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" for="filterType">Tipo:</label>
+<select class="bg-surface font-body-sm text-body-sm text-on-surface rounded-lg px-space-sm py-2 shadow-sm focus:outline-none cursor-pointer" id="filterType">
+<option value="all">Todos os Tipos</option>
+<option value="INTERNO">Interno (Prédios TJRR)</option>
+<option value="EXTERNO">Externo (Comarcas/Itinerante)</option>
+</select>
+</div>
+<div class="flex items-center gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" for="filterStatus">Status:</label>
+<select class="bg-surface font-body-sm text-body-sm text-on-surface rounded-lg px-space-sm py-2 shadow-sm focus:outline-none cursor-pointer" id="filterStatus">
+<option value="all">Todos os Status</option>
+<option value="Em Montagem">Em Montagem</option>
+<option value="Planejado">Planejado</option>
+<option value="Em Andamento">Em Andamento</option>
+<option value="Desmobilização">Desmobilização</option>
+<option value="Concluído">Concluído</option>
+</select>
+</div>
+<div class="flex items-center gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" for="filterTech">Técnico:</label>
+<select class="bg-surface font-body-sm text-body-sm text-on-surface rounded-lg px-space-sm py-2 shadow-sm focus:outline-none cursor-pointer" id="filterTech">
+<option value="all">Todos os Plantonistas</option>
+<option value="Lucas Brandão">Lucas Brandão (Infra N2)</option>
+<option value="Rafael Albuquerque">Rafael Albuquerque (Áudio/Vídeo)</option>
+<option value="Marcio Vasconcelos">Marcio Vasconcelos (Redes)</option>
+<option value="Carla Silveira">Carla Silveira (N3 Telecom)</option>
+</select>
+</div>
+<button class="p-2 rounded-lg bg-surface text-on-surface-variant hover:text-on-surface shadow-sm" id="btnResetFilters" title="Limpar Filtros" type="button">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+</button>
+</div>
+</div>
+<!-- Primary Listing: Interactive Operational Event Table -->
+<div class="rounded-xl bg-surface-container-lowest shadow-sm overflow-hidden flex flex-col">
+<div class="p-space-md bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">calendar_view_week</span>
+<h2 class="font-headline-sm text-headline-sm text-primary">Cronograma Operacional de Eventos e Suporte TI</h2>
+</div>
+<div class="flex items-center gap-space-sm text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-secondary"></span> Montagem Ativa</span>
+<span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-on-tertiary-container"></span> Em Andamento</span>
+<span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-outline"></span> Planejado</span>
+</div>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-space-sm px-space-md">Tipo &amp; Protocolo</th>
+<th class="py-space-sm px-space-md">Nome do Evento &amp; Solicitante</th>
+<th class="py-space-sm px-space-md">Localização</th>
+<th class="py-space-sm px-space-md">Infra &amp; Equipamentos Alocados</th>
+<th class="py-space-sm px-space-md">Datas (Montagem / Realização / Retirada)</th>
+<th class="py-space-sm px-space-md">Responsável TI</th>
+<th class="py-space-sm px-space-md">Status</th>
+<th class="py-space-sm px-space-md text-right">Ações Operacionais</th>
+</tr>
+</thead>
+<tbody class="divide-y-0" id="eventsTableBody">
+<!-- Row 1: Interno - Sessão Pleno -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1">
+<span class="inline-flex items-center w-fit px-2 py-0.5 rounded-md font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed font-bold tracking-wide">
+                  INTERNO
+                </span>
+<span class="font-label-sm text-label-sm text-secondary font-mono font-semibold">#EV-2024-089</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">SEI 001923/24</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5 max-w-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-snug">
+                  Sessão Solene de Abertura do Ano Judiciário 2025
+                </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">
+                  Solicitante: <strong class="text-on-surface font-medium">Presidência TJRR / Des. Presidente</strong>
+</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">gavel</span>
+                  Auditório do Tribunal Pleno
+                </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Palácio da Justiça • 2º Pavimento</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-wrap gap-1 max-w-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">4 Microfones Shure</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">2 Telões Laser 5k</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">3 Laptops Dell i7 (OBS)</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Switch PoE 24p</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-1 text-secondary font-medium">
+<span class="material-symbols-outlined text-[15px]">build</span>
+<span>Montagem: 28/10/2024 às 08:00</span>
+</div>
+<div class="flex items-center gap-1 text-primary font-semibold">
+<span class="material-symbols-outlined text-[15px]">event</span>
+<span>Evento: 29/10/2024 • 09:00 - 18:00</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">inventory</span>
+<span>Retirada: 29/10/2024 às 19:30</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex items-center gap-space-xs">
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Avatar do analista de áudio e vídeo da TI do TJRR com crachá e camisa institucional azul marinho em fundo neutro" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQCCjnQEBkUa8FMdDbSgIVEVCp1tNucU6R49sveXhEO4CqjjQogI-6e-QgpAG8puEvHScPDIBnB9KiTo53f4rs_2La2q4uUeynxXGnMzK54jtzEWtzX98SdyV7iw9kgQyt3qEvu0WznyI-zHT0v3BrLew_kjQqn_BorEEBNv9Nw8HZPOROkN7JlEiUlcM52Gf8CrCnGB25r7xsMHy89o_9ow6c52D3GKrhqmxTz7TCS7sta1gr3kLrhQ"/>
+<span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-on-tertiary-container ring-1 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Rafael Albuquerque</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Áudio/Vídeo • N2</span>
+<span class="text-secondary font-label-sm text-label-sm">Ramal: 3198-4421</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed-variant font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                Em Montagem
+              </span>
+</td>
+<td class="py-space-md px-space-md align-top text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container-high text-primary hover:bg-surface-variant" title="Ver Checklist" type="button">
+<span class="material-symbols-outlined text-[18px]">checklist</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-high text-secondary hover:bg-surface-variant" title="Emitir Termo de Cautela" type="button">
+<span class="material-symbols-outlined text-[18px]">description</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-variant" title="Editar Logística" type="button">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Externo - Justiça Itinerante Rorainópolis -->
+<tr class="bg-surface-container-low/20 hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1">
+<span class="inline-flex items-center w-fit px-2 py-0.5 rounded-md font-label-sm text-label-sm bg-secondary-container text-on-secondary-container font-bold tracking-wide">
+                  EXTERNO
+                </span>
+<span class="font-label-sm text-label-sm text-secondary font-mono font-semibold">#EV-2024-092</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">SEI 002144/24</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5 max-w-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-snug">
+                  Mutirão Justiça Itinerante - Polo Sul
+                </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">
+                  Solicitante: <strong class="text-on-surface font-medium">Coord. Juizado Itinerante (Dr. Erick)</strong>
+</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">explore</span>
+                  Comarca de Rorainópolis
+                </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Escola Estadual Padre José Monticone</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-wrap gap-1 max-w-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold text-secondary">Antena Starlink Móvel</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">8 Laptops Biometria</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Nobreak Senoidal 3kVA</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Roteador VPN Dual-SIM</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-1 text-secondary font-medium">
+<span class="material-symbols-outlined text-[15px]">local_shipping</span>
+<span>Despacho: 30/10/2024 às 05:00</span>
+</div>
+<div class="flex items-center gap-1 text-primary font-semibold">
+<span class="material-symbols-outlined text-[15px]">event</span>
+<span>Ação: 31/10 a 02/11 • 08:00 - 17:00</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">assignment_return</span>
+<span>Retorno: 03/11/2024 às 14:00</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex items-center gap-space-xs">
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Técnico de suporte de TI em trânsito operacional, com colete de campo da Justiça Itinerante do Tribunal de Roraima, luz de dia suave" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEHScTdoidMDravVcIArozHiBNrrefxZx7OvlAzp_6zQEvHii09mGWU-NmU-Oi31EUcQBCvyv21FZdVIKnxcUNZm6XrzWn2dkE6CDSiUOK0F0iK6k3xmzwFWh5yirGaxPk_9TVUk82YLKrCL6S3xXRWDUiB9xEnLM26z2rS36kc9SKsJMtvg-_guH5X_7Q9o7c91J33awmRvALKOzCWzIQaTEr5eRCcyTviUMQSywvROl-12yd9EBvvA"/>
+<span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-secondary ring-1 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Lucas Brandão</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Infra N2 (Plantão Externo)</span>
+<span class="text-secondary font-label-sm text-label-sm">Tel: (95) 98402-9911</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container-high text-primary font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                Planejado
+              </span>
+</td>
+<td class="py-space-md px-space-md align-top text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container-high text-primary hover:bg-surface-variant" title="Ver Checklist" type="button">
+<span class="material-symbols-outlined text-[18px]">checklist</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-high text-secondary hover:bg-surface-variant" title="Emitir Termo de Cautela" type="button">
+<span class="material-symbols-outlined text-[18px]">description</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-variant" title="Editar Logística" type="button">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Interno - Workshop Inovação & IA -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1">
+<span class="inline-flex items-center w-fit px-2 py-0.5 rounded-md font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed font-bold tracking-wide">
+                  INTERNO
+                </span>
+<span class="font-label-sm text-label-sm text-secondary font-mono font-semibold">#EV-2024-095</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">SEI 002380/24</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5 max-w-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-snug">
+                  Workshop de Inovação e Inteligência Artificial no Judiciário
+                </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">
+                  Solicitante: <strong class="text-on-surface font-medium">Escola Judicial de Roraima (EJURR)</strong>
+</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">school</span>
+                  Auditório EJURR
+                </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Fórum Sobral Pinto • 3º Andar</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-wrap gap-1 max-w-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Transmissão YouTube Oficial</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Mesa de Corte Blackmagic</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">2 Câmeras PTZ 4K</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Ponto Fibra Dedicada</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-1 text-secondary font-medium">
+<span class="material-symbols-outlined text-[15px]">build</span>
+<span>Passagem Som: 25/10 às 15:00</span>
+</div>
+<div class="flex items-center gap-1 text-primary font-semibold">
+<span class="material-symbols-outlined text-[15px]">event</span>
+<span>Evento: 26/10 • 14:00 - 18:30</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">inventory</span>
+<span>Retirada: 26/10 às 20:00</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex items-center gap-space-xs">
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Engenheira de redes e sistemas sênior do tribunal com fones profissionais e laptop corporativo em sala técnica moderna" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNGZZ9ADGJkuKovGpECK4Q4jaMgoxaZDye7898YhkmWZwuHRW740EM2CJky5js9kpTeN-txXMYruXuSxDSTWRpkBpVvYI8QSoUigEzOvXgy-orrH6j0x6Bg8Pq96wVmF_9Iui-I1NTdLauTWD47BK1r0NC2wIurFmng2jZ4o905I4sK8317_2ZQutu9XOda0mVuM25CfUNNRHefABO8I7QpWkP8_TYzQHix7qjfaPVjG_ow8DjhsYA3w"/>
+<span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-on-tertiary-container ring-1 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Carla Silveira</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">N3 Telecom / Streaming</span>
+<span class="text-secondary font-label-sm text-label-sm">Ramal: 3198-4480</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-tertiary-fixed text-on-tertiary-fixed-variant font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+                Em Andamento
+              </span>
+</td>
+<td class="py-space-md px-space-md align-top text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container-high text-primary hover:bg-surface-variant" title="Ver Checklist" type="button">
+<span class="material-symbols-outlined text-[18px]">checklist</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-high text-secondary hover:bg-surface-variant" title="Emitir Termo de Cautela" type="button">
+<span class="material-symbols-outlined text-[18px]">description</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-variant" title="Editar Logística" type="button">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Externo - Audiência Conciliação Fundiária Caracaraí -->
+<tr class="bg-surface-container-low/20 hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1">
+<span class="inline-flex items-center w-fit px-2 py-0.5 rounded-md font-label-sm text-label-sm bg-secondary-container text-on-secondary-container font-bold tracking-wide">
+                  EXTERNO
+                </span>
+<span class="font-label-sm text-label-sm text-secondary font-mono font-semibold">#EV-2024-098</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">SEI 002501/24</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5 max-w-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-snug">
+                  Audiência Pública de Conciliação Fundiária
+                </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">
+                  Solicitante: <strong class="text-on-surface font-medium">Vara Agrária e Ambiental TJRR</strong>
+</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5">
+<span class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">domain</span>
+                  Fórum de Caracaraí
+                </span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Salão do Júri Popular Regional</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-wrap gap-1 max-w-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Gravação PJe Mídias</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Kit Áudio Conferência</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">2 Caixas Ativas Yamaha</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-1 text-secondary font-medium">
+<span class="material-symbols-outlined text-[15px]">build</span>
+<span>Instalação: 04/11 às 07:30</span>
+</div>
+<div class="flex items-center gap-1 text-primary font-semibold">
+<span class="material-symbols-outlined text-[15px]">event</span>
+<span>Audiência: 04/11 • 09:00 - 16:30</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">inventory</span>
+<span>Desmobilização: 04/11 às 17:30</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex items-center gap-space-xs">
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Retrato profissional de técnico de telecomunicações do judiciário com rádio comunicador e crachá do Tribunal de Justiça" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCKrT0uhkmnzscTJznPJEin757kW5MEvfKi92g7RdGNXpfbxgbZ11LOBdUIvmATSYXI6HEO8rGZXt3hP04mLc7ZinGVtbpL1qd3nFIOHLEzwSiqbRkPrUJXZtgH52SqD_gx6KqVgjkyOGKe8DX9lJ7EllgibJHvcwLnkBwNUavrW8ZlWJvFUisd5yJx-ss6-9tpqmhhlvp-iwsVesF4IuNQzwb38bG2VdgT-M81HigqAhOh00kJSpXzg"/>
+<span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-outline ring-1 ring-surface-container-lowest"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Marcio Vasconcelos</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Redes &amp; Conectividade</span>
+<span class="text-secondary font-label-sm text-label-sm">Tel: (95) 98112-3304</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container-high text-on-surface-variant font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                Planejado
+              </span>
+</td>
+<td class="py-space-md px-space-md align-top text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container-high text-primary hover:bg-surface-variant" title="Ver Checklist" type="button">
+<span class="material-symbols-outlined text-[18px]">checklist</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-high text-secondary hover:bg-surface-variant" title="Emitir Termo de Cautela" type="button">
+<span class="material-symbols-outlined text-[18px]">description</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-variant" title="Editar Logística" type="button">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination -->
+<div class="p-space-md bg-surface flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant font-body-sm text-body-sm">
+<span id="eventsCountLabel">Exibindo 4 de 24 registros mapeados para o ciclo corrente</span>
+<div class="flex items-center gap-1">
+<button class="px-space-sm py-1 rounded bg-surface-container text-on-surface-variant disabled:opacity-50" disabled="" type="button">Anterior</button>
+<span class="px-space-sm py-1 font-semibold text-primary">1 de 6</span>
+<button class="px-space-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors" type="button">Próxima</button>
+</div>
+</div>
+</div>
+<!-- Operational Dispatch / Termo de Cautela Side Panel Card -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-md">
+<!-- Card 1: Checklist Rápido de Instalação Hoje -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="material-symbols-outlined text-[20px]">task_alt</span>
+<h3 class="font-headline-sm text-headline-sm">Checklist Crítico do Dia</h3>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-semibold">3 Pendentes</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container cursor-pointer hover:bg-surface-container-high transition-colors">
+<input checked="" class="mt-1 rounded text-primary focus:ring-0" type="checkbox"/>
+<div class="flex flex-col text-on-surface">
+<span class="font-label-sm text-label-sm font-semibold">Tribunal Pleno: Teste de Microfones Shure</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Frequências 540MHz livres de interferência</span>
+</div>
+</label>
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container cursor-pointer hover:bg-surface-container-high transition-colors">
+<input class="mt-1 rounded text-primary focus:ring-0" type="checkbox"/>
+<div class="flex flex-col text-on-surface">
+<span class="font-label-sm text-label-sm font-semibold">Polo Sul: Carga dos Nobreaks Senoidais</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Baterias 100% testadas em bancada</span>
+</div>
+</label>
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container cursor-pointer hover:bg-surface-container-high transition-colors">
+<input class="mt-1 rounded text-primary focus:ring-0" type="checkbox"/>
+<div class="flex flex-col text-on-surface">
+<span class="font-label-sm text-label-sm font-semibold">Streaming EJURR: Link Fibra Redundante</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Rota BGP ativada na operadora Roraima</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Card 2: Termos de Cautela de Equipamentos -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+<h3 class="font-headline-sm text-headline-sm text-primary">Termos de Cautela &amp; Patrimônio</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Emissão automatizada de cautela provisória para saída de bens de TI (áudio, vídeo, informática) com assinatura digital via Gov.br / Certificado Digital ICP-Brasil.
+        </p>
+<div class="p-space-sm rounded-lg bg-surface-container flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-semibold text-on-surface">Termo Cautela #TC-8821/24</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">8 Laptops Dell • Itinerante Rorainópolis</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-semibold">Assinado</span>
+</div>
+</div>
+<button class="mt-space-md w-full py-2 px-space-md rounded-lg bg-surface-container text-primary hover:bg-surface-container-high font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">history_edu</span>
+        Consultar Livro de Cautelas TJRR
+      </button>
+</div>
+<!-- Card 3: Suporte Móvel & Veículos DTI -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="material-symbols-outlined text-[20px]">directions_car</span>
+<h3 class="font-headline-sm text-headline-sm">Logística e Viaturas DTI</h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">2 Disponíveis</span>
+</div>
+<div class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface-variant">
+<div class="flex items-center justify-between py-1 border-b-0">
+<span>Van Operacional TI (Placa NAH-4491):</span>
+<span class="font-semibold text-primary">Em Rota (Sul)</span>
+</div>
+<div class="flex items-center justify-between py-1 border-b-0">
+<span>Picape Hilux Tração 4x4 (Placa NAJ-1022):</span>
+<span class="font-semibold text-on-tertiary-container">Pátio Palácio</span>
+</div>
+<div class="flex items-center justify-between py-1 border-b-0">
+<span>Próximo Abastecimento Autorizado:</span>
+<span class="font-semibold text-on-surface">30/10/2024</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md p-space-sm rounded-lg bg-secondary-fixed text-on-secondary-fixed flex items-center justify-between">
+<span class="font-label-sm text-label-sm">Contato Motorista Oficial:</span>
+<span class="font-label-sm text-label-sm font-bold">Ramal Frotas 3198-4500</span>
+</div>
+</div>
+</div>
+<!-- MODAL: Agendamento / Cadastro de Novo Evento TI -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-space-md bg-inverse-surface/60 backdrop-blur-sm hidden" id="newEventModal">
+<div class="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-surface-container-lowest rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+<!-- Modal Header -->
+<div class="p-space-lg bg-primary-container text-on-primary flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<span class="p-2.5 rounded-xl bg-surface-container-lowest/10 text-on-primary">
+<span class="material-symbols-outlined text-[24px]">event_available</span>
+</span>
+<div class="flex flex-col">
+<h3 class="font-headline-lg text-headline-lg font-bold">Formulário de Alocação Tecnológica para Eventos</h3>
+<span class="font-body-sm text-body-sm text-on-primary-container">Cadastro operacional de infraestrutura, cronograma logístico e técnicos TJRR</span>
+</div>
+</div>
+<button class="p-2 rounded-lg text-on-primary-container hover:text-on-primary hover:bg-surface-container-lowest/10 transition-colors" id="btnCloseModal" type="button">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+<!-- Modal Body (Scrollable) -->
+<div class="p-space-lg overflow-y-auto flex flex-col gap-space-lg">
+<!-- Toggle: Tipo de Evento -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Classificação da Demanda</span>
+<div class="grid grid-cols-2 gap-space-sm p-1 rounded-xl bg-surface-container">
+<button class="modal-type-btn py-2.5 rounded-lg bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm font-bold transition-all flex items-center justify-center gap-space-xs" id="btnTypeInterno" type="button">
+<span class="material-symbols-outlined text-[18px]">apartment</span>
+              Interno (Prédios / Fóruns TJRR)
+            </button>
+<button class="modal-type-btn py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg font-bold transition-all flex items-center justify-center gap-space-xs" id="btnTypeExterno" type="button">
+<span class="material-symbols-outlined text-[18px]">rv_hookup</span>
+              Externo (Itinerante / Ações Comunitárias)
+            </button>
+</div>
+</div>
+<!-- Event Details Fields -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Nome Oficial do Evento *</label>
+<input class="w-full px-space-md py-2.5 rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm" placeholder="Ex: Sessão Solene de Posse ou Mutirão Itinerante" type="text"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Protocolo SEI / ID Chamado GLPI *</label>
+<input class="w-full px-space-md py-2.5 rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm" placeholder="Ex: #EV-2024-102 ou SEI 003112/2024" type="text"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Magistrado / Setor Solicitante *</label>
+<input class="w-full px-space-md py-2.5 rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm" placeholder="Ex: Presidência, Corregedoria Geral ou Juizado Especial" type="text"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Local Exato / Comarca ou Município *</label>
+<input class="w-full px-space-md py-2.5 rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm" placeholder="Ex: Auditório Tribunal Pleno ou Ginásio de Cantá/RR" type="text"/>
+</div>
+</div>
+<!-- 3-Tier Logistics Timeline -->
+<div class="flex flex-col gap-space-sm p-space-md rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="material-symbols-outlined text-[20px]">more_time</span>
+<span class="font-headline-sm text-headline-sm">Cronograma Logístico &amp; Operacional de TI</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md mt-space-xs">
+<!-- 1. Instalação -->
+<div class="flex flex-col gap-1 p-space-sm rounded-lg bg-surface-container-lowest shadow-sm">
+<span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">build</span>
+                1. Montagem / Passagem Som
+              </span>
+<label class="font-body-sm text-body-sm text-on-surface-variant">Data e Horário Inicial</label>
+<input class="bg-surface font-body-sm text-body-sm p-2 rounded-lg text-on-surface focus:outline-none" type="datetime-local"/>
+</div>
+<!-- 2. Evento -->
+<div class="flex flex-col gap-1 p-space-sm rounded-lg bg-surface-container-lowest shadow-sm">
+<span class="font-label-sm text-label-sm text-primary font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">event</span>
+                2. Realização Oficial
+              </span>
+<label class="font-body-sm text-body-sm text-on-surface-variant">Início e Encerramento</label>
+<input class="bg-surface font-body-sm text-body-sm p-2 rounded-lg text-on-surface focus:outline-none" type="datetime-local"/>
+</div>
+<!-- 3. Retirada -->
+<div class="flex flex-col gap-1 p-space-sm rounded-lg bg-surface-container-lowest shadow-sm">
+<span class="font-label-sm text-label-sm text-on-surface font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">inventory_2</span>
+                3. Retirada / Conferência
+              </span>
+<label class="font-body-sm text-body-sm text-on-surface-variant">Desmobilização de Bens</label>
+<input class="bg-surface font-body-sm text-body-sm p-2 rounded-lg text-on-surface focus:outline-none" type="datetime-local"/>
+</div>
+</div>
+</div>
+<!-- Material and Equipment Checklist by Category -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Bens de TI &amp; Equipamentos Requisitados</span>
+<span class="font-label-sm text-label-sm text-secondary">Estoque do Centro de TI Integrado</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-space-sm">
+<!-- Col 1: Áudio/Vídeo -->
+<div class="p-space-sm rounded-xl bg-surface-container flex flex-col gap-1.5">
+<span class="font-label-sm text-label-sm text-primary font-bold">Áudio e Projeção</span>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input checked="" class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Microfones Shure (4)</span>
+</label>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input checked="" class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Projetor Laser 5000L</span>
+</label>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Caixas Ativas Yamaha (2)</span>
+</label>
+</div>
+<!-- Col 2: Conectividade -->
+<div class="p-space-sm rounded-xl bg-surface-container flex flex-col gap-1.5">
+<span class="font-label-sm text-label-sm text-primary font-bold">Rede e Internet</span>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Kit Antena Starlink</span>
+</label>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input checked="" class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Switch Gigabit PoE</span>
+</label>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Roteador 4G/5G Dual</span>
+</label>
+</div>
+<!-- Col 3: Transmissão / Computação -->
+<div class="p-space-sm rounded-xl bg-surface-container flex flex-col gap-1.5">
+<span class="font-label-sm text-label-sm text-primary font-bold">Transmissão &amp; PC</span>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input checked="" class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Notebook Dell OBS i7</span>
+</label>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Mesa de Corte Blackmagic</span>
+</label>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Leitores Biométricos (4)</span>
+</label>
+</div>
+<!-- Col 4: Energia & Apoio -->
+<div class="p-space-sm rounded-xl bg-surface-container flex flex-col gap-1.5">
+<span class="font-label-sm text-label-sm text-primary font-bold">Energia &amp; Apoio</span>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input checked="" class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Nobreak Senoidal 3kVA</span>
+</label>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Extensão Industrial 50m</span>
+</label>
+<label class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface cursor-pointer">
+<input class="rounded text-primary focus:ring-0" type="checkbox"/>
+<span>Kit Cabos HDMI / SDI</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Responsável e Conflito de Escala -->
+<div class="flex flex-col sm:flex-row items-center gap-space-md p-space-md rounded-xl bg-surface-container-high/40">
+<div class="flex-1 w-full flex flex-col gap-space-xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold">Técnico Líder Designado *</label>
+<select class="w-full bg-surface-container-lowest font-body-md text-body-md text-on-surface rounded-lg p-2.5 shadow-sm focus:outline-none">
+<option value="rafael">Rafael Albuquerque - Áudio/Vídeo (N2) • Escala Livre</option>
+<option value="lucas">Lucas Brandão - Infraestrutura de Campo (N2) • Escala Livre</option>
+<option value="carla">Carla Silveira - Redes &amp; Transmissão (N3) • 1 Evento Conflitante</option>
+<option value="marcio">Marcio Vasconcelos - Telecomunicações (N2) • Escala Livre</option>
+</select>
+</div>
+<div class="w-full sm:w-auto flex items-center gap-space-sm pt-2 sm:pt-6">
+<span class="material-symbols-outlined text-on-tertiary-container text-[24px]">verified</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Conflitos de agenda checados automaticamente pelo módulo de plantão.</span>
+</div>
+</div>
+</div>
+<!-- Modal Footer Action Buttons -->
+<div class="p-space-lg bg-surface-container flex items-center justify-between gap-space-md">
+<button class="px-space-md py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg transition-colors" id="btnCancelModal" type="button">
+          Cancelar
+        </button>
+<div class="flex items-center gap-space-sm">
+<button class="px-space-md py-2.5 rounded-lg bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm hover:bg-surface-container-high transition-colors" id="btnDraftModal" type="button">
+            Salvar Rascunho
+          </button>
+<button class="px-space-lg py-2.5 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:bg-primary transition-all flex items-center gap-space-xs" id="btnConfirmModal" type="button">
+<span class="material-symbols-outlined text-[18px]">send</span>
+            Confirmar e Despachar Equipe
+          </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function initEventsModule() {
+    const modal = document.getElementById('newEventModal');
+    const btnOpenModal = document.getElementById('btnOpenNewEventModal');
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    const btnCancelModal = document.getElementById('btnCancelModal');
+    const btnDraftModal = document.getElementById('btnDraftModal');
+    const btnConfirmModal = document.getElementById('btnConfirmModal');
+
+    const btnTypeInterno = document.getElementById('btnTypeInterno');
+    const btnTypeExterno = document.getElementById('btnTypeExterno');
+
+    const searchInput = document.getElementById('eventSearchInput');
+    const filterType = document.getElementById('filterType');
+    const filterStatus = document.getElementById('filterStatus');
+    const filterTech = document.getElementById('filterTech');
+    const btnResetFilters = document.getElementById('btnResetFilters');
+
+    const tabButtons = document.querySelectorAll('.tab-filter-btn');
+    const tableBody = document.getElementById('eventsTableBody');
+
+    // Open & Close Modal
+    function openModal() {
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      if (modal) modal.classList.add('hidden');
+    }
+
+    if (btnOpenModal) btnOpenModal.addEventListener('click', openModal);
+    if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
+    if (btnCancelModal) btnCancelModal.addEventListener('click', closeModal);
+
+    if (btnDraftModal) {
+      btnDraftModal.addEventListener('click', () => {
+        closeModal();
+      });
+    }
+
+    if (btnConfirmModal) {
+      btnConfirmModal.addEventListener('click', () => {
+        closeModal();
+      });
+    }
+
+    // Modal Type Toggle Buttons
+    if (btnTypeInterno && btnTypeExterno) {
+      btnTypeInterno.addEventListener('click', () => {
+        btnTypeInterno.className = 'modal-type-btn py-2.5 rounded-lg bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm font-bold transition-all flex items-center justify-center gap-space-xs';
+        btnTypeExterno.className = 'modal-type-btn py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg font-bold transition-all flex items-center justify-center gap-space-xs';
+      });
+
+      btnTypeExterno.addEventListener('click', () => {
+        btnTypeExterno.className = 'modal-type-btn py-2.5 rounded-lg bg-surface-container-lowest text-secondary font-label-lg text-label-lg shadow-sm font-bold transition-all flex items-center justify-center gap-space-xs';
+        btnTypeInterno.className = 'modal-type-btn py-2.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg font-bold transition-all flex items-center justify-center gap-space-xs';
+      });
+    }
+
+    // Segmented View Tabs
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach(b => {
+          b.className = 'tab-filter-btn px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all';
+        });
+        btn.className = 'tab-filter-btn px-space-md py-1.5 rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm transition-all';
+
+        const target = btn.getAttribute('data-target');
+        if (filterType) {
+          if (target === 'internal') filterType.value = 'INTERNO';
+          else if (target === 'external') filterType.value = 'EXTERNO';
+          else filterType.value = 'all';
+          applyFilters();
+        }
+      });
+    });
+
+    // Filtering Logic
+    function applyFilters() {
+      if (!tableBody) return;
+      const term = (searchInput?.value || '').toLowerCase().trim();
+      const typeVal = filterType?.value || 'all';
+      const statusVal = filterStatus?.value || 'all';
+      const techVal = filterTech?.value || 'all';
+
+      const rows = tableBody.querySelectorAll('tr');
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const matchesTerm = !term || text.includes(term);
+
+        const isInterno = text.includes('interno');
+        const isExterno = text.includes('externo');
+        let matchesType = true;
+        if (typeVal === 'INTERNO') matchesType = isInterno;
+        if (typeVal === 'EXTERNO') matchesType = isExterno;
+
+        let matchesStatus = true;
+        if (statusVal !== 'all') {
+          matchesStatus = text.includes(statusVal.toLowerCase());
+        }
+
+        let matchesTech = true;
+        if (techVal !== 'all') {
+          matchesTech = text.includes(techVal.toLowerCase());
+        }
+
+        if (matchesTerm && matchesType && matchesStatus && matchesTech) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      const countLabel = document.getElementById('eventsCountLabel');
+      if (countLabel) {
+        countLabel.textContent = `Exibindo ${visibleCount} de 24 registros mapeados para o ciclo corrente`;
+      }
+    }
+
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+    if (filterType) filterType.addEventListener('change', applyFilters);
+    if (filterStatus) filterStatus.addEventListener('change', applyFilters);
+    if (filterTech) filterTech.addEventListener('change', applyFilters);
+
+    if (btnResetFilters) {
+      btnResetFilters.addEventListener('click', () => {
+        if (searchInput) searchInput.value = '';
+        if (filterType) filterType.value = 'all';
+        if (filterStatus) filterStatus.value = 'all';
+        if (filterTech) filterTech.value = 'all';
+        tabButtons.forEach(b => {
+          if (b.getAttribute('data-target') === 'all') {
+            b.className = 'tab-filter-btn px-space-md py-1.5 rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm transition-all';
+          } else {
+            b.className = 'tab-filter-btn px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all';
+          }
+        });
+        applyFilters();
+      });
+    }
+  })();
+</script></main><footer class="w-full bg-surface-container-low py-space-sm px-gutter-desktop shadow-[0_-1px_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-body-sm text-body-sm"><span>Tribunal de Justiça do Estado de Roraima • Diretoria de Tecnologia da Informação (DTI)</span><div class="flex items-center gap-space-md"><span>Versão <strong class="text-on-surface font-semibold">v2.4.1</strong></span><span>Suporte Técnico: cits@tjrr.jus.br</span></div></div></footer></div></body></html>

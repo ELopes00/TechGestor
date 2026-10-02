@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const stitch = resolve(root, '../stitch_techgestor_tjrr_chamados');
+const stitch = resolve(root, 'design/stitch');
 const force = process.argv.includes('--force');
 
 const PAGES = [
