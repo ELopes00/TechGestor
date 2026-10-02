@@ -1,0 +1,115 @@
+<!--page id="dashboard" nav="dashboard" title="Painel de Controle"-->
+<div class="flex flex-col w-full gap-space-lg">
+<!-- Cabeçalho operacional -->
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md p-space-lg rounded-xl bg-surface-container-lowest shadow-sm">
+  <div class="flex items-center gap-space-md">
+    <div class="shrink-0 pr-space-md border-r border-outline-variant/60 text-[#0f4e81] dark:text-[#a3caf6]">{{logo-tjrr:h-16 sm:h-20 w-auto block}}</div>
+    <div class="flex flex-col">
+      <div class="flex items-center gap-space-xs flex-wrap">
+        <h2 class="font-headline-xl text-headline-xl text-primary tracking-tight">Centro Integrado de Operações (NOC)</h2>
+        <span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm tracking-wide" id="plantao-badge">PLANTÃO ATIVO</span>
+      </div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1.5 mt-0.5 flex-wrap">
+        <span class="material-symbols-outlined text-[16px] text-secondary">schedule</span>
+        <span>Horário oficial de Boa Vista/RR (UTC-4):</span>
+        <span class="font-label-sm text-label-sm font-semibold text-primary" id="live-clock">--:--:--</span>
+        <span class="text-outline-variant">•</span>
+        <span id="saudacao">Olá</span>
+      </p>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-space-sm w-full lg:w-auto">
+    <label class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-surface-container text-on-surface font-label-md text-label-md">
+      <span class="material-symbols-outlined text-[18px] text-secondary">domain</span>
+      <select class="bg-transparent focus:outline-none cursor-pointer" id="filtro-predio"></select>
+    </label>
+    <button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-md text-label-md transition-all shadow-sm" id="btn-exportar" type="button">
+      <span class="material-symbols-outlined text-[18px]">download</span>
+      <span>Exportar boletim (CSV)</span>
+    </button>
+    <a class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-error hover:opacity-90 text-on-error font-label-md text-label-md transition-all shadow-sm" href="chamados.html?novo=CRITICA">
+      <span class="material-symbols-outlined text-[18px]">emergency</span>
+      <span>+ Chamado emergencial</span>
+    </a>
+  </div>
+</div>
+
+<!-- Indicadores -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md" id="kpis"></div>
+
+<!-- Gráficos -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+  <section class="lg:col-span-8 p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-md">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-secondary">bar_chart</span>
+          <h3 class="font-headline-sm text-headline-sm text-primary font-bold">Chamados abertos por hora</h3>
+        </div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant" id="fluxo-sub">Distribuição pelo horário de abertura</p>
+      </div>
+      <div class="flex items-center bg-surface-container rounded-lg p-0.5" id="fluxo-periodo" role="tablist">
+        <button class="px-space-sm py-1 rounded font-label-sm text-label-sm font-semibold" data-periodo="1" type="button">Hoje</button>
+        <button class="px-space-sm py-1 rounded font-label-sm text-label-sm font-semibold" data-periodo="7" type="button">7 dias</button>
+        <button class="px-space-sm py-1 rounded font-label-sm text-label-sm font-semibold" data-periodo="30" type="button">30 dias</button>
+      </div>
+    </div>
+    <div class="relative" id="fluxo-chart"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md bg-surface-container-low p-space-md rounded-xl" id="fluxo-resumo"></div>
+  </section>
+  <section class="lg:col-span-4 p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-md">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px] text-secondary">domain</span>
+        <h3 class="font-headline-sm text-headline-sm text-primary font-bold">Chamados em aberto por prédio</h3>
+      </div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant">Fila atual de cada unidade</p>
+    </div>
+    <div class="flex flex-col gap-space-sm" id="por-predio"></div>
+  </section>
+</div>
+
+<!-- Equipe técnica -->
+<section class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-md">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px] text-secondary">groups</span>
+        <h3 class="font-headline-sm text-headline-sm text-primary font-bold">Equipe técnica</h3>
+      </div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant">Status e carga de chamados em aberto de cada técnico</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-space-md font-label-sm text-label-sm text-on-surface-variant" id="equipe-legenda"></div>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md" id="equipe"></div>
+</section>
+
+<!-- Fila prioritária -->
+<section class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-md">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px] text-error">crisis_alert</span>
+        <h3 class="font-headline-sm text-headline-sm text-primary font-bold">Fila prioritária</h3>
+      </div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant">Chamados em aberto mais próximos (ou além) do prazo de SLA</p>
+    </div>
+    <a class="flex items-center gap-1 font-label-md text-label-md text-secondary hover:text-primary" href="chamados.html" id="ver-todos">Ver todos os chamados <span class="material-symbols-outlined text-[18px]">arrow_forward</span></a>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left min-w-[720px]">
+      <thead>
+        <tr class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider border-b border-outline-variant/50">
+          <th class="py-2 pr-space-md font-semibold">Chamado</th>
+          <th class="py-2 pr-space-md font-semibold">Prioridade</th>
+          <th class="py-2 pr-space-md font-semibold">Local</th>
+          <th class="py-2 pr-space-md font-semibold">Técnico</th>
+          <th class="py-2 pr-space-md font-semibold">SLA</th>
+          <th class="py-2 font-semibold text-right">Ação</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-outline-variant/30" id="fila-prioritaria"></tbody>
+    </table>
+  </div>
+</section>
+</div>

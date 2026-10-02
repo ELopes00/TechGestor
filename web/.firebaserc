@@ -1,0 +1,12 @@
+{
+  "projects": {
+    "default": "techgestor-bd"
+  },
+  "targets": {
+    "techgestor-bd": {
+      "hosting": {
+        "web": ["techgestor-web"]
+      }
+    }
+  }
+}

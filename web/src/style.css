@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body { margin: 0; padding: 0; }
+  body { overscroll-behavior: none; }
+  main > :first-child { margin-top: 0 !important; }
+  main > :last-child { margin-bottom: 0 !important; }
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Barra de rolagem discreta (o Stitch escondia todas, o que atrapalha em desktop) */
+* { scrollbar-width: thin; scrollbar-color: rgb(var(--c-outline-variant)) transparent; }
+
+/* ---------- Modo escuro ----------
+   As cores de marca são escuras demais para TEXTO sobre o fundo escuro;
+   aqui só a cor de texto é clareada (o fundo dos botões continua igual). */
+.dark .text-primary,
+.dark .text-primary-container,
+.dark .hover\:text-primary:hover,
+.dark .group:hover .group-hover\:text-primary { color: #a3caf6; }
+.dark .text-secondary,
+.dark .hover\:text-secondary:hover,
+.dark .group:hover .group-hover\:text-secondary { color: #93ccff; }
+.dark .text-tertiary,
+.dark .group:hover .group-hover\:text-tertiary { color: #4edea3; }
+.dark .text-error,
+.dark .hover\:text-error:hover { color: #ffb4ab; }
+.dark .border-primary { border-color: #a3caf6; }
+
+/* Selos verdes claros do Stitch */
+.dark .bg-emerald-50,
+.dark .bg-emerald-100 { background-color: rgb(16 185 129 / 0.16); }
+.dark .text-emerald-600,
+.dark .text-emerald-700,
+.dark .text-emerald-800,
+.dark .text-emerald-900 { color: #6ee7b7; }
+.dark .bg-white { background-color: rgb(var(--c-surface-container-lowest)); }
+.dark .border-white { border-color: rgb(var(--c-surface-container-lowest)); }
+
+/* Gráficos SVG com cores fixas */
+.dark [stroke="#eaedff"] { stroke: #24314a; }
+.dark [stroke="#002541"] { stroke: #a3caf6; }
+.dark [fill="#002541"] { fill: #a3caf6; }
+
+/* Campos de formulário nativos */
+.dark input::placeholder, .dark textarea::placeholder { color: rgb(var(--c-outline)); }
+.dark option, .dark optgroup { background: #1e293b; color: #e2e8f0; }
+
+/* Carregamento de dados do Firebase */
+.skeleton { background: linear-gradient(90deg, rgb(var(--c-surface-container)) 25%, rgb(var(--c-surface-container-high)) 50%, rgb(var(--c-surface-container)) 75%); background-size: 200% 100%; animation: skeleton 1.2s infinite; }
+@keyframes skeleton { to { background-position: -200% 0; } }
+
+/* Esconde o conteúdo de exemplo até a sessão ser validada */
+body[data-auth="required"]:not(.auth-ok) main { visibility: hidden; }
+
+/* Cor da série única dos gráficos (validada no claro e no escuro) */
+:root { --chart-1: #006398; }
+.dark { --chart-1: #3b9ad8; }
+.chart-bar { background: var(--chart-1); }
+.chart-bar:hover, .chart-bar:focus-visible { filter: brightness(1.15); outline: none; }

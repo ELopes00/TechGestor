@@ -1,0 +1,36 @@
+<!--page id="auditoria-exportacao" nav="auditoria" title="Exportação Pericial" require="ADM"-->
+<div class="flex flex-col w-full gap-space-lg max-w-5xl">
+<section class="flex items-start gap-space-md p-space-lg bg-primary text-on-primary rounded-xl shadow-sm">
+  <div class="p-2.5 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-[28px]">verified</span></div>
+  <div class="flex flex-col gap-0.5">
+    <h1 class="font-headline-xl text-headline-xl tracking-tight">Exportação Pericial de Logs</h1>
+    <p class="font-body-sm text-body-sm text-on-primary-container leading-relaxed">Gera um pacote com os registros do período, o hash SHA-256 de cada registro e a raiz da árvore de Merkle. Com ele é possível provar depois, na tela <a class="underline" href="auditoria-integridade.html">Integridade</a>, que nenhum registro foi alterado ou removido.</p>
+  </div>
+</section>
+
+<form class="flex flex-col gap-space-lg" id="form-export" novalidate>
+  <section class="flex flex-col gap-space-md p-space-lg bg-surface-container-lowest rounded-xl shadow-sm">
+    <div class="flex items-center gap-space-xs text-primary font-headline-sm text-headline-sm"><span class="material-symbols-outlined text-secondary text-[20px]">date_range</span>1. Período e filtros</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md" id="campos-periodo"></div>
+    <div class="flex flex-col gap-space-xs">
+      <span class="font-label-md text-label-md text-on-surface">Tipos de registro</span>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-space-xs" id="tipos"></div>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-space-md p-space-lg bg-surface-container-lowest rounded-xl shadow-sm">
+    <div class="flex items-center gap-space-xs text-primary font-headline-sm text-headline-sm"><span class="material-symbols-outlined text-secondary text-[20px]">description</span>2. Finalidade</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md" id="campos-finalidade"></div>
+  </section>
+
+  <section class="flex flex-col md:flex-row md:items-center justify-between gap-space-md p-space-lg bg-surface-container-lowest rounded-xl shadow-sm">
+    <p class="font-body-sm text-body-sm text-on-surface-variant" id="estimativa">Escolha o período para ver quantos registros serão exportados.</p>
+    <div class="flex gap-space-sm">
+      <a class="h-10 px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg flex items-center" href="auditoria.html">Cancelar</a>
+      <button class="h-10 px-space-md rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center gap-1.5 disabled:opacity-60" id="btn-gerar" type="submit"><span class="material-symbols-outlined text-[18px]">enhanced_encryption</span>Gerar pacote pericial</button>
+    </div>
+  </section>
+</form>
+
+<section class="hidden flex-col gap-space-md p-space-lg bg-surface-container-lowest rounded-xl shadow-sm border border-on-tertiary-container/40" id="resultado"></section>
+</div>

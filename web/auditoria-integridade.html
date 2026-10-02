@@ -1,0 +1,17 @@
+<!--page id="auditoria-integridade" nav="auditoria" title="Integridade Merkle" require="ADM"-->
+<div class="flex flex-col w-full gap-space-lg max-w-5xl">
+<section class="flex flex-col gap-space-xs bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+  <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-secondary">account_tree</span><span class="font-label-sm text-label-sm tracking-wider uppercase text-secondary font-bold">Segurança da informação • DTI / TJRR</span></div>
+  <h1 class="font-headline-xl text-headline-xl text-primary tracking-tight">Teste de Integridade (Árvore de Merkle)</h1>
+  <p class="font-body-md text-body-md text-on-surface-variant">Carregue um pacote gerado na <a class="text-secondary underline" href="auditoria-exportacao.html">Exportação pericial</a>. O sistema confere (1) se o arquivo não foi editado e (2) se os registros atuais do banco no mesmo período continuam iguais aos do pacote.</p>
+</section>
+
+<label class="flex flex-col items-center justify-center gap-space-sm p-space-xl rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer text-center" id="drop">
+  <span class="material-symbols-outlined text-[40px] text-secondary">upload_file</span>
+  <span class="font-headline-sm text-headline-sm text-on-surface">Selecione ou arraste o arquivo .json do pacote pericial</span>
+  <span class="font-body-sm text-body-sm text-on-surface-variant">O arquivo é lido só no seu navegador; nada é enviado.</span>
+  <input accept="application/json,.json" class="sr-only" id="arquivo" type="file"/>
+</label>
+
+<section class="hidden flex-col gap-space-md" id="resultado"></section>
+</div>

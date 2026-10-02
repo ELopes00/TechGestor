@@ -1,0 +1,36 @@
+<!--page id="admin" nav="admin" title="Usuários e Lotações" require="ADM"-->
+<div class="flex flex-col w-full gap-space-lg">
+<section class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+  <div class="flex flex-col gap-space-xs">
+    <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-secondary">admin_panel_settings</span><span class="font-label-sm text-label-sm tracking-wider uppercase text-secondary font-bold">Administração • DTI / TJRR</span></div>
+    <h1 class="font-headline-xl text-headline-xl text-primary tracking-tight">Usuários, Perfis e Lotações</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">Contas de acesso ao TechGestor (app e site), expediente e prédio de cada técnico.</p>
+  </div>
+  <button class="h-10 px-space-md rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center gap-1.5 shadow-sm self-start lg:self-center" id="btn-novo" type="button"><span class="material-symbols-outlined text-[20px]">person_add</span>Novo usuário</button>
+</section>
+
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-space-md" id="kpis"></section>
+
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col lg:flex-row lg:items-center gap-space-sm">
+  <div class="relative flex-1 min-w-[220px]">
+    <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+    <input class="w-full h-10 pl-10 pr-space-md bg-surface-container-low rounded-lg text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none" id="f-busca" placeholder="Buscar por nome, login ou e-mail..." type="search"/>
+  </div>
+  <div class="flex flex-wrap gap-space-sm">
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm h-10 rounded-lg"><span class="material-symbols-outlined text-[18px] text-secondary">badge</span><select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none" id="f-perfil"><option value="">Todos os perfis</option><option value="TECNICO">Técnicos</option><option value="ADM">Administradores</option></select></label>
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm h-10 rounded-lg"><span class="material-symbols-outlined text-[18px] text-secondary">domain</span><select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none" id="f-predio"></select></label>
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm h-10 rounded-lg"><span class="material-symbols-outlined text-[18px] text-secondary">circle</span><select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none" id="f-status"></select></label>
+  </div>
+</section>
+
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-left min-w-[860px]">
+      <thead class="bg-surface-container-low font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+        <tr><th class="px-space-lg py-2 font-semibold">Usuário</th><th class="px-space-md py-2 font-semibold">Perfil</th><th class="px-space-md py-2 font-semibold">Prédio</th><th class="px-space-md py-2 font-semibold">Expediente</th><th class="px-space-md py-2 font-semibold">Status</th><th class="px-space-md py-2 font-semibold">Chamados</th><th class="px-space-lg py-2 font-semibold text-right">Ações</th></tr>
+      </thead>
+      <tbody class="divide-y divide-outline-variant/30" id="tabela"></tbody>
+    </table>
+  </div>
+</section>
+</div>

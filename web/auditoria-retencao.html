@@ -1,0 +1,29 @@
+<!--page id="auditoria-retencao" nav="auditoria" title="Retenção de Logs" require="ADM"-->
+<div class="flex flex-col w-full gap-space-lg max-w-5xl">
+<section class="flex flex-col gap-space-xs bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+  <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-secondary">inventory</span><span class="font-label-sm text-label-sm tracking-wider uppercase text-secondary font-bold">Governança de logs • DTI / TJRR</span></div>
+  <h1 class="font-headline-xl text-headline-xl text-primary tracking-tight">Política de Retenção de Logs</h1>
+  <p class="font-body-md text-body-md text-on-surface-variant">Situação real do armazenamento dos registros de auditoria e o que falta para cumprir a retenção imutável (WORM) de 36 meses.</p>
+</section>
+
+<section class="grid grid-cols-1 sm:grid-cols-3 gap-space-md" id="situacao"></section>
+
+<section class="flex flex-col gap-space-md p-space-lg bg-surface-container-lowest rounded-xl shadow-sm">
+  <h2 class="font-headline-sm text-headline-sm text-primary">Como está hoje</h2>
+  <ul class="flex flex-col gap-space-sm font-body-md text-body-md text-on-surface">
+    <li class="flex gap-space-sm"><span class="material-symbols-outlined text-on-tertiary-container">check_circle</span><span>Os logs ficam na coleção <code class="px-1 rounded bg-surface-container">logs</code> do Firestore e <strong>não são apagados automaticamente</strong>.</span></li>
+    <li class="flex gap-space-sm"><span class="material-symbols-outlined text-on-tertiary-container">check_circle</span><span>A <a class="text-secondary underline" href="auditoria-exportacao.html">exportação pericial</a> gera pacotes com raiz de Merkle, e a tela de <a class="text-secondary underline" href="auditoria-integridade.html">integridade</a> detecta qualquer alteração posterior no banco.</span></li>
+    <li class="flex gap-space-sm"><span class="material-symbols-outlined text-amber-500">error</span><span>O Firestore <strong>não é imutável (WORM)</strong>: um administrador do projeto Firebase ainda consegue editar ou apagar registros. A verificação de integridade detecta, mas não impede.</span></li>
+  </ul>
+</section>
+
+<section class="flex flex-col gap-space-md p-space-lg bg-surface-container-lowest rounded-xl shadow-sm">
+  <h2 class="font-headline-sm text-headline-sm text-primary">Para ter retenção WORM de 36 meses (configuração no servidor)</h2>
+  <ol class="list-decimal pl-6 flex flex-col gap-space-xs font-body-md text-body-md text-on-surface">
+    <li>Nas regras do Firestore, permitir só <em>criação</em> na coleção <code class="px-1 rounded bg-surface-container">logs</code> (sem update/delete).</li>
+    <li>Criar um bucket no Cloud Storage com <em>Bucket Lock</em> (política de retenção de 36 meses, travada).</li>
+    <li>Uma Cloud Function agendada exporta os logs do dia para esse bucket, com a raiz de Merkle no nome do arquivo.</li>
+  </ol>
+  <p class="font-body-sm text-body-sm text-on-surface-variant">Esses passos exigem o plano Blaze do Firebase e acesso de proprietário ao projeto <code>techgestor-bd</code>, por isso não podem ser ativados por esta tela.</p>
+</section>
+</div>

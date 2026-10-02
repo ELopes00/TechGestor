@@ -1,0 +1,40 @@
+<!--page id="agenda" nav="agenda" title="Agenda Forense"-->
+<div class="flex flex-col w-full gap-space-lg">
+<section class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+  <div class="flex flex-col gap-space-xs">
+    <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-secondary">calendar_month</span><span class="font-label-sm text-label-sm tracking-wider uppercase text-secondary font-bold">Planejamento • DTI / TJRR</span></div>
+    <h1 class="font-headline-xl text-headline-xl text-primary tracking-tight">Agenda Forense &amp; Serviços Agendados</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">Serviços agendados para os técnicos e eventos institucionais, no mesmo calendário.</p>
+  </div>
+  <button class="h-10 px-space-md rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center gap-1.5 shadow-sm self-start lg:self-center" id="btn-novo" type="button"><span class="material-symbols-outlined text-[20px]">event_available</span>Agendar serviço</button>
+</section>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+  <section class="xl:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-md">
+    <div class="flex flex-wrap items-center justify-between gap-space-sm">
+      <div class="flex items-center gap-space-xs">
+        <button aria-label="Mês anterior" class="p-1.5 rounded-lg hover:bg-surface-container-high text-on-surface-variant" id="mes-ant" type="button"><span class="material-symbols-outlined">chevron_left</span></button>
+        <h2 class="font-headline-lg text-headline-lg text-primary min-w-[12rem] text-center" id="mes-titulo"></h2>
+        <button aria-label="Próximo mês" class="p-1.5 rounded-lg hover:bg-surface-container-high text-on-surface-variant" id="mes-prox" type="button"><span class="material-symbols-outlined">chevron_right</span></button>
+        <button class="ml-space-xs px-space-sm py-1 rounded-lg bg-surface-container hover:bg-surface-container-high font-label-md text-label-md" id="mes-hoje" type="button">Hoje</button>
+      </div>
+      <div class="flex items-center gap-space-md font-label-sm text-label-sm text-on-surface-variant">
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-secondary"></span>Serviço agendado</span>
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span>Evento</span>
+      </div>
+    </div>
+    <div class="grid grid-cols-7 gap-1 font-label-sm text-label-sm text-on-surface-variant uppercase text-center">
+      <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+    </div>
+    <div class="grid grid-cols-7 gap-1" id="calendario"></div>
+  </section>
+
+  <section class="xl:col-span-4 bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-md">
+    <div class="flex items-center justify-between">
+      <h2 class="font-headline-sm text-headline-sm text-primary" id="dia-titulo"></h2>
+      <span class="font-label-sm text-label-sm text-on-surface-variant" id="dia-contagem"></span>
+    </div>
+    <div class="flex flex-col gap-space-sm" id="dia-lista"></div>
+  </section>
+</div>
+</div>

@@ -1,0 +1,70 @@
+<!--page id="auditoria" nav="auditoria" title="Trilha de Auditoria" require="ADM"-->
+<div class="flex flex-col w-full gap-space-lg">
+<!-- Cabeçalho -->
+<section class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+  <div class="flex flex-col gap-space-xs max-w-4xl">
+    <div class="flex items-center gap-space-xs text-on-surface-variant flex-wrap">
+      <span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span>
+      <span class="font-label-sm text-label-sm tracking-wider uppercase text-secondary font-bold">Segurança da informação &amp; governança • DTI / TJRR</span>
+    </div>
+    <h1 class="font-headline-xl text-headline-xl text-primary tracking-tight">Trilha de Auditoria &amp; Registro de Eventos</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+      Todas as ações registradas pelo TechGestor (app e site): acessos, chamados, inventário e cadastros, em tempo real.
+    </p>
+  </div>
+  <div class="flex flex-wrap items-center gap-space-sm self-start xl:self-center">
+    <a class="flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg shadow-sm transition-all" href="auditoria-integridade.html">
+      <span class="material-symbols-outlined text-[18px] text-secondary">account_tree</span><span>Verificar integridade</span>
+    </a>
+    <a class="flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg shadow-sm transition-all" href="auditoria-exportacao.html">
+      <span class="material-symbols-outlined text-[18px]">download</span><span>Exportação pericial</span>
+    </a>
+  </div>
+</section>
+
+<!-- Indicadores -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md" id="kpis"></section>
+
+<!-- Filtros -->
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col lg:flex-row lg:items-center gap-space-sm">
+  <div class="relative flex-1 min-w-[220px]">
+    <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+    <input class="w-full h-10 pl-10 pr-space-md bg-surface-container-low rounded-lg text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none" id="f-busca" placeholder="Buscar na descrição ou usuário..." type="search"/>
+  </div>
+  <div class="flex flex-wrap gap-space-sm">
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm h-10 rounded-lg text-body-sm font-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-secondary">category</span><select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none" id="f-tipo"></select></label>
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm h-10 rounded-lg text-body-sm font-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-secondary">person</span><select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none max-w-[12rem]" id="f-usuario"></select></label>
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm h-10 rounded-lg text-body-sm font-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-secondary">date_range</span><select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none" id="f-periodo">
+      <option value="1">Hoje</option><option value="7" selected>Últimos 7 dias</option><option value="30">Últimos 30 dias</option><option value="0">Tudo (últimos 1000)</option>
+    </select></label>
+    <button class="h-10 px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1" id="btn-csv" type="button"><span class="material-symbols-outlined text-[18px]">download</span>CSV</button>
+  </div>
+</section>
+
+<!-- Tabela -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+  <div class="flex items-center justify-between gap-space-sm px-space-lg py-space-md border-b border-outline-variant/40">
+    <div class="flex items-center gap-space-xs">
+      <h2 class="font-headline-sm text-headline-sm text-primary">Registros</h2>
+      <span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+      <span class="font-label-sm text-label-sm text-on-surface-variant">ao vivo</span>
+    </div>
+    <span class="font-label-sm text-label-sm text-on-surface-variant" id="contagem"></span>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left font-body-md text-body-md text-on-surface min-w-[720px]">
+      <thead class="bg-surface-container-low font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+        <tr><th class="px-space-lg py-2 font-semibold w-44">Data / hora</th><th class="px-space-md py-2 font-semibold w-40">Usuário</th><th class="px-space-md py-2 font-semibold w-36">Tipo</th><th class="px-space-md py-2 font-semibold">Descrição</th></tr>
+      </thead>
+      <tbody class="divide-y divide-outline-variant/30" id="tabela"></tbody>
+    </table>
+  </div>
+  <div class="flex items-center justify-between gap-space-sm px-space-lg py-space-sm border-t border-outline-variant/40 font-label-md text-label-md text-on-surface-variant">
+    <span id="pagina-info"></span>
+    <div class="flex gap-space-xs">
+      <button class="px-space-sm py-1 rounded-lg bg-surface-container hover:bg-surface-container-high disabled:opacity-40" id="pag-ant" type="button">Anterior</button>
+      <button class="px-space-sm py-1 rounded-lg bg-surface-container hover:bg-surface-container-high disabled:opacity-40" id="pag-prox" type="button">Próxima</button>
+    </div>
+  </div>
+</section>
+</div>

@@ -1,0 +1,41 @@
+<!--page id="perfil" nav="perfil" title="Perfil e Segurança"-->
+<div class="flex flex-col w-full gap-space-lg">
+<section class="flex flex-col md:flex-row md:items-center gap-space-lg bg-surface-container-lowest p-space-lg rounded-xl shadow-sm" id="cartao"></section>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+  <div class="xl:col-span-7 flex flex-col gap-space-lg">
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-space-md" id="meus-numeros"></section>
+
+    <section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+      <div class="flex items-center justify-between">
+        <h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-space-xs"><span class="material-symbols-outlined text-secondary">confirmation_number</span>Meus chamados em aberto</h2>
+        <a class="font-label-md text-label-md text-secondary hover:text-primary" href="chamados.html?filtro=meus">Ver na fila</a>
+      </div>
+      <div class="flex flex-col divide-y divide-outline-variant/30" id="meus-chamados"></div>
+    </section>
+
+    <section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+      <h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-space-xs"><span class="material-symbols-outlined text-secondary">history</span>Minha atividade recente</h2>
+      <div class="flex flex-col gap-space-xs" id="atividade"></div>
+    </section>
+  </div>
+
+  <div class="xl:col-span-5 flex flex-col gap-space-lg">
+    <section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+      <h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-space-xs"><span class="material-symbols-outlined text-secondary">lock_reset</span>Alterar senha</h2>
+      <form class="flex flex-col gap-space-md" id="form-senha" novalidate></form>
+    </section>
+
+    <section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+      <h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-space-xs"><span class="material-symbols-outlined text-secondary">contrast</span>Aparência</h2>
+      <div class="grid grid-cols-3 gap-space-sm" id="tema"></div>
+    </section>
+
+    <section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-sm">
+      <h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-space-xs"><span class="material-symbols-outlined text-secondary">logout</span>Sessão</h2>
+      <p class="font-body-sm text-body-sm text-on-surface-variant">Ao sair, seu status fica Offline e a saída é registrada na auditoria.</p>
+      <button class="h-10 px-space-md rounded-lg bg-error text-on-error hover:opacity-90 font-label-lg text-label-lg flex items-center justify-center gap-1.5 self-start" id="btn-sair" type="button"><span class="material-symbols-outlined text-[18px]">logout</span>Sair do TechGestor</button>
+    </section>
+  </div>
+</div>
+</div>

@@ -1,0 +1,50 @@
+<!--page id="inventario" nav="inventario" title="Inventário de Ativos"-->
+<div class="flex flex-col w-full gap-space-lg">
+<section class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+  <div class="flex flex-col gap-space-xs">
+    <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-secondary">inventory_2</span><span class="font-label-sm text-label-sm tracking-wider uppercase text-secondary font-bold">Patrimônio de TI • DTI / TJRR</span></div>
+    <h1 class="font-headline-xl text-headline-xl text-primary tracking-tight">Inventário de Ativos &amp; Levantamento</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">Estações de trabalho por responsável, com os equipamentos vinculados (tombos), empréstimos e prontuário de alterações.</p>
+  </div>
+  <div class="flex flex-wrap gap-space-sm self-start lg:self-center">
+    <button class="h-10 px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg flex items-center gap-1.5" id="btn-csv" type="button"><span class="material-symbols-outlined text-[18px]">download</span>Exportar CSV</button>
+    <button class="h-10 px-space-md rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg flex items-center gap-1.5 shadow-sm" id="btn-novo" type="button"><span class="material-symbols-outlined text-[20px]">add_box</span>Novo levantamento</button>
+  </div>
+</section>
+
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-space-md" id="kpis"></section>
+
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col lg:flex-row lg:items-center gap-space-sm">
+  <div class="relative flex-1 min-w-[220px]">
+    <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+    <input class="w-full h-10 pl-10 pr-space-md bg-surface-container-low rounded-lg text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none" id="f-busca" placeholder="Buscar por tombo, responsável, matrícula, setor ou marca..." type="search"/>
+  </div>
+  <div class="flex flex-wrap gap-space-sm">
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm h-10 rounded-lg"><span class="material-symbols-outlined text-[18px] text-secondary">domain</span><select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none" id="f-predio"></select></label>
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm h-10 rounded-lg"><span class="material-symbols-outlined text-[18px] text-secondary">devices</span><select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none" id="f-tipo"></select></label>
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm h-10 rounded-lg"><span class="material-symbols-outlined text-[18px] text-secondary">rule</span><select class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none" id="f-situacao"><option value="">Todas as situações</option><option value="indisponivel">Com equipamento indisponível</option><option value="emprestado">Emprestados</option></select></label>
+  </div>
+</section>
+
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+  <div class="flex items-center justify-between px-space-lg py-space-md border-b border-outline-variant/40">
+    <h2 class="font-headline-sm text-headline-sm text-primary">Estações cadastradas</h2>
+    <span class="font-label-sm text-label-sm text-on-surface-variant" id="contagem"></span>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left min-w-[900px]">
+      <thead class="bg-surface-container-low font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+        <tr><th class="px-space-lg py-2 font-semibold">Responsável</th><th class="px-space-md py-2 font-semibold">Lotação</th><th class="px-space-md py-2 font-semibold">Equipamentos</th><th class="px-space-md py-2 font-semibold">Situação</th><th class="px-space-lg py-2 font-semibold text-right">Ações</th></tr>
+      </thead>
+      <tbody class="divide-y divide-outline-variant/30" id="tabela"></tbody>
+    </table>
+  </div>
+  <div class="flex items-center justify-between gap-space-sm px-space-lg py-space-sm border-t border-outline-variant/40 font-label-md text-label-md text-on-surface-variant">
+    <span id="pagina-info"></span>
+    <div class="flex gap-space-xs">
+      <button class="px-space-sm py-1 rounded-lg bg-surface-container hover:bg-surface-container-high disabled:opacity-40" id="pag-ant" type="button">Anterior</button>
+      <button class="px-space-sm py-1 rounded-lg bg-surface-container hover:bg-surface-container-high disabled:opacity-40" id="pag-prox" type="button">Próxima</button>
+    </div>
+  </div>
+</section>
+</div>

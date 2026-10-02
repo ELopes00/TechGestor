@@ -1,0 +1,147 @@
+<!--page id="index" title="Acesso" layout="blank" bodyClass="bg-surface font-body-md text-on-surface antialiased flex items-center justify-center min-h-screen"-->
+<main class="w-full"><div class="flex flex-col w-full">
+<div class="relative w-full min-h-[92vh] flex items-center justify-center p-4 md:p-8 overflow-hidden">
+<div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-secondary-fixed opacity-40 blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-24 -right-24 w-[30rem] h-[30rem] rounded-full bg-surface-container-high opacity-60 blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/2 left-1/12 w-64 h-64 rounded-full bg-surface-variant opacity-30 blur-2xl pointer-events-none"></div>
+<button aria-label="Alternar modo escuro" class="absolute top-4 right-4 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" data-action="toggle-theme" type="button"><span class="material-symbols-outlined text-[22px]" data-theme-icon>dark_mode</span></button>
+<div class="relative w-full max-w-xl flex flex-col items-center">
+<div class="mb-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-lowest shadow-sm">
+<span class="inline-block w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Ambiente Seguro</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">• Rede Corporativa TJRR</span>
+<span class="material-symbols-outlined text-secondary text-sm ml-0.5">verified_user</span>
+</div>
+<div class="w-full bg-surface-container-lowest rounded-xl shadow-xl p-6 sm:p-10 transition-all duration-300">
+<div class="flex flex-col items-center text-center mb-8">
+<div class="w-56 max-w-full mb-4 text-[#0f4e81] dark:text-[#a3caf6]">{{logo-tjrr:w-full h-auto}}</div>
+<h1 class="font-headline-xl text-headline-xl text-primary tracking-tight">
+            TechGestor <span class="text-secondary font-headline-xl">TJRR</span>
+</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-sm mt-1">
+            Sistema Integrado de Gestão de Tecnologia da Informação Judiciária
+          </p>
+</div>
+<form class="space-y-4" id="login-form" novalidate>
+<div class="hidden items-start gap-2 p-3 rounded-lg bg-error-container text-on-error-container font-body-sm text-body-sm" id="login-erro" role="alert"><span class="material-symbols-outlined text-[18px]">error</span><span data-msg></span></div>
+<div class="space-y-1.5">
+<label class="block font-label-md text-label-md text-on-surface" for="matricula">
+              Matrícula Funcional / Usuário de Rede
+            </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline pointer-events-none text-xl">
+                badge
+              </span>
+<input autocomplete="username" class="w-full h-11 pl-10 pr-3 rounded bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface transition-colors" id="matricula" placeholder="Ex: 0048291 ou usuario.rede" type="text"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="block font-label-md text-label-md text-on-surface" for="senha">
+                Senha de Acesso
+              </label>
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors" data-ajuda="senha" href="#">
+                Esqueceu a senha funcional?
+              </a>
+</div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline pointer-events-none text-xl">
+                lock
+              </span>
+<input autocomplete="current-password" class="w-full h-11 pl-10 pr-10 rounded bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:bg-surface transition-colors" id="senha" placeholder="••••••••••••" type="password"/>
+<button aria-label="Alternar visibilidade da senha" class="absolute right-2 p-1 rounded-full text-outline hover:text-on-surface transition-colors" id="toggleSenhaBtn" type="button">
+<span class="material-symbols-outlined text-xl" id="eyeIcon">visibility</span>
+</button>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="block font-label-md text-label-md text-on-surface" for="polo">
+              Unidade / Polo Judiciário
+            </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline pointer-events-none text-xl">
+                domain
+              </span>
+<select class="w-full h-11 pl-10 pr-8 rounded bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:bg-surface appearance-none transition-colors cursor-pointer" id="polo">
+<optgroup label="Capital - Boa Vista">
+<option selected="" value="sede">Sede TJRR - Palácio da Justiça (Boa Vista)</option>
+<option value="forum_civel">Fórum Cível Advogado Sobral Pinto</option>
+<option value="forum_criminal">Fórum Criminal Min. Evandro Lins e Silva</option>
+<option value="dti">Diretoria de Tecnologia da Informação (DTI)</option>
+<option value="juizados">Juizados Especiais Cíveis e da Fazenda Pública</option>
+</optgroup>
+<optgroup label="Comarcas do Interior">
+<option value="rorainopolis">Comarca de Rorainópolis</option>
+<option value="caracarai">Comarca de Caracaraí</option>
+<option value="alto_alegre">Comarca de Alto Alegre</option>
+<option value="mucajai">Comarca de Mucajaí</option>
+<option value="pacaraima">Comarca de Pacaraima</option>
+<option value="sao_luiz">Comarca de São Luiz do Anauá</option>
+<option value="bonfim">Comarca de Bonfim</option>
+</optgroup>
+</select>
+<span class="material-symbols-outlined absolute right-3 text-outline pointer-events-none text-lg">
+                expand_more
+              </span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<label class="flex items-center gap-2 cursor-pointer select-none">
+<input class="w-4 h-4 rounded text-secondary bg-surface-container-low accent-secondary focus:ring-0 cursor-pointer" id="lembrar" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Lembrar minha matrícula neste terminal</span>
+</label>
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors" data-ajuda="primeiro" href="#">
+              Primeiro acesso?
+            </a>
+</div>
+<button class="w-full h-11 mt-2 rounded bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-wait" id="login-btn" type="submit">
+<span data-label>Entrar no TechGestor</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</form>
+<div class="relative my-6 flex items-center justify-center">
+<div class="w-full h-px bg-surface-container-high"></div>
+<span class="absolute px-3 bg-surface-container-lowest font-label-sm text-label-sm text-outline uppercase tracking-wider">
+            ou
+          </span>
+</div>
+<button class="w-full h-11 rounded bg-surface-container-low hover:bg-surface-container text-secondary font-label-md text-label-md transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer shadow-sm" id="login-certificado" type="button">
+<span class="material-symbols-outlined text-secondary text-xl">token</span>
+<span>Acessar com Certificado Digital / Token ICP-Brasil</span>
+</button>
+<div class="mt-6 pt-5 bg-surface-container-low rounded-lg p-3.5 flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-xl shrink-0 mt-0.5">headset_mic</span>
+<div class="flex flex-col text-left">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Central de Atendimento e Suporte DTI</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+              Plantão Judiciário e Suporte Técnico: <span class="text-secondary font-semibold">(95) 3198-4100</span> • Ramal 4100
+            </span>
+</div>
+</div>
+</div>
+<div class="mt-6 text-center space-y-1">
+<p class="font-body-sm text-body-sm text-outline">
+          Tribunal de Justiça do Estado de Roraima • Diretoria de Tecnologia da Informação (DTI)
+        </p>
+<p class="font-label-sm text-label-sm text-outline-variant">
+          Em conformidade com a Resolução CNJ nº 370/2021 (Estratégia Nacional de TIC do Poder Judiciário)
+        </p>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const toggleBtn = document.getElementById('toggleSenhaBtn');
+    const senhaInput = document.getElementById('senha');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    if (toggleBtn && senhaInput && eyeIcon) {
+      toggleBtn.addEventListener('click', function() {
+        const isPassword = senhaInput.getAttribute('type') === 'password';
+        senhaInput.setAttribute('type', isPassword ? 'text' : 'password');
+        eyeIcon.textContent = isPassword ? 'visibility_off' : 'visibility';
+      });
+    }
+  })();
+</script></main>

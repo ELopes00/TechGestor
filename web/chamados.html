@@ -1,0 +1,45 @@
+<!--page id="chamados" nav="chamados" title="Chamados"-->
+<div class="flex flex-col w-full gap-space-md">
+<!-- Barra superior: busca, filtros e novo chamado -->
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-space-md">
+  <div class="flex flex-wrap items-center gap-space-sm flex-1">
+    <div class="relative flex-1 min-w-[220px] max-w-lg">
+      <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[20px]">search</span>
+      <input class="w-full h-10 pl-10 pr-space-md bg-surface-container-low rounded-lg text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all" id="ticket-search" placeholder="Buscar por protocolo, título, solicitante, sala ou técnico..." type="search"/>
+    </div>
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1.5 rounded-lg text-body-sm font-body-sm text-on-surface-variant">
+      <span class="material-symbols-outlined text-[18px] text-secondary">filter_alt</span>
+      <span>Prédio:</span>
+      <select class="bg-transparent font-label-md text-label-md text-primary font-semibold focus:outline-none cursor-pointer" id="filtro-predio"></select>
+    </label>
+    <label class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1.5 rounded-lg text-body-sm font-body-sm text-on-surface-variant">
+      <span class="material-symbols-outlined text-[18px] text-secondary">priority_high</span>
+      <span>Prioridade:</span>
+      <select class="bg-transparent font-label-md text-label-md text-primary font-semibold focus:outline-none cursor-pointer" id="filtro-prioridade"></select>
+    </label>
+  </div>
+  <div class="flex flex-wrap items-center gap-space-sm justify-between xl:justify-end">
+    <div class="flex flex-wrap items-center gap-1 bg-surface-container p-1 rounded-lg" id="status-tabs" role="tablist"></div>
+    <button class="h-10 px-space-md rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg flex items-center gap-space-xs hover:bg-primary transition-all shadow-sm" id="btn-novo-chamado" type="button">
+      <span class="material-symbols-outlined text-[20px]">add_circle</span>
+      <span>Abrir Novo Chamado</span>
+    </button>
+  </div>
+</section>
+
+<!-- Fila + detalhe -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md items-start">
+  <div class="xl:col-span-5 flex flex-col gap-space-sm">
+    <div class="flex items-center justify-between px-space-xs">
+      <div class="flex items-center gap-space-xs">
+        <span class="font-headline-sm text-headline-sm text-primary">Fila Operacional</span>
+        <span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+        <span class="font-label-sm text-label-sm text-on-surface-variant">Sincronização ativa</span>
+      </div>
+      <span class="font-label-sm text-label-sm text-secondary font-semibold" id="fila-resumo"></span>
+    </div>
+    <div class="flex flex-col gap-space-xs xl:max-h-[calc(100vh-15rem)] overflow-y-auto pr-1" id="tickets-queue-list"></div>
+  </div>
+  <div class="xl:col-span-7 flex flex-col gap-space-md" id="ticket-detail"></div>
+</div>
+</div>
