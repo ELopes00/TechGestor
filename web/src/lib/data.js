@@ -118,6 +118,9 @@ export const deletarAgendamento = (id) => deleteDoc(doc(db, 'agendamentos', id))
 // --- LOGS ---
 export const subscribeLogs = (cb, onError, max = 1000) =>
   listen(query(collection(db, 'logs'), orderBy('data', 'desc'), limit(max)), cb, onError);
+/** Logs do próprio usuário (técnicos só podem ler os seus). Ordenação feita aqui, sem índice composto. */
+export const subscribeMeusLogs = (login, cb, onError) =>
+  listen(query(collection(db, 'logs'), where('usuario', '==', login), limit(200)), (l) => cb(l.sort((a, b) => (b.data || 0) - (a.data || 0))), onError);
 /** Logs de um intervalo [de, ate] em ordem cronológica (para exportação/verificação). */
 export async function buscarLogs(de, ate) {
   const snap = await getDocs(query(collection(db, 'logs'), where('data', '>=', de), where('data', '<=', ate), orderBy('data', 'asc')));

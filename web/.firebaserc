@@ -5,7 +5,12 @@
   "targets": {
     "techgestor-bd": {
       "hosting": {
-        "web": ["techgestor-web"]
+        "web": [
+          "techgestor-sti"
+        ],
+        "antigo": [
+          "techgestor-web"
+        ]
       }
     }
   }

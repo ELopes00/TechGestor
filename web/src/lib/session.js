@@ -11,11 +11,15 @@ const authPronto = new Promise((resolve) => {
   });
 });
 
+// Conta sem cadastro em "usuarios" não tem acesso (as regras do Firestore também bloqueiam).
 async function perfilDe(authUser) {
-  const snap = await getDoc(doc(db, 'usuarios', authUser.uid));
-  if (snap.exists()) return { id: snap.id, uid: authUser.uid, ...snap.data() };
-  // Mesmo fallback do app: conta sem documento em "usuarios" é tratada como ADM.
-  return { uid: authUser.uid, login: authUser.email?.split('@')[0] ?? 'Admin', perfil: 'ADM', predio: 'Base' };
+  try {
+    const snap = await getDoc(doc(db, 'usuarios', authUser.uid));
+    if (snap.exists()) return { id: snap.id, uid: authUser.uid, ...snap.data() };
+  } catch (e) {
+    if (e.code !== 'permission-denied') throw e;
+  }
+  return null;
 }
 
 let sessaoAtual;
@@ -28,7 +32,13 @@ export function requireSession() {
       location.replace(`index.html?next=${volta}`);
       return new Promise(() => {}); // a página não continua sem sessão
     }
-    return perfilDe(u);
+    const perfil = await perfilDe(u);
+    if (!perfil) {
+      await signOut(auth);
+      location.replace('index.html?erro=sem-cadastro');
+      return new Promise(() => {});
+    }
+    return perfil;
   });
   return sessaoAtual;
 }
@@ -37,7 +47,13 @@ export const usuarioAtual = () => authPronto.then((u) => (u ? perfilDe(u) : null
 
 export async function login(matricula, senha) {
   const cred = await signInWithEmailAndPassword(auth, emailDoLogin(matricula), senha);
-  const dados = (await getDoc(doc(db, 'usuarios', cred.user.uid))).data() ?? {};
+  const dados = await perfilDe(cred.user);
+  if (!dados) {
+    await signOut(auth);
+    const e = new Error('Conta sem cadastro');
+    e.code = 'tg/sem-cadastro';
+    throw e;
+  }
 
   // Mesmo controle de expediente do app.
   const hora = new Date().getHours();
@@ -48,9 +64,7 @@ export async function login(matricula, senha) {
     noHorario ? 'LOGOU NO SISTEMA (Dentro do expediente) [Web]' : `ALERTA: LOGOU NO SISTEMA FORA DO EXPEDIENTE (${hora}h) [Web]`,
     dados.login || matricula,
   );
-  if (Object.keys(dados).length) {
-    await updateDoc(doc(db, 'usuarios', cred.user.uid), { status: noHorario ? 'ONLINE' : 'OFFLINE' });
-  }
+  await updateDoc(doc(db, 'usuarios', cred.user.uid), { status: noHorario ? 'ONLINE' : 'OFFLINE' });
   return cred.user;
 }
 
@@ -77,4 +91,5 @@ export const MENSAGENS_ERRO_LOGIN = {
   'auth/too-many-requests': 'Muitas tentativas. Aguarde alguns minutos e tente de novo.',
   'auth/network-request-failed': 'Sem conexão com o servidor. Verifique a rede.',
   'auth/user-disabled': 'Usuário desativado. Procure a DTI.',
+  'tg/sem-cadastro': 'Esta conta não tem cadastro ativo no TechGestor. Procure um administrador.',
 };

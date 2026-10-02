@@ -1,0 +1,75 @@
+rules_version = '2';
+
+// Regras do Firestore do TechGestor (projeto techgestor-bd) — valem para o app e para o site.
+//
+// Princípios:
+//  - Só entra quem tem cadastro em /usuarios/{uid} (conta de login sozinha não basta).
+//    Isso fecha o autocadastro pela chave pública e as contas "excluídas" pelo app,
+//    que perdiam só o cadastro e continuavam com acesso.
+//  - Perfil e cadastro de usuários: só administradores (perfil == 'ADM').
+//    Cada usuário pode mudar apenas o próprio status e o token de notificação.
+//  - Exclusões de chamados, inventário e eventos: só administradores (como na tela do app).
+//  - Logs: criação por usuários cadastrados; ninguém altera nem apaga (trilha imutável).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function logado() {
+      return request.auth != null;
+    }
+    function meuCadastro() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+    function cadastrado() {
+      return logado() && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid));
+    }
+    function adm() {
+      return cadastrado() && meuCadastro().perfil == 'ADM';
+    }
+    function soAlterou(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
+    }
+
+    match /usuarios/{uid} {
+      allow read: if cadastrado();
+      allow create, delete: if adm();
+      allow update: if adm()
+        || (request.auth.uid == uid && soAlterou(['status', 'expoPushToken']));
+    }
+
+    match /chamados/{id} {
+      allow read, create, update: if cadastrado();
+      allow delete: if adm();
+    }
+
+    match /inventario/{id} {
+      allow read, create, update: if cadastrado();
+      allow delete: if adm();
+
+      match /prontuario/{registro} {
+        allow read, create: if cadastrado();
+        allow delete: if adm();
+      }
+    }
+
+    match /eventos/{id} {
+      allow read, create, update: if cadastrado();
+      allow delete: if adm();
+    }
+
+    // "Concluir" e "cancelar" agendamento apagam o documento (app e site).
+    match /agendamentos/{id} {
+      allow read, create, update, delete: if cadastrado();
+    }
+
+    match /logs/{id} {
+      allow read: if adm()
+        || (cadastrado() && resource.data.usuario == meuCadastro().login);
+      allow create: if cadastrado()
+        && request.resource.data.keys().hasOnly(['mensagem', 'usuario', 'data'])
+        && request.resource.data.mensagem is string
+        && request.resource.data.data is number;
+    }
+
+    // Qualquer outra coleção fica fechada.
+  }
+}

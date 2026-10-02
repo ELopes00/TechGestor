@@ -11,16 +11,20 @@ npm run build    # gera dist/
 npm run demo     # http://localhost:5175 — dados fictícios, login demo / demo123, sem Firebase
 ```
 
-Publicado em **https://techgestor-web.web.app** (site `techgestor-web` do projeto `techgestor-bd`;
-o site `techgestor-bd.web.app` é do app Expo e não deve ser usado aqui). Para publicar de novo:
+Publicado em **https://techgestor-sti.web.app** (site `techgestor-sti` do projeto `techgestor-bd`).
+O endereço antigo `techgestor-web.web.app` só redireciona para o novo (pasta `redirecionamento/`).
+O site `techgestor-bd.web.app` é do app Expo (e do APK) e não deve ser usado aqui. Para publicar de novo:
 
 ```bash
 npm run build
 NODE_OPTIONS=--use-system-ca firebase deploy --only hosting:web --project techgestor-bd
 ```
 
+Regras de segurança do Firestore (valem para o app e o site): `firestore.rules`.
+Publicar com `firebase deploy --only firestore:rules --project techgestor-bd`.
+
 Criar um usuário real (mesmo formato do app):
-`NODE_OPTIONS=--use-system-ca node scripts/criar-usuario.mjs <login> <senha> "<Nome>" ADM SUBCS`
+`TG_ADMIN=<seu login ADM> TG_ADMIN_SENHA=<sua senha> NODE_OPTIONS=--use-system-ca node scripts/criar-usuario.mjs <login> <senha> "<Nome>" ADM SUBCS`
 
 ## Páginas
 

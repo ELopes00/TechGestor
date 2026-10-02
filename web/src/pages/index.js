@@ -17,6 +17,9 @@ const destino = () => {
 };
 
 usuarioAtual().then((u) => u && location.replace(destino()));
+if (new URLSearchParams(location.search).get('erro') === 'sem-cadastro') {
+  queueMicrotask(() => mostrarErro(MENSAGENS_ERRO_LOGIN['tg/sem-cadastro']));
+}
 
 try {
   const salvo = JSON.parse(localStorage.getItem('tg-login') || 'null');

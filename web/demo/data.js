@@ -24,6 +24,7 @@ export const subscribeChamados = live(chamados);
 export const subscribeChamado = (id, cb) => { setTimeout(() => cb(chamados.find((c) => c.id === id) || null), 50); return () => {}; };
 export const subscribeUsuarios = live(users);
 export const subscribeLogs = live(logs);
+export const subscribeMeusLogs = (login, cb) => live(logs.filter((l) => l.usuario === login))(cb);
 export const subscribeInventario = live(inventario);
 export const subscribeEventos = live(eventos);
 export const subscribeAgendamentos = live(agendamentos);

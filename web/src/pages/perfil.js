@@ -1,6 +1,6 @@
 // Perfil do usuário logado: dados, status, números, senha, tema e atividade.
 import { logout, requireSession } from '../lib/session.js';
-import { atualizarUsuario, mudarMinhaSenha, subscribeChamados, subscribeLogs, subscribeUsuarios } from '../lib/data.js';
+import { atualizarUsuario, mudarMinhaSenha, subscribeChamados, subscribeMeusLogs, subscribeUsuarios } from '../lib/data.js';
 import { dataHora, ehHoje, esc, formatProtocolo, getDataFechamento, isFechado, isSlaVencido, prioridadeUI, slaTexto, tempoRelativo, USUARIO_STATUS_UI, usuarioStatusUI } from '../lib/format.js';
 import { avatar, BTN, emptyState, field, INPUT, options, skeletonRows, toast } from '../lib/ui.js';
 
@@ -71,8 +71,8 @@ subscribeChamados((todos) => {
 
 // Atividade
 $('atividade').innerHTML = skeletonRows(4, 'h-8');
-subscribeLogs((logs) => {
-  const meus = logs.filter((l) => l.usuario === user.login).slice(0, 15);
+subscribeMeusLogs(user.login, (logs) => {
+  const meus = logs.slice(0, 15);
   $('atividade').innerHTML = meus.length
     ? meus.map((l) => `<div class="flex items-start justify-between gap-space-sm py-1"><span class="font-body-sm text-body-sm text-on-surface">${esc(l.mensagem)}</span><span class="font-label-sm text-label-sm text-outline shrink-0" title="${dataHora(l.data)}">${tempoRelativo(l.data)}</span></div>`).join('')
     : emptyState('history', 'Nenhuma atividade registrada.');
